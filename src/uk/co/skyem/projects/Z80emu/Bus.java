@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * Created by skye on 2015-03-11.
  */
 public class Bus implements IBusDevice {
-	// TODO: use hashmap?
 	private ArrayList<IBusDevice> connections = new ArrayList<>();
 	public void putByte(int position, byte data) {
 		for (IBusDevice connection : connections) {
@@ -20,8 +19,15 @@ public class Bus implements IBusDevice {
 		}
 		return result;
 	}
-	public String getHexStringByte(int position) {
-		return Integer.toHexString(Byte.toUnsignedInt(this.getByte(position)));
+	public byte[] getBytes(int position, int amount) {
+		byte[] result = new byte[amount];
+		for (IBusDevice connection : connections) {
+			byte[] bytes = connection.getBytes(position, amount);
+			for (int i = 0; i < bytes.length; i++) {
+				result[i] = (byte)(result[i] | bytes[i]);
+			}
+		}
+		return result;
 	}
 	public void addConnection(IBusDevice connection) {
 		connections.add(connection);

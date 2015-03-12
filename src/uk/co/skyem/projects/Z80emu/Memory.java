@@ -5,24 +5,31 @@ package uk.co.skyem.projects.Z80emu;
  */
 public class Memory implements IBusDevice{
     private byte[] storage;
-	private int offset;
+	private int offset = 0;
     Memory(int size) {
         storage = new byte[size];
     }
 	Memory(int size, int offset) {
-		// TODO: offset
 		this.offset = offset;
 		this.storage = new byte[size];
 	}
 	public void putByte(int position, byte data) {
-		// TODO: Bounds check
-		storage[position-offset] = data;
+		if (!(position < offset || position >= storage.length + offset)) {
+			storage[position - offset] = data;
+		}
 	}
 	public byte getByte(int position) {
-		// TODO: Bounds check
-		return storage[position-offset];
+		if (position < offset || position >= storage.length + offset) {
+			return (byte)0x00;
+		} else {
+			return storage[position - offset];
+		}
 	}
-	public String getHexStringByte(int position) {
-		return Integer.toHexString(Byte.toUnsignedInt(this.getByte(position)));
+	public  byte[] getBytes(int position, int amount) {
+		byte[] result = new byte[amount];
+		for (;amount > 0;amount--) {
+			result[amount-1] = this.getByte(position+amount-1);
+		}
+		return result;
 	}
 }
