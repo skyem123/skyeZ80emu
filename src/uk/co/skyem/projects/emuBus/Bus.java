@@ -1,4 +1,6 @@
-package uk.co.skyem.projects.Z80emu;
+package uk.co.skyem.projects.emuBus;
+
+import uk.co.skyem.projects.emuBus.IBusDevice;
 
 import java.util.ArrayList;
 
@@ -33,6 +35,48 @@ public class Bus implements IBusDevice {
 	public void putBytes(int position, byte[] data) {
 		for (IBusDevice connection : connections) {
 			connection.putBytes(position, data);
+		}
+	}
+
+	public short getWord(int position) {
+		short result = 0x00;
+		for (IBusDevice connection : connections) {
+			result = (short) (result | connection.getWord(position));
+		}
+		return result;
+	}
+
+	public int getDWord(int position) {
+		int result = 0x00;
+		for (IBusDevice connection : connections) {
+			result = (int) (result | connection.getDWord(position));
+		}
+		return result;
+	}
+
+	public long getQWord(int position) {
+		long result = 0x00;
+		for (IBusDevice connection : connections) {
+			result = (long) (result | connection.getQWord(position));
+		}
+		return result;
+	}
+
+	public void putWord(int position, short data) {
+		for (IBusDevice connection : connections) {
+			connection.putWord(position, data);
+		}
+	}
+
+	public void putDWord(int position, int data) {
+		for (IBusDevice connection : connections) {
+			connection.putDWord(position, data);
+		}
+	}
+
+	public void putQWord(int position, long data) {
+		for (IBusDevice connection : connections) {
+			connection.putQWord(position, data);
 		}
 	}
 
