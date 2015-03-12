@@ -49,7 +49,7 @@ public class Bus implements IBusDevice {
 	public int getDWord(int position) {
 		int result = 0x00;
 		for (IBusDevice connection : connections) {
-			result = (int) (result | connection.getDWord(position));
+			result = (result | connection.getDWord(position));
 		}
 		return result;
 	}
@@ -57,7 +57,7 @@ public class Bus implements IBusDevice {
 	public long getQWord(int position) {
 		long result = 0x00;
 		for (IBusDevice connection : connections) {
-			result = (long) (result | connection.getQWord(position));
+			result = (result | connection.getQWord(position));
 		}
 		return result;
 	}
