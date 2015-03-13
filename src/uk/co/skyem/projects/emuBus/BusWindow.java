@@ -1,21 +1,17 @@
 package uk.co.skyem.projects.emuBus;
 
 public class BusWindow extends BusOffset {
-	int offset = 0;
-	IBusDevice toOffset;
 	int upperLimit = 0;
 	int lowerLimit = 0;
 
 	public BusWindow(int offset, int upper, int lower, IBusDevice toOffset) {
-		this.offset = offset;
-		this.toOffset = toOffset;
+		super(offset, toOffset);
 		this.upperLimit = upper;
 		this.lowerLimit = lower;
 	}
 
 	public BusWindow(int offset, int upper, IBusDevice toOffset) {
-		this.offset = offset;
-		this.toOffset = toOffset;
+		super(offset, toOffset);
 		this.upperLimit = upper;
 		this.lowerLimit = offset;
 	}
