@@ -27,24 +27,29 @@ public class Main {
 	}
 
     public static void main(String[] args) {
+		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
-		System.out.println(toHexString(memory.getByte(0)));
+		bus.addConnection(memory);
+		System.out.println(toHexString(bus.getByte(0)));
 		byte[] datas = new byte[4];
 		datas[0] = (byte)0xAA;
 		datas[1] = (byte)0xEE;
 		datas[3] = (byte)0xCC;
-		memory.putBytes(0, datas);
-		memory.putQWord(4, 0xDEADL);
-		for (byte data : memory.getBytes(0,16)) {
+		bus.putBytes(0, datas);
+		bus.putQWord(4, 0xDEADL);
+		for (byte data : bus.getBytes(0,16)) {
 			System.out.print(toHexString(data) + ' ');
 		}
 		System.out.println();
-		System.out.println(toHexString(memory.getWord(2)));
-		System.out.println(toHexString(memory.getWord(0)));
-		System.out.println(toHexString(memory.getDWord(0)));
-		System.out.println(toHexString(memory.getQWord(4)));
-		//BusWindow window = new BusWindow();
-		//System.out.println(toHexString());
+		System.out.println(toHexString(bus.getWord(2)));
+		System.out.println(toHexString(bus.getWord(0)));
+		System.out.println(toHexString(bus.getDWord(0)));
+		System.out.println(toHexString(bus.getQWord(4)));
+		bus.addConnection(new SimpleIO(1025));
+		bus.putByte(1025, (byte)65);
+		bus.putByte(1025, (byte) 65);
+		bus.putByte(1025, bus.getByte(1025));
+		bus.putByte(1025, bus.getByte(1025));
     }
 
 }
