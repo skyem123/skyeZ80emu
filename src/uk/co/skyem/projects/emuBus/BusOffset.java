@@ -11,6 +11,14 @@ public class BusOffset implements IBusDevice {
 		this.toOffset = toOffset;
 	}
 
+	public int getOffset() {
+		return offset;
+	}
+
+	public void changeOffset(int offset)  {
+		this.offset = offset;
+	}
+
 	public void putByte(int position, byte data) {
 		toOffset.putByte(position - offset, data);
 	}

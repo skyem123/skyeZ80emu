@@ -1,12 +1,22 @@
 package uk.co.skyem.projects.emuBus;
 
 public abstract class SimpleBusDevice implements IBusDevice {
+	int offset = 0;
+
 	public byte[] getBytes(int position, int amount) {
 		byte[] result = new byte[amount];
 		for (; amount > 0; amount--) {
 			result[amount - 1] = this.getByte(position + amount - 1);
 		}
 		return result;
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void changeOffset(int offset)  {
+		this.offset = offset;
 	}
 
 	public short getWord(int position) {

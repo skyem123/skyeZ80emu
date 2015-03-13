@@ -41,7 +41,7 @@ public class Console {
 	public static void init(String title) {
 
 		if (initialized) {
-			System.err.println("Console alrady started! Aborting!");
+			System.err.println("Console already started! Aborting!");
 			System.exit(-1);
 		}
 
@@ -92,7 +92,7 @@ public class Console {
 			consoleArea.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
-					writer.println(e.getKeyChar());
+					writer.print(e.getKeyChar());
 					writer.flush();
 				}
 			});

@@ -1,11 +1,7 @@
 package uk.co.skyem.projects.emuBus;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 public class SimpleIO extends SimpleBusDevice{
 	int address;
-	BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
 	public SimpleIO(int address) {
 		this.address = address;

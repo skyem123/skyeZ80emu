@@ -1,6 +1,7 @@
 package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.emuBus.*;
+import uk.co.skyem.projects.misc.Vic.Console;
 
 public class Main {
 
@@ -27,6 +28,8 @@ public class Main {
 	}
 
     public static void main(String[] args) {
+		Console.init("skyeZ80emu");
+
 		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
 		bus.addConnection(memory);
@@ -50,6 +53,25 @@ public class Main {
 		bus.putByte(1025, (byte) 65);
 		bus.putByte(1025, bus.getByte(1025));
 		bus.putByte(1025, bus.getByte(1025));
+
+		System.out.println("\nOkay, now lets start the virtual Z80...\n" +
+						   "First, we need ROM...");
+		// Load the ROM from a file
+		Memory cpuROM = new Memory(32768, 0);
+		System.out.println("Next, we need RAM...");
+		Memory cpuMemory = new Memory(32768, 32768);
+		System.out.println("Don't forget IO!");
+		SimpleIO cpuIO = new SimpleIO(0);
+		System.out.println("Now for the buses!");
+		Bus cpuMemBus = new Bus();
+		Bus cpuIOBus = new Bus();
+		System.out.println("Now connect things to those buses!");
+		cpuIOBus.addConnection(cpuIO);
+		cpuMemBus.addConnection(cpuMemory);
+		cpuMemBus.addConnection(cpuROM);
+		System.out.println("Okay, so now get the cpu and give it the buses...");
+		Z80Cpu cpu = new Z80Cpu(cpuMemBus, cpuIOBus);
+		// TODO: Run the thing.
     }
 
 }
