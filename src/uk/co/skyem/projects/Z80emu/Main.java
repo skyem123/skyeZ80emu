@@ -43,6 +43,8 @@ public class Main {
 		System.out.println(toHexString(memory.getWord(0)));
 		System.out.println(toHexString(memory.getDWord(0)));
 		System.out.println(toHexString(memory.getQWord(4)));
+		//BusWindow window = new BusWindow();
+		//System.out.println(toHexString());
     }
 
 }
