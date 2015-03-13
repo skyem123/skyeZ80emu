@@ -10,7 +10,7 @@ public class SimpleIO extends SimpleBusDevice{
 	public byte getByte(int address) {
 		if (address == this.address) {
 			try { return (byte)System.in.read(); }
-			catch (java.io.IOException e) { return (byte)0x00; }
+			catch (java.io.IOException e) { throw new RuntimeException(e); }
 		} else { return (byte)0x00; }
 	}
 

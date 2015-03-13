@@ -57,7 +57,6 @@ public class Console {
 			consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			consoleFrame.getContentPane().setPreferredSize(new Dimension(600, 300));
 
-			scrollPane = new JScrollPane();
 			consoleFrame.add(scrollPane = new JScrollPane(consoleArea = new JTextPane()));
 			consoleFrame.add(consoleInput = new JTextField(), BorderLayout.SOUTH);
 
@@ -66,6 +65,10 @@ public class Console {
 
 			System.setOut(new ConsoleOutputStream(System.out, Color.black));
 			System.setErr(new ConsoleOutputStream(System.err, Color.red));
+
+			PipedInputStream pin = new PipedInputStream();
+			writer = new PrintStream(new PipedOutputStream(pin));
+			System.setIn(pin);
 
 			Thread inPipe = new Thread(() -> {
 				@SuppressWarnings("resource")
@@ -77,10 +80,6 @@ public class Console {
 			});
 			inPipe.setDaemon(true);
 			inPipe.start();
-
-			PipedInputStream pin = new PipedInputStream();
-			writer = new PrintStream(new PipedOutputStream(pin));
-			System.setIn(pin);
 
 			consoleInput.addActionListener((ActionEvent action) -> {
 				String input = consoleInput.getText();

@@ -70,8 +70,11 @@ public class Main {
 		cpuMemBus.addConnection(cpuMemory);
 		cpuMemBus.addConnection(cpuROM);
 		System.out.println("Okay, so now get the cpu and give it the buses...");
-		Z80Cpu cpu = new Z80Cpu(cpuMemBus, cpuIOBus);
+		Core cpu = new Core(cpuMemBus, cpuIOBus);
 		// TODO: Run the thing.
+		while (true){
+			cpu.cycle();
+		}
     }
 
 }
