@@ -1,4 +1,4 @@
-package uk.co.skyem.projects.emuBus;
+package uk.co.skyem.projects.Z80emu.bus;
 
 public class SimpleIO extends SimpleBusDevice{
 	int address;

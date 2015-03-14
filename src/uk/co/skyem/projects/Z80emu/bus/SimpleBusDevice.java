@@ -1,4 +1,4 @@
-package uk.co.skyem.projects.emuBus;
+package uk.co.skyem.projects.Z80emu.bus;
 
 public abstract class SimpleBusDevice implements IBusDevice {
 	int offset = 0;

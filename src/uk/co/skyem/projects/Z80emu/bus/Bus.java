@@ -1,6 +1,4 @@
-package uk.co.skyem.projects.emuBus;
-
-import uk.co.skyem.projects.emuBus.IBusDevice;
+package uk.co.skyem.projects.Z80emu.bus;
 
 import java.util.ArrayList;
 

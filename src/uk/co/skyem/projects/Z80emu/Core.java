@@ -1,6 +1,6 @@
 package uk.co.skyem.projects.Z80emu;
 
-import uk.co.skyem.projects.emuBus.IBusDevice;
+import uk.co.skyem.projects.Z80emu.bus.IBusDevice;
 
 public class Core {
 	IBusDevice memoryBus;

@@ -1,7 +1,10 @@
 package uk.co.skyem.projects.Z80emu;
 
-import uk.co.skyem.projects.emuBus.*;
-import uk.co.skyem.projects.misc.Vic.Console;
+import uk.co.skyem.projects.Z80emu.asm.Assembler;
+import uk.co.skyem.projects.Z80emu.bus.*;
+import uk.co.skyem.projects.Z80emu.util.Console;
+
+import java.util.Scanner;
 
 public class Main {
 
@@ -29,7 +32,10 @@ public class Main {
 
     public static void main(String[] args) {
 		Console.init("skyeZ80emu");
-
+		Scanner input = new Scanner(System.in);
+		while(true)
+			Assembler.assemble(input.nextLine());
+		/*
 		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
 		bus.addConnection(memory);
@@ -75,6 +81,7 @@ public class Main {
 		while (true){
 			cpu.cycle();
 		}
-    }
+		*/
+	}
 
 }

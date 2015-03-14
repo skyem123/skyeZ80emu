@@ -1,4 +1,4 @@
-package uk.co.skyem.projects.emuBus;
+package uk.co.skyem.projects.Z80emu.bus;
 
 /**
  * An object that can connect as a device on the bus.
