@@ -7,6 +7,7 @@ public class Core {
 	IBusDevice IOBus;
 
 	Registers registers = new Registers();
+	Registers registersShadow = new Registers();
 
 	public Core(IBusDevice memory, IBusDevice IO) {
 		memoryBus = memory;
