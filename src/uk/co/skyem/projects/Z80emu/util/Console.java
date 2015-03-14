@@ -1,8 +1,8 @@
 package uk.co.skyem.projects.Z80emu.util;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import sun.awt.FontDescriptor;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -63,6 +63,8 @@ public class Console {
 			consoleArea.setEditable(false);
 			consoleArea.setFocusable(true);
 
+			consoleInput.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+
 			System.setOut(new ConsoleOutputStream(System.out, Color.black));
 			System.setErr(new ConsoleOutputStream(System.err, Color.red));
 
@@ -108,6 +110,7 @@ public class Console {
 	private static void append(String s, Color color) {
 		AttributeSet set = new SimpleAttributeSet();
 		StyleConstants.setForeground((MutableAttributeSet) set, color);
+		StyleConstants.setFontFamily((MutableAttributeSet) set, Font.MONOSPACED);
 		try {
 			consoleArea.getDocument().insertString(consoleArea.getDocument().getLength(), s, set);
 		} catch (BadLocationException e) {

@@ -13,12 +13,14 @@ public class Memory extends SimpleBusDevice {
 		this.storage = new byte[size];
 	}
 
+	@Override
 	public void putByte(int position, byte data) {
 		if (!(position < offset || position >= storage.length + offset)) {
 			storage[position - offset] = data;
 		}
 	}
 
+	@Override
 	public byte getByte(int position) {
 		if (position < offset || position >= storage.length + offset) {
 			return (byte) 0x00;
@@ -27,6 +29,7 @@ public class Memory extends SimpleBusDevice {
 		}
 	}
 
+	@Override
 	public void putBytes(int position, byte[] bytes) {
 		System.arraycopy(bytes, 0, storage, position-offset, bytes.length);
 	}

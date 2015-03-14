@@ -32,10 +32,6 @@ public abstract class Register<T extends Number> {
 
 	public static final class Register8 extends Register<Byte> {
 
-		public Register8() {
-			Registers.registers.add(this);
-		}
-
 		public byte data;
 
 		@Override

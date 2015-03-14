@@ -7,6 +7,7 @@ public class SimpleIO extends SimpleBusDevice{
 		this.address = address;
 	}
 
+	@Override
 	public byte getByte(int address) {
 		if (address == this.address) {
 			try { return (byte)System.in.read(); }
@@ -14,6 +15,7 @@ public class SimpleIO extends SimpleBusDevice{
 		} else { return (byte)0x00; }
 	}
 
+	@Override
 	public void putByte(int address, byte data) {
 		if (address == this.address) {
 			System.out.print(Character.toChars(data)[0]);

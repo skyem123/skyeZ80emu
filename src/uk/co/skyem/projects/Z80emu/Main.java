@@ -4,6 +4,8 @@ import uk.co.skyem.projects.Z80emu.asm.Assembler;
 import uk.co.skyem.projects.Z80emu.bus.*;
 import uk.co.skyem.projects.Z80emu.util.Console;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -32,6 +34,16 @@ public class Main {
 
     public static void main(String[] args) {
 		Console.init("skyeZ80emu");
+
+		String text = "" +
+				"				DI                    ; Disable interrupt\n\n\n" +
+				"				LD     SP,RAMTOP      ; Set stack pointer to top off ram\n" +
+				"      			IM     1              ; Set interrupt mode 1\n" +
+				"            	JP     $100           ; jump to Start of program\n" +
+				"            	.blah     \"I am a string     with spaces\"           ; jump to Start of program";
+
+		System.out.println(Arrays.toString(Assembler.preparse(text)));
+
 		Scanner input = new Scanner(System.in);
 		while(true)
 			Assembler.assemble(input.nextLine());
