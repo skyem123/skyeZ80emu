@@ -40,13 +40,13 @@ public class Main {
 				"				LD     SP,RAMTOP      ; Set stack pointer to top off ram\n" +
 				"      			IM     1              ; Set interrupt mode 1\n" +
 				"            	JP     $100           ; jump to Start of program\n" +
-				"            	.blah     \"I am a string     with spaces\"           ; jump to Start of program";
+				"            	.blah     \"I am a string     with spaces\"           ";
 
-		System.out.println(Arrays.toString(Assembler.preparse(text)));
+		//System.out.println(Arrays.toString(Assembler.preparse(text)));
 
 		Scanner input = new Scanner(System.in);
 		while(true)
-			Assembler.assemble(input.nextLine());
+			System.out.println(Arrays.toString(Assembler.preparse(input.nextLine())));
 		/*
 		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
