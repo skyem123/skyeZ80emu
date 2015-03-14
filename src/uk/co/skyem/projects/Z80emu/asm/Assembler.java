@@ -5,46 +5,44 @@ import java.util.regex.Pattern;
 
 import uk.co.skyem.projects.Z80emu.asm.Token.*;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.*;
-import uk.co.skyem.projects.Z80emu.util.InternalExcpetion;
+import uk.co.skyem.projects.Z80emu.util.InternalException;
 
 public class Assembler {
 
+	private static final HashMap<String, Class<? extends Instruction>> instructions = new HashMap<>();
 	private static final HashMap<String, Class<? extends ASMDirective>> asmDirectives = new HashMap<>();
-	private static final HashMap<String, Class<? extends CPUInstruction>> instructions = new HashMap<>();
 
 	static {
 		registerToken("TOKEN", CPUInstruction.class);
 	}
 
-	private static void registerToken(String name, Class<? extends Token> tokenClass) {
-		if (tokenClass.isAssignableFrom(ASMDirective.class)) {
-			asmDirectives.put(name, (Class<? extends ASMDirective>) tokenClass);
-		} else {
-			instructions.put(name, (Class<? extends CPUInstruction>) tokenClass);
+	private static void registerToken(String name, Class<? extends Instruction> clazz) {
+		instructions.put(name, clazz);
+		if (clazz.isAssignableFrom(ASMDirective.class)) {
+			asmDirectives.put(name, (Class<? extends ASMDirective>) clazz);
 		}
 	}
 
-	private static ASMDirective getASMDirective(String name, int lineNumber, String line, String arguments) throws InvalidTokenException {
-		if(asmDirectives.containsKey(name)) {
-			try {
-				return asmDirectives.get(name).getConstructor(String.class).newInstance(arguments);
-			} catch (Exception e) {
-				throw new InternalExcpetion();
-			}
-		} else {
-			throw new InvalidTokenException(name, true, lineNumber, line);
-		}
-	}
-
-	private static CPUInstruction getCPUInstruction(String name, int lineNumber, String line, String arguments) throws InvalidTokenException {
-		if(instructions.containsKey(name)) {
+	private Instruction getInstruction(String name, String arguments) throws InvalidInstructionException {
+		if (instructions.containsKey(name)) {
 			try {
 				return instructions.get(name).getConstructor(String.class).newInstance(arguments);
 			} catch (Exception e) {
-				throw new InternalExcpetion();
+				throw new InternalException(e);
 			}
 		} else {
-			throw new InvalidTokenException(name, false, lineNumber, line);
+			throw new InvalidInstructionException(name, lineNumber, line);
+		}
+	}
+
+	private ASMDirective getASMDirective(String name, String arguments) throws InvalidASMDirectiveException {
+		try {
+			Instruction instruction = getInstruction(name, arguments);
+			if (instruction instanceof ASMDirective) {
+				return (ASMDirective) instruction;
+			}
+		} finally {
+			throw new InvalidASMDirectiveException(line, lineNumber, name);
 		}
 	}
 
@@ -54,23 +52,29 @@ public class Assembler {
 	// Gets rid of comments (things after ';')
 	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
 
-	private Assembler() {
+	private String source;
+
+	private short origin;
+	private int lineNumber;
+	private String line;
+
+	public Assembler(String source) {
+		this.source = source;
 	}
 
 	/**
 	 * Assemble Z80 asm to Z80 machine code.
 	 *
-	 * @param input The source code
 	 * @return a bytearray of assembled Z80 code.
 	 */
-	public static byte[] assemble(String input) {
-		System.out.println(tokenize(preparse(input)));
-		return new byte[0];
+	public void assemble() throws AssemblerException {
+		String[] preparsed = preparse();
+		Token[] tokens = tokenize(preparsed);
 	}
 
 	// Public for now...
-	public static String[] preparse(String input) {
-		String[] splitted = input.split("\n");
+	public String[] preparse() {
+		String[] splitted = source.split("\n");
 		for (int i = 0; i < splitted.length; i++) {
 			String line = splitted[i];
 
@@ -83,8 +87,15 @@ public class Assembler {
 		return splitted;
 	}
 
-	// Takes preparsed code and spits out tokens.
-	private static Token[] tokenize(String[] input) {
+	// Takes pre-parsed code and spits out tokens.
+	private Token[] tokenize(String[] input) throws AssemblerException {
+		// Turn ALL tokens to a token array
+		// Then sort out labels
+
+		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
+			line = input[lineNumber];
+			Token token = getInstruction("stuff", "args");
+		}
 
 		return new Token[0];
 	}

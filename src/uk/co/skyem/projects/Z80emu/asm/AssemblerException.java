@@ -6,9 +6,21 @@ public class AssemblerException extends Exception {
 		super(cause + " at line [" + lineNumber + "]: \"" + line + "\"");
 	}
 
-	public static class InvalidTokenException extends AssemblerException {
-		public InvalidTokenException(String name, boolean assemblerDirective, int lineNumber, String line) {
-			super(lineNumber, line, "Found an invalid " + (assemblerDirective ? "ASM directive " : "Instruction ") + name);
+	public static class InvalidInstructionException extends AssemblerException {
+		public InvalidInstructionException(String name, int lineNumber, String line) {
+			super(lineNumber, line, "Found an invalid Instruction \"" + name + "\"");
+		}
+	}
+
+	public static class InvalidASMDirectiveException extends AssemblerException {
+		public InvalidASMDirectiveException(String name, int lineNumber, String line) {
+			super(lineNumber, line, "Found an invalid ASM directive \"" + name + "\", Specified greedy for ASM directive, maybe you are looking for a normal Instruction?");
+		}
+	}
+
+	public static class SyntaxException extends AssemblerException {
+		public SyntaxException(int lineNumber, String line, String cause) {
+			super(lineNumber, line, cause);
 		}
 	}
 }

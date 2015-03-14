@@ -45,8 +45,14 @@ public class Main {
 		//System.out.println(Arrays.toString(Assembler.preparse(text)));
 
 		Scanner input = new Scanner(System.in);
-		while(true)
-			System.out.println(Arrays.toString(Assembler.preparse(input.nextLine())));
+		while(true) {
+			Assembler assembler = new Assembler(input.nextLine());
+			System.out.println(Arrays.toString(assembler.preparse()));
+		}
+
+
+
+
 		/*
 		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
@@ -89,11 +95,15 @@ public class Main {
 		cpuMemBus.addConnection(cpuROM);
 		System.out.println("Okay, so now get the cpu and give it the buses...");
 		Core cpu = new Core(cpuMemBus, cpuIOBus);
+
+		// Load code to 1000h
+		// bus.putBytes(0x1000, assembledCode);
+
 		// TODO: Run the thing.
 		while (true){
-			cpu.cycle();
-		}
-		*/
+			//cpu.cycle();
+		}*/
+
 	}
 
 }

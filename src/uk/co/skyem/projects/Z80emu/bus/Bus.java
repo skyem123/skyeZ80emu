@@ -11,6 +11,7 @@ public class Bus implements IBusDevice {
 		}
 	}
 
+	@Override
 	public byte getByte(int position) {
 		byte result = 0x00;
 		for (IBusDevice connection : connections) {
@@ -19,6 +20,7 @@ public class Bus implements IBusDevice {
 		return result;
 	}
 
+	@Override
 	public byte[] getBytes(int position, int amount) {
 		byte[] result = new byte[amount];
 		for (IBusDevice connection : connections) {
@@ -30,12 +32,14 @@ public class Bus implements IBusDevice {
 		return result;
 	}
 
+	@Override
 	public void putBytes(int position, byte[] data) {
 		for (IBusDevice connection : connections) {
 			connection.putBytes(position, data);
 		}
 	}
 
+	@Override
 	public short getWord(int position) {
 		short result = 0x00;
 		for (IBusDevice connection : connections) {
@@ -44,6 +48,7 @@ public class Bus implements IBusDevice {
 		return result;
 	}
 
+	@Override
 	public int getDWord(int position) {
 		int result = 0x00;
 		for (IBusDevice connection : connections) {
@@ -52,6 +57,7 @@ public class Bus implements IBusDevice {
 		return result;
 	}
 
+	@Override
 	public long getQWord(int position) {
 		long result = 0x00;
 		for (IBusDevice connection : connections) {
@@ -60,18 +66,21 @@ public class Bus implements IBusDevice {
 		return result;
 	}
 
+	@Override
 	public void putWord(int position, short data) {
 		for (IBusDevice connection : connections) {
 			connection.putWord(position, data);
 		}
 	}
 
+	@Override
 	public void putDWord(int position, int data) {
 		for (IBusDevice connection : connections) {
 			connection.putDWord(position, data);
 		}
 	}
 
+	@Override
 	public void putQWord(int position, long data) {
 		for (IBusDevice connection : connections) {
 			connection.putQWord(position, data);
@@ -84,5 +93,15 @@ public class Bus implements IBusDevice {
 
 	public void removeConnection(IBusDevice connection) {
 		connections.remove(connection);
+	}
+
+	@Override
+	public int getOffset() {
+		return 0;
+	}
+
+	@Override
+	public void changeOffset(int offset) {
+
 	}
 }

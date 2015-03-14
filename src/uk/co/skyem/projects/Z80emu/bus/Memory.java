@@ -31,6 +31,6 @@ public class Memory extends SimpleBusDevice {
 
 	@Override
 	public void putBytes(int position, byte[] bytes) {
-		System.arraycopy(bytes, 0, storage, position-offset, bytes.length);
+		System.arraycopy(bytes, 0, storage, position - offset, bytes.length);
 	}
 }
