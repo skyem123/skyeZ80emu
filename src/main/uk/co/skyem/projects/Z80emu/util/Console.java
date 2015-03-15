@@ -38,7 +38,7 @@ public class Console {
 		initialized = true;
 		try {
 			consoleFrame = new JFrame(title);
-			consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			consoleFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			consoleFrame.getContentPane().setPreferredSize(new Dimension(600, 300));
 
 			consoleFrame.add(scrollPane = new JScrollPane(consoleArea = new JTextPane()));

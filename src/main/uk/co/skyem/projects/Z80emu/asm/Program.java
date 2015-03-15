@@ -3,8 +3,6 @@ package uk.co.skyem.projects.Z80emu.asm;
 import uk.co.skyem.projects.Z80emu.util.buffer.ByteBuffer;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 public class Program extends ByteBuffer {

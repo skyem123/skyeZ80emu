@@ -1,6 +1,5 @@
 package uk.co.skyem.projects.Z80emu;
 
-import uk.co.skyem.projects.Z80emu.asm.AssemblerException;
 import uk.co.skyem.projects.Z80emu.bus.Bus;
 import uk.co.skyem.projects.Z80emu.bus.Memory;
 import uk.co.skyem.projects.Z80emu.bus.SimpleIO;

@@ -75,9 +75,7 @@ public class Registers {
 	 * Clears all registers.
 	 */
 	public void clear() {
-		for(Register register : registers) {
-			register.clear();
-		}
+		registers.forEach(Register::clear);
 	}
 
 	public short getProgramCounter() {
