@@ -51,15 +51,18 @@ public class ByteBuffer extends AbstractByteBuffer {
 
 	public void insert(int offset, byte[] data) {
 		synchronized (this) {
-			if (offset < 0 || offset > value.length) {
+			if (offset < 0) {
 				throw new IllegalArgumentException("Can't insert at negative position index " + offset);
 			}
 			int size = value.length;
 
 			// Expand the byte array to fit in the extra opcodes
-			value = Arrays.copyOf(value, size + data.length);
-			// Move everything after the offset to the end of the byte array
-			System.arraycopy(value, 0, value, offset + data.length, size - offset);
+			value = Arrays.copyOf(value, size + data.length + Math.max(0, offset - value.length));
+
+			if (offset <= size) {
+				// Move everything after the offset to the end of the byte array
+				System.arraycopy(value, 0, value, offset + data.length, size - offset);
+			}
 			// Insert the data
 			System.arraycopy(data, 0, value, offset, data.length);
 		}

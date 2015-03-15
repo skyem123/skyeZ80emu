@@ -76,6 +76,13 @@ public class ByteBufferTest {
 
 		bb1.insert(2, bb2);
 		assertThat(bb1.getQWord(0)).isEqualTo(0xAAAABBBBBBBBAAAAL);
+
+		ByteBuffer bb3 = new ByteBuffer(2);
+		bb3.putWord(0, (short) 0xCCCC);
+		bb1.insert(12, bb3);
+
+		assertThat(bb1.getSize()).isEqualTo(14);
+		assertThat(bb1.getQWord(6)).isEqualTo(0xAAAA00000000CCCCL);
 	}
 
 	@Test
