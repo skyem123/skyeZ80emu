@@ -1,5 +1,6 @@
 package uk.co.skyem.projects.Z80emu;
 
+import uk.co.skyem.projects.Z80emu.asm.AssemblerException;
 import uk.co.skyem.projects.Z80emu.bus.Bus;
 import uk.co.skyem.projects.Z80emu.bus.Memory;
 import uk.co.skyem.projects.Z80emu.bus.SimpleIO;
@@ -37,8 +38,8 @@ public class Main {
 		return Integer.toBinaryString(data);
 	}
 
-	public static void main(String[] args) {
-		Console.init("skyeuk.co.skyem.projects.Z80emu");
+	public static void main(String[] args) throws java.io.IOException {
+		Console.init("skyeZ80emu");
 
 		String text = "" +
 				"				DI                    ; Disable interrupt\n\n\n" +
@@ -84,6 +85,11 @@ public class Main {
 				"First, we need ROM...");
 		// Load the ROM from a file
 		Memory cpuROM = new Memory(32768, 0);
+		byte[] ROMdata = new byte[4];
+		ROMdata[0] = (byte) 0x01; // LD BC
+		ROMdata[1] = (byte) 0x42; //      ,$42
+		ROMdata[2] = (byte) 0xFE; //          FE
+		cpuROM.putBytes(0, ROMdata);
 		System.out.println("Next, we need RAM...");
 		Memory cpuMemory = new Memory(32768, 32768);
 		System.out.println("Don't forget IO!");
@@ -128,10 +134,10 @@ public class Main {
 //		processor1.start();
 //		processor2.start();
 		// TODO: Run the thing.
-		while (true) {
+		while (System.in.read() != "s".getBytes()[0]) {
 			cpu.cycle();
 		}
-
+		System.out.println("\nDone!");
 	}
 
 }

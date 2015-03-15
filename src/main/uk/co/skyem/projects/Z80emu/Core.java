@@ -13,6 +13,14 @@ public class Core {
 		reset();
 	}
 
+	// The real Z80 CPU reads it as two bytes... so let's do that.
+	private short read16bits(short address) {
+		short data = (short) (memoryBus.getByte(address) & 0xFF | (memoryBus.getByte(address - 1) << 8 & 0xFF00));
+		System.out.println(Main.toHexString(data));
+		return data;
+	}
+
+
 	public void reset() {
 		registers.clear();
 	}
@@ -26,6 +34,10 @@ public class Core {
 				registers.incrementProgramCounter();
 				break;
 			case 0x01: // LD BC,nn (load 16 bits into register BC)
+				registers.incrementProgramCounter((short) 2);
+				// FIXME: 16 bit registers seem to be broken. (0x62FE was given, 0xFFFE comes out)
+				registers.REG_BC.setData(read16bits(registers.getProgramCounter()));
+				System.out.println(Main.toHexString(registers.REG_BC.getData()));
 				break;
 			default:   // Error out
 				break;
