@@ -30,29 +30,28 @@ public class ByteBuffer extends AbstractByteBuffer {
 
 	@Override
 	public void putByte(int position, byte data) {
-		try {
-			synchronized (this) {
-				value[position] = data;
-			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-
+		synchronized (this) {
+			value[position] = data;
 		}
 	}
 
 	@Override
 	public byte getByte(int position) {
-		try {
-			synchronized (this) {
-				return value[position];
-			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return 0;
+		synchronized (this) {
+			return value[position];
 		}
+	}
+
+	@Override
+	public byte[] getBytes(int position, int amount) {
+		byte[] copy = new byte[amount];
+		System.arraycopy(value, position, copy, 0, amount);
+		return copy;
 	}
 
 	public void insert(int offset, byte[] data) {
 		synchronized (this) {
-			if (offset < 0) {
+			if (offset < 0 || offset > value.length) {
 				throw new IllegalArgumentException("Can't insert at negative position index " + offset);
 			}
 			int size = value.length;
@@ -60,7 +59,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 			// Expand the byte array to fit in the extra opcodes
 			value = Arrays.copyOf(value, size + data.length);
 			// Move everything after the offset to the end of the byte array
-			System.arraycopy(value, offset, value, offset + data.length, size - offset);
+			System.arraycopy(value, 0, value, offset + data.length, size - offset);
 			// Insert the data
 			System.arraycopy(data, 0, value, offset, data.length);
 		}
@@ -70,14 +69,14 @@ public class ByteBuffer extends AbstractByteBuffer {
 		if (buffer.getSize() == -1) {
 			throw new IllegalArgumentException("Can't insert a buffer of infinite size!");
 		}
-		insert(offset, buffer.getBytes(0, buffer.getSize() - 1));
+		insert(offset, buffer.getBytes(0, buffer.getSize()));
 	}
 
-	public void append(byte[] opcodes) {
+	public void append(byte[] data) {
 		synchronized (this) {
 			int size = value.length;
-			value = Arrays.copyOf(value, value.length + opcodes.length);
-			System.arraycopy(opcodes, 0, value, size, opcodes.length);
+			value = Arrays.copyOf(value, value.length + data.length);
+			System.arraycopy(data, 0, value, size, data.length);
 		}
 	}
 
@@ -85,7 +84,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 		if (buffer.getSize() == -1) {
 			throw new IllegalArgumentException("Can't append a buffer of infinite size!");
 		}
-		append(buffer.getBytes(0, buffer.getSize() - 1));
+		append(buffer.getBytes(0, buffer.getSize()));
 	}
 
 	public int appendByte(byte data) {

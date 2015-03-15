@@ -45,4 +45,11 @@ public class Memory extends SimpleBusDevice {
 			System.arraycopy(bytes, 0, storage, position - offset, bytes.length);
 		}
 	}
+
+	@Override
+	public byte[] getBytes(int position, int amount) {
+		byte[] copy = new byte[amount];
+		System.arraycopy(storage, position, copy, 0, amount);
+		return copy;
+	}
 }
