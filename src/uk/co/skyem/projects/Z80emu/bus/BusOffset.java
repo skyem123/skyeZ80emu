@@ -13,7 +13,7 @@ public class BusOffset implements IBusDevice {
 		return offset;
 	}
 
-	public void changeOffset(int offset)  {
+	public void changeOffset(int offset) {
 		this.offset = offset;
 	}
 

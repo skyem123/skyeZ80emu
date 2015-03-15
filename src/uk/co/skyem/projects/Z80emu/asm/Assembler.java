@@ -1,11 +1,14 @@
 package uk.co.skyem.projects.Z80emu.asm;
 
+import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidASMDirectiveException;
+import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidInstructionException;
+import uk.co.skyem.projects.Z80emu.asm.Token.ASMDirective;
+import uk.co.skyem.projects.Z80emu.asm.Token.CPUInstruction;
+import uk.co.skyem.projects.Z80emu.asm.Token.Instruction;
+import uk.co.skyem.projects.Z80emu.util.InternalException;
+
 import java.util.HashMap;
 import java.util.regex.Pattern;
-
-import uk.co.skyem.projects.Z80emu.asm.Token.*;
-import uk.co.skyem.projects.Z80emu.asm.AssemblerException.*;
-import uk.co.skyem.projects.Z80emu.util.InternalException;
 
 public class Assembler {
 
@@ -15,12 +18,29 @@ public class Assembler {
 	static {
 		registerToken("TOKEN", CPUInstruction.class);
 	}
+	// Our regex patterns
+	// Gets rid of all unnecessary blanks
+	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile("(\".*\")|(?<![^\\s])\\s+|\\s+$");
+	// Gets rid of comments (things after ';')
+	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
+	private String source;
+	private short origin;
+	private int lineNumber;
+	private String line;
+
+	public Assembler(String source) {
+		this.source = source;
+	}
 
 	private static void registerToken(String name, Class<? extends Instruction> clazz) {
 		instructions.put(name, clazz);
 		if (clazz.isAssignableFrom(ASMDirective.class)) {
 			asmDirectives.put(name, (Class<? extends ASMDirective>) clazz);
 		}
+	}
+
+	private static String regexReplaceAll(Pattern pattern, String input, String replace) {
+		return pattern.matcher(input).replaceAll(replace);
 	}
 
 	private Instruction getInstruction(String name, String arguments) throws InvalidInstructionException {
@@ -46,26 +66,8 @@ public class Assembler {
 		}
 	}
 
-	// Our regex patterns
-	// Gets rid of all unnecessary blanks
-	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile("(\".*\")|(?<![^\\s])\\s+|\\s+$");
-	// Gets rid of comments (things after ';')
-	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
-
-	private String source;
-
-	private short origin;
-	private int lineNumber;
-	private String line;
-
-	public Assembler(String source) {
-		this.source = source;
-	}
-
 	/**
 	 * Assemble Z80 asm to Z80 machine code.
-	 *
-	 * @return a bytearray of assembled Z80 code.
 	 */
 	public void assemble() throws AssemblerException {
 		String[] preparsed = preparse();
@@ -81,7 +83,7 @@ public class Assembler {
 			line = regexReplaceAll(PATTERN_COMMENTS, line, "");
 			line = regexReplaceAll(PATTERN_UNNECESSARY_BLANKS, line, "$1");
 
-			if(line.length() == 0) line = null;
+			if (line.length() == 0) line = null;
 			splitted[i] = line;
 		}
 		return splitted;
@@ -98,9 +100,5 @@ public class Assembler {
 		}
 
 		return new Token[0];
-	}
-
-	private static String regexReplaceAll(Pattern pattern, String input, String replace) {
-		return pattern.matcher(input).replaceAll(replace);
 	}
 }

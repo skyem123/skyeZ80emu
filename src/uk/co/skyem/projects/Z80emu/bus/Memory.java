@@ -15,22 +15,29 @@ public class Memory extends SimpleBusDevice {
 
 	@Override
 	public void putByte(int position, byte data) {
-		if (!(position < offset || position >= storage.length + offset)) {
-			storage[position - offset] = data;
+		synchronized (this) {
+			if (!(position < offset || position >= storage.length + offset)) {
+				storage[position - offset] = data;
+			}
 		}
 	}
 
 	@Override
+	// TODO: should this be synchronized
 	public byte getByte(int position) {
-		if (position < offset || position >= storage.length + offset) {
-			return (byte) 0x00;
-		} else {
-			return storage[position - offset];
+		synchronized (this) {
+			if (position < offset || position >= storage.length + offset) {
+				return (byte) 0x00;
+			} else {
+				return storage[position - offset];
+			}
 		}
 	}
 
 	@Override
 	public void putBytes(int position, byte[] bytes) {
-		System.arraycopy(bytes, 0, storage, position - offset, bytes.length);
+		synchronized (this) {
+			System.arraycopy(bytes, 0, storage, position - offset, bytes.length);
+		}
 	}
 }

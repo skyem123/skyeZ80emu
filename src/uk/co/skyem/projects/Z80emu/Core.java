@@ -5,7 +5,7 @@ import uk.co.skyem.projects.Z80emu.bus.IBusDevice;
 public class Core {
 	IBusDevice memoryBus;
 	IBusDevice IOBus;
-	Registers registers  = new Registers();
+	Registers registers = new Registers();
 
 	Registers registersShadow = new Registers();
 

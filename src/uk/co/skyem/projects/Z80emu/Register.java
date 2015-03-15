@@ -1,9 +1,5 @@
 package uk.co.skyem.projects.Z80emu;
 
-import uk.co.skyem.projects.Z80emu.Registers;
-
-import javax.print.DocFlavor;
-
 /**
  * A register is an object that can hold data, in the form of a primitive.
  * You can set and get individual flags, the flags are located in {@link Registers}
@@ -25,10 +21,7 @@ public abstract class Register<T extends Number> {
 
 	public abstract void setData(T data);
 
-	@SuppressWarnings({"unchecked"})
-	public final void clear() {
-		setData((T) (Integer) 0);
-	}
+	public abstract void clear();
 
 	public static final class Register8 extends Register<Byte> {
 
@@ -62,6 +55,11 @@ public abstract class Register<T extends Number> {
 		public void setData(Byte data) {
 			this.data = data;
 		}
+
+		@Override
+		public void clear() {
+			setData((byte) 0);
+		}
 	}
 
 	public static final class Register16 extends Register<Short> {
@@ -80,7 +78,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public boolean getFlag(int flag) {
-			if(flag > 127) {
+			if (flag > 127) {
 				return upper.getFlag(flag >> 8);
 			} else {
 				return lower.getFlag(flag);
@@ -89,7 +87,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setFlag(int flag, boolean value) {
-			if(flag > 127) {
+			if (flag > 127) {
 				upper.setFlag(flag >> 8, value);
 			} else {
 				lower.setFlag(flag, value);
@@ -98,7 +96,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void toggleFlag(int flag) {
-			if(flag > 127) {
+			if (flag > 127) {
 				upper.toggleFlag(flag >> 8);
 			} else {
 				lower.toggleFlag(flag);
@@ -117,6 +115,11 @@ public abstract class Register<T extends Number> {
 
 			lower.setData(data1);
 			upper.setData(data2);
+		}
+
+		@Override
+		public void clear() {
+			setData((short) 0);
 		}
 	}
 }

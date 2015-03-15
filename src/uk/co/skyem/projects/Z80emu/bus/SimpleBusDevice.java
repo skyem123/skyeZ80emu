@@ -7,11 +7,13 @@ public abstract class SimpleBusDevice extends AbstractByteBuffer implements IBus
 
 	@Override
 	public byte[] getBytes(int position, int amount) {
-		byte[] result = new byte[amount];
-		for (; amount > 0; amount--) {
-			result[amount - 1] = this.getByte(position + amount - 1);
+		synchronized (this) {
+			byte[] result = new byte[amount];
+			for (; amount > 0; amount--) {
+				result[amount - 1] = this.getByte(position + amount - 1);
+			}
+			return result;
 		}
-		return result;
 	}
 
 	@Override
@@ -20,7 +22,7 @@ public abstract class SimpleBusDevice extends AbstractByteBuffer implements IBus
 	}
 
 	@Override
-	public void changeOffset(int offset)  {
+	public void changeOffset(int offset) {
 		this.offset = offset;
 	}
 }

@@ -26,7 +26,7 @@ public class BusWindow extends BusOffset {
 	@Override
 	public byte getByte(int position) {
 		if (position < lowerLimit || position > upperLimit) {
-			return (byte)0x00;
+			return (byte) 0x00;
 		} else {
 			return toOffset.getByte(position - offset);
 		}
@@ -51,7 +51,7 @@ public class BusWindow extends BusOffset {
 	@Override
 	public short getWord(int position) {
 		if (position < lowerLimit || position + 1 > upperLimit) {
-			return (short)0x00;
+			return (short) 0x00;
 		} else {
 			return toOffset.getWord(position - offset);
 		}

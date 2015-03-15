@@ -11,24 +11,21 @@ abstract class Token {
 
 		public Instruction(String line) {
 			this.line = line;
-			operation = line.split("\\s",1)[0];
+			operation = line.split("\\s", 1)[0];
 		}
+
+		public abstract void insert(Program program, int offset);
 	}
 
-	public static class ASMDirective extends Instruction {
+	public static abstract class ASMDirective extends Instruction {
 		public ASMDirective(String code) {
 			super(code);
 		}
 	}
 
-	public static class CPUInstruction extends Instruction {
+	public static abstract class CPUInstruction extends Instruction {
 		public CPUInstruction(String code) {
 			super(code);
 		}
-
-		public byte[] getOpcode() {
-			return new byte[0];
-		}
 	}
-
 }
