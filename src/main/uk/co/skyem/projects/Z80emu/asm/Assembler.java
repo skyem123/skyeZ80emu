@@ -7,7 +7,10 @@ import uk.co.skyem.projects.Z80emu.asm.Token.CPUInstruction;
 import uk.co.skyem.projects.Z80emu.asm.Token.Instruction;
 import uk.co.skyem.projects.Z80emu.util.InternalException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Assembler {
@@ -23,6 +26,11 @@ public class Assembler {
 	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile("(\".*\")|(?<![^\\s])\\s+|\\s+$");
 	// Gets rid of comments (things after ';')
 	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
+	// Matches a label
+	private static final Pattern PATTERN_LABEL = Pattern.compile("^([a-zA-Z_]):\\s*");
+	// Matches an instruction
+	private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^((.)[A-Z.]|[a-z.])\\s*");
+
 	private String source;
 	private short origin;
 	private int lineNumber;
@@ -71,7 +79,7 @@ public class Assembler {
 	 */
 	public void assemble() throws AssemblerException {
 		String[] preparsed = preparse();
-		Token[] tokens = tokenize(preparsed);
+		List<Token> tokens = tokenize(preparsed);
 	}
 
 	// Public for now...
@@ -90,15 +98,39 @@ public class Assembler {
 	}
 
 	// Takes pre-parsed code and spits out tokens.
-	private Token[] tokenize(String[] input) throws AssemblerException {
+	private List<Token> tokenize(String[] input) throws AssemblerException {
+
+		List<Token> tokens = new ArrayList<>();
 		// Turn ALL tokens to a token array
 		// Then sort out labels
 
 		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
 			line = input[lineNumber];
-			Token token = getInstruction("stuff", "args");
+
+			Matcher labelMatcher = PATTERN_LABEL.matcher(line);
+			if (labelMatcher.matches()) {
+				// The whole line matches, so we only have a label here
+				tokens.add(new Token.Label(labelMatcher.group(1)));
+				continue;
+			} else if(labelMatcher.find()) {
+				tokens.add(new Token.Label(labelMatcher.group(1)));
+				line = line.substring(labelMatcher.end());
+			}
+
+			Matcher instructionMatcher = PATTERN_INSTRUCTION.matcher(line);
+			if (instructionMatcher.find()) {
+				if (instructionMatcher.group(2) != null) {
+					// We have an asm directive because it matches the starting dot
+					tokens.add(getASMDirective(instructionMatcher.group(1), line.substring(instructionMatcher.end())));
+				} else {
+					// We have an unspecified instruction
+					tokens.add(getInstruction(instructionMatcher.group(1), line.substring(instructionMatcher.end())));
+				}
+			} else {
+				throw new AssemblerException.SyntaxException(lineNumber, line);
+			}
 		}
 
-		return new Token[0];
+		return tokens;
 	}
 }

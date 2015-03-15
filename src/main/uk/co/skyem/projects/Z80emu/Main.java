@@ -38,7 +38,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		Console.init("skyeZ80emu");
+		Console.init("skyeuk.co.skyem.projects.Z80emu");
 
 		String text = "" +
 				"				DI                    ; Disable interrupt\n\n\n" +
@@ -96,39 +96,40 @@ public class Main {
 		cpuMemBus.addConnection(cpuMemory);
 		cpuMemBus.addConnection(cpuROM);
 		System.out.println("Okay, so now get the cpu and give it the buses...");
+
 		Core cpu = new Core(cpuMemBus, cpuIOBus);
 
-		// Load code to 1000h
-		// bus.putBytes(0x1000, assembledCode)
-		Thread processor1 = new Thread(() -> {
-			try {
-				while (true) {
-					// You can do that here
-					bus.putQWord(0, 0xAAAAAAAAAAAAAAAAL);
-					System.out.println(toHexString(bus.getQWord(0)));
-					Thread.sleep(100);
-				}
-			} catch (Exception e) {
-
-			}
-		});
-		Thread processor2 = new Thread(() -> {
-			try {
-				while (true) {
-					bus.putQWord(0, 0xFFFFFFFFFFFFFFFFL);
-					System.out.println(toHexString(bus.getQWord(0)));
-					// This one is slower
-					Thread.sleep(300);
-				}
-			} catch (Exception e) {
-
-			}
-		});
-		processor1.start();
-		processor2.start();
+//		// Load code to 1000h
+//		// bus.putBytes(0x1000, assembledCode)
+//		Thread processor1 = new Thread(() -> {
+//			try {
+//				while (true) {
+//					// You can do that here
+//					bus.putQWord(0, 0xAAAAAAAAAAAAAAAAL);
+//					System.out.println(toHexString(bus.getQWord(0)));
+//					Thread.sleep(100);
+//				}
+//			} catch (Exception e) {
+//
+//			}
+//		});
+//		Thread processor2 = new Thread(() -> {
+//			try {
+//				while (true) {
+//					bus.putQWord(0, 0xFFFFFFFFFFFFFFFFL);
+//					System.out.println(toHexString(bus.getQWord(0)));
+//					// This one is slower
+//					Thread.sleep(300);
+//				}
+//			} catch (Exception e) {
+//
+//			}
+//		});
+//		processor1.start();
+//		processor2.start();
 		// TODO: Run the thing.
 		while (true) {
-			//cpu.cycle();
+			cpu.cycle();
 		}
 
 	}

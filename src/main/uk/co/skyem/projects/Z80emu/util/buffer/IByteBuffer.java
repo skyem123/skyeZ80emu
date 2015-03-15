@@ -2,6 +2,14 @@ package uk.co.skyem.projects.Z80emu.util.buffer;
 
 public interface IByteBuffer {
 	/**
+	 * Gets the size of this buffer
+	 * @return the size of the buffer (can be -1 for no size limit)
+	 */
+	public default int getSize() {
+		return -1;
+	}
+
+	/**
 	 * Gives the buffer a byte.
 	 *
 	 * @param position The 'address' of the data

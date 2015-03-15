@@ -9,12 +9,20 @@ abstract class Token {
 		// FIXME: Is this the correct name?
 		public String operands;
 
-		public Instruction(String line) {
+		public Instruction(String arguments) {
 			this.line = line;
 			operation = line.split("\\s", 1)[0];
 		}
 
 		public abstract void insert(Program program, int offset);
+	}
+
+	public static class Label extends Token {
+		public String label;
+
+		public Label(String label) {
+			this.label = label;
+		}
 	}
 
 	public static abstract class ASMDirective extends Instruction {

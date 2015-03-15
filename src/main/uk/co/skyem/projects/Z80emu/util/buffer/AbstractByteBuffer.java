@@ -7,6 +7,10 @@ package uk.co.skyem.projects.Z80emu.util.buffer;
  */
 public abstract class AbstractByteBuffer implements IByteBuffer {
 
+	public static enum Endian {
+		BIG, LITTLE
+	}
+
 	private Endian endian;
 
 	public AbstractByteBuffer() {
@@ -119,9 +123,5 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 				putByte(position + i, bytes[i]);
 			}
 		}
-	}
-
-	public static enum Endian {
-		LITTLE, BIG;
 	}
 }

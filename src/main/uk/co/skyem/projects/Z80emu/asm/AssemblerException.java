@@ -22,5 +22,8 @@ public class AssemblerException extends Exception {
 		public SyntaxException(int lineNumber, String line, String cause) {
 			super(lineNumber, line, cause);
 		}
+		public SyntaxException(int lineNumber, String line) {
+			super(lineNumber, line , "Syntax Error");
+		}
 	}
 }

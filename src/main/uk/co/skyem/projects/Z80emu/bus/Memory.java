@@ -14,6 +14,11 @@ public class Memory extends SimpleBusDevice {
 	}
 
 	@Override
+	public int getSize() {
+		return storage.length;
+	}
+
+	@Override
 	public void putByte(int position, byte data) {
 		synchronized (this) {
 			if (!(position < offset || position >= storage.length + offset)) {
