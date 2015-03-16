@@ -95,4 +95,14 @@ public class Registers {
 		programCounter.setData((short) (programCounter.getData() + value));
 		return programCounter.getData();
 	}
+
+	public byte incrementRefreshCounter() {
+		refreshCounter.setData((byte) (refreshCounter.getData() + 1));
+		return refreshCounter.getData();
+	}
+
+	public byte incrementRefreshCounter(byte value) {
+		refreshCounter.setData((byte) (refreshCounter.getData() + value));
+		return refreshCounter.getData();
+	}
 }

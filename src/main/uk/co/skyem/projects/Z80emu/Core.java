@@ -14,6 +14,7 @@ public class Core {
 	}
 
 	// The real Z80 CPU reads it as two bytes... so let's do that.
+	// TODO: use a bytebuffer!
 	private short read16bits(short address) {
 		short data = (short) (memoryBus.getByte(address) & 0xFF | (memoryBus.getByte(address - 1) << 8 & 0xFF00));
 		System.out.println(Main.toHexString(data));
@@ -27,6 +28,7 @@ public class Core {
 
 	public void cycle() {
 		byte data = memoryBus.getByte(registers.getProgramCounter());
+		registers.incrementRefreshCounter();
 		// Convert the data into an instruction
 		// TODO: move this to a different class?
 		switch (data) {
