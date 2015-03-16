@@ -35,9 +35,7 @@ public class Core {
 				break;
 			case 0x01: // LD BC,nn (load 16 bits into register BC)
 				registers.incrementProgramCounter((short) 2);
-				// FIXME: 16 bit registers seem to be broken. (0x62FE was given, 0xFFFE comes out)
 				registers.REG_BC.setData(read16bits(registers.getProgramCounter()));
-				System.out.println(Main.toHexString(registers.REG_BC.getData()));
 				break;
 			default:   // Error out
 				break;

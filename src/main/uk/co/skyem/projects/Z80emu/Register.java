@@ -79,7 +79,7 @@ public abstract class Register<T extends Number> {
 		@Override
 		public boolean getFlag(int flag) {
 			if (flag > 127) {
-				return upper.getFlag(flag >> 8);
+				return upper.getFlag(flag >>> 8);
 			} else {
 				return lower.getFlag(flag);
 			}
@@ -88,7 +88,7 @@ public abstract class Register<T extends Number> {
 		@Override
 		public void setFlag(int flag, boolean value) {
 			if (flag > 127) {
-				upper.setFlag(flag >> 8, value);
+				upper.setFlag(flag >>> 8, value);
 			} else {
 				lower.setFlag(flag, value);
 			}
@@ -97,7 +97,7 @@ public abstract class Register<T extends Number> {
 		@Override
 		public void toggleFlag(int flag) {
 			if (flag > 127) {
-				upper.toggleFlag(flag >> 8);
+				upper.toggleFlag(flag >>> 8);
 			} else {
 				lower.toggleFlag(flag);
 			}
@@ -105,14 +105,13 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public Short getData() {
-			return (short) (lower.getData() | upper.getData() >> 8);
+			return (short) ((lower.getData() & 0xFF) | upper.getData() << 8);
 		}
 
 		@Override
 		public void setData(Short data) {
 			byte data1 = (byte) (data & 0xFF);
-			byte data2 = (byte) ((data & 0xFF00) >> 8);
-
+			byte data2 = (byte) (data >>> 8);
 			lower.setData(data1);
 			upper.setData(data2);
 		}
