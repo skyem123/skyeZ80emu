@@ -6,6 +6,8 @@ import uk.co.skyem.projects.Z80emu.bus.SimpleIO;
 import uk.co.skyem.projects.Z80emu.util.Console;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
 
@@ -37,8 +39,12 @@ public class Main {
 		return Integer.toBinaryString(data);
 	}
 
-	public static void main(String[] args) throws java.io.IOException {
+	public static void main(String[] args) throws Exception {
+		Logger logger = Logger.getGlobal();
 		Console.init("skyeZ80emu");
+		logger.log(Level.INFO, "test2!");
+		logger.log(Level.INFO, "test3!");
+
 
 		String text = "" +
 				"				DI                    ; Disable interrupt\n\n\n" +

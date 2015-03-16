@@ -113,6 +113,56 @@ public class Console {
 			this.color = color;
 		}
 
+		private String getTrace() {
+			StackTraceElement traceElement = Thread.currentThread().getStackTrace()[3];
+			return "[" + traceElement.getFileName() + "@" + traceElement.getLineNumber() + "]: ";
+		}
+
+		@Override
+		public void println(boolean x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(char x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(int x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(long x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(float x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(double x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(char[] x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(String x) {
+			super.println(getTrace() + x);
+		}
+
+		@Override
+		public void println(Object x) {
+			super.println(getTrace() + x);
+		}
+
 		@Override
 		public void write(byte[] buf, int off, int len) {
 			super.write(buf, off, len);
