@@ -38,6 +38,9 @@ public class Core {
 				registers.REG_BC.setData(read16bits((byte) (registers.getProgramCounter() + 2)));
 				registers.incrementProgramCounter((short) 3);
 				break;
+			case 0x02: // LD (BC),A
+				// Put the data in register A into the memory address specified in BC
+				memoryBus.putByte(registers.REG_BC.getData(), registers.REG_A.getData());
 			default:   // Error out
 				break;
 		}
