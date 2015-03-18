@@ -34,13 +34,19 @@ public class Core {
 			case 0x00: // NOP
 				registers.incrementProgramCounter();
 				break;
-			case 0x01: // LD BC,nn (load 16 bits into register BC)
+			case 0x01: // LD BC,nn
+				// Put 16 bits (nn) into register BC
 				registers.REG_BC.setData(read16bits((byte) (registers.getProgramCounter() + 2)));
 				registers.incrementProgramCounter((short) 3);
 				break;
 			case 0x02: // LD (BC),A
 				// Put the data in register A into the memory address specified in BC
 				memoryBus.putByte(registers.REG_BC.getData(), registers.REG_A.getData());
+				break;
+			case 0x03: // INC BC
+				// Increment (add one) to BC
+				registers.REG_BC.setData((byte) (registers.REG_BC.getData() + 1));
+				break;
 			default:   // Error out
 				break;
 		}
