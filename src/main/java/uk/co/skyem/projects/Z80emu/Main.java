@@ -140,6 +140,7 @@ public class Main {
 //		processor2.start();
 		// TODO: Run the thing.
 		while (System.in.read() != "s".getBytes()[0]) {
+			System.out.println(toHexString(cpu.registers.getProgramCounter()));
 			cpu.cycle();
 		}
 		System.out.println("\nDone!");
