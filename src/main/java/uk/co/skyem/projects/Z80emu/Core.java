@@ -45,7 +45,7 @@ public class Core {
 				break;
 			case 0x03: // INC BC
 				// Increment (add one) to BC
-				registers.REG_BC.setData((byte) (registers.REG_BC.getData() + 1));
+				registers.REG_BC.increment();
 				break;
 			default:   // Error out
 				break;

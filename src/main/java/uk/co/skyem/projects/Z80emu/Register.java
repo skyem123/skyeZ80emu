@@ -21,6 +21,14 @@ public abstract class Register<T extends Number> {
 
 	public abstract void setData(T data);
 
+	public abstract void increment();
+
+	public abstract void decrement();
+
+	public abstract void increment(T value);
+
+	public abstract void decrement(T value);
+
 	public abstract void clear();
 
 	public static final class Register8 extends Register<Byte> {
@@ -54,6 +62,26 @@ public abstract class Register<T extends Number> {
 		@Override
 		public void setData(Byte data) {
 			this.data = data;
+		}
+
+		@Override
+		public void increment() {
+			++data;
+		}
+
+		@Override
+		public void decrement() {
+			--data;
+		}
+
+		@Override
+		public void increment(Byte value) {
+			setData((byte)(getData() + value));
+		}
+
+		@Override
+		public void decrement(Byte value) {
+			setData((byte)(getData() - value));
 		}
 
 		@Override
@@ -114,6 +142,26 @@ public abstract class Register<T extends Number> {
 			byte data2 = (byte) (data >>> 8);
 			lower.setData(data1);
 			upper.setData(data2);
+		}
+
+		@Override
+		public void increment() {
+			setData((short) (getData() + 1));
+		}
+
+		@Override
+		public void decrement() {
+			setData((short) (getData() - 1));
+		}
+
+		@Override
+		public void increment(Short value) {
+			setData((short) (getData() + value));
+		}
+
+		@Override
+		public void decrement(Short value) {
+			setData((short) (getData() - value));
 		}
 
 		@Override

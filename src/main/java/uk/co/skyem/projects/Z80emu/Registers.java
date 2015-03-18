@@ -87,22 +87,22 @@ public class Registers {
 	}
 
 	public short incrementProgramCounter() {
-		programCounter.setData((short) (programCounter.getData() + 1));
+		programCounter.increment();
 		return programCounter.getData();
 	}
 
 	public short incrementProgramCounter(short value) {
-		programCounter.setData((short) (programCounter.getData() + value));
+		programCounter.increment(value);
 		return programCounter.getData();
 	}
 
 	public byte incrementRefreshCounter() {
-		refreshCounter.setData((byte) (refreshCounter.getData() + 1));
+		refreshCounter.increment();
 		return refreshCounter.getData();
 	}
 
 	public byte incrementRefreshCounter(byte value) {
-		refreshCounter.setData((byte) (refreshCounter.getData() + value));
+		refreshCounter.increment(value);
 		return refreshCounter.getData();
 	}
 }
