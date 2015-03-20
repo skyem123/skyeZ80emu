@@ -30,6 +30,17 @@ abstract class Token {
 		}
 	}
 
+	public static class instructionLD extends CPUInstruction {
+		public instructionLD(String code) {
+			super(code);
+		}
+
+		@Override
+		public void insert(Program program, int offset) {
+
+		}
+	}
+
 	// TODO: get this working.
 	/*public static class ORG extends ASMDirective {
 

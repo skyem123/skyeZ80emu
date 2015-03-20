@@ -11,7 +11,6 @@ public class Core {
 	public Core(IBusDevice memory, IBusDevice IO) {
 		memoryBus = memory;
 		IOBus = IO;
-		instructionDecoder = new InstructionDecoder(this);
 		reset();
 	}
 

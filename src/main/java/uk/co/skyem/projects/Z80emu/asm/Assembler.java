@@ -2,8 +2,7 @@ package uk.co.skyem.projects.Z80emu.asm;
 
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidASMDirectiveException;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidInstructionException;
-import uk.co.skyem.projects.Z80emu.asm.Token.ASMDirective;
-import uk.co.skyem.projects.Z80emu.asm.Token.CPUInstruction;
+import uk.co.skyem.projects.Z80emu.asm.Token.*;
 import uk.co.skyem.projects.Z80emu.asm.Token.Instruction;
 import uk.co.skyem.projects.Z80emu.util.InternalException;
 
@@ -19,7 +18,7 @@ public class Assembler {
 	private static final HashMap<String, Class<? extends ASMDirective>> asmDirectives = new HashMap<>();
 
 	static {
-		registerToken("TOKEN", CPUInstruction.class);
+		registerToken("LD", instructionLD.class);
 	}
 	// Our regex patterns
 	// Gets rid of all unnecessary blanks
