@@ -1,5 +1,6 @@
 package uk.co.skyem.projects.Z80emu.asm;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidASMDirectiveException;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidInstructionException;
 import uk.co.skyem.projects.Z80emu.asm.Token.*;
@@ -22,7 +23,24 @@ public class Assembler {
 	}
 	// Our regex patterns
 	// Gets rid of all unnecessary blanks
-	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile("(\".*\")|(?<![^\\s])\\s+|\\s+$");
+	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile(
+		    // First alternative, match quoted strings.
+			"([\"'])"   // Group 1, matches start of a quote, can either be " or '
+		+   "("         // Group 2, matches the rest of the quote
+		+       "(\\\\{2})*"        // Group 3, matches escape characters, any \\, for 0 or more times
+		+       "|"                 // Second alternative
+		+       "(.*?[^\\\\]"       // Group 4, matches any character for 0 or more times, followed by any character that is not a \
+		+   	    "(\\\\{2})*"    // Group 5, matches escape characters, any \\, for 0 or more times
+		+       ")"
+		+   ")\\1"      // Matches the same as most recently matched by group 1
+		    // Second alternative
+		+   "|("        // Group 6, matches repeated whitespaces
+		+   	"(?<![^\\s])"   // Negative look-behind, asserts that it is not possible to match any character that is not a blank
+		+   	"\\s+"          // Match a blank, for 1 or more times
+		+   	"|"             // Second alternative
+		+       "\\s+$"         // Matches a blank, for 1 or more times, followed by the end of the line
+		+   ")"
+	);
 	// Gets rid of comments (things after ';')
 	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
 	// Matches a label
@@ -88,7 +106,20 @@ public class Assembler {
 			String line = splitted[i];
 
 			line = regexReplaceAll(PATTERN_COMMENTS, line, "");
-			line = regexReplaceAll(PATTERN_UNNECESSARY_BLANKS, line, "$1");
+
+			// Matcher for repeated blanks
+			Matcher matcher = PATTERN_UNNECESSARY_BLANKS.matcher(line);
+			while (matcher.find()) {
+				// If we could find a group 6 (which is the repeated blank)
+				if (matcher.group(6) != null) {
+					int start = matcher.start(6);
+					int end = matcher.end(6);
+					// Take the blanks out
+					line = line.substring(0, start) + line.substring(end);
+					// Feed the matcher with the new, replaced version
+					matcher.reset(line);
+				}
+			}
 
 			if (line.length() == 0) line = null;
 			splitted[i] = line;
