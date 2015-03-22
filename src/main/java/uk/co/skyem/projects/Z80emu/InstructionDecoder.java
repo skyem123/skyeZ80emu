@@ -1,7 +1,6 @@
 package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.Z80emu.Register.*;
-import uk.co.skyem.projects.Z80emu.bus.IBusDevice;
 import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class InstructionDecoder {
@@ -15,13 +14,40 @@ public class InstructionDecoder {
 		registers = cpu.registers;
 	}
 
-	private byte currentOpcode;
-	private short position;
+	public void decode(byte[] data) {
+		byte prefix;
+		byte opcode;
+		boolean secondPrefix = false;
+		byte displacement;
+		short immediateData;
+
+		int position = 0;
+		// The cleanest way I could do this...
+		// Find out the prefix (if there is one)
+		switch ((int) data[position]) {
+			case 0xDD:case 0xFD:case 0xCB:case 0xED:
+				prefix = data[position++];
+		}
+		// Is there a second prefix?
+		if (data[position] == 0xCB) {
+			secondPrefix = true;
+			// Get the displacement byte
+			displacement = data[++position];
+		}
+		// Get the opcode of the instruction
+		opcode = data[position++];
+		// Get the immediate data (if there is no second prefix)
+		immediateData = secondPrefix ? data[position] : 0;
+	}
+
+	public void decode(long data) {
+		// Split the long into a byte array to give to decode
+	}
 
 	// TODO: Is there a more appropriate name?
 	public void cycle() {
-		position = registers.getProgramCounter();
-		currentOpcode = memoryBuffer.getByte(position);
+		short position = registers.getProgramCounter();
+		byte currentOpcode = memoryBuffer.getByte(position);
 		switch (currentOpcode) {
 			case 0x00: // NOP
 				System.out.println("NOP");
@@ -47,7 +73,7 @@ public class InstructionDecoder {
 				LDRegisterMemory(registers.REG_B, position + 1);
 				registers.incrementProgramCounter((short) 1);
 				break;
-			default:   // Error out
+			default:   // Be unpredictable! \o/
 				break;
 		}
 		registers.incrementProgramCounter();
