@@ -8,72 +8,72 @@ public class InstructionDecoder {
 	private Registers registers;
 	private Core cpuCore;
 
+
+	// The real Z80 CPU reads it as two bytes... so let's do that.
+	// TODO: use a bytebuffer!
+	private short read16bits(short address) {
+		// FIXME: is there another way to do this?
+		Thread.currentThread().suspend();
+		byte data1 = memoryBus.getByte(address);
+		Thread.currentThread().suspend();
+		byte data2 = memoryBus.getByte(address - 1);
+		return (short) (data1 & 0xFF | (data2 << 8 & 0xFF00));
+	}
+
 	InstructionDecoder(Core cpu) {
 		memoryBus = cpu.memoryBus;
 		cpuCore = cpu;
 		registers = cpu.registers;
+		cycleThread.start();
 	}
 
 	private byte currentOpcode;
 	private short position;
-	private int instuctionCycles;
 
-	// TODO: Is there a more appropriate name?
-	public void cycle() {
-		if (instuctionCycles > 0) { // Continue an instruction
-			--instuctionCycles;
-			switch (currentOpcode) {
-				case 0x00: // NOP
-					break;
-				case 0x01: // LD BC,nn
-					// No clue what to do...
-					break;
-				case 0x02: // LD (BC),A
-					// No clue what to do...
-					break;
-				case 0x03: // INC BC
-					// No clue what to do...
-					break;
-				case 0x06: // LD B,n
-					// No clue what to do...
-					break;
-				default:   // Error out
-					break;
-			}
-		} else { // Start a new instruction
+	// FIXME: Is this needed?
+	private Thread cycleThread = new Thread(() -> {
+		Thread.currentThread().suspend();
+		while (true) {
 			position = registers.getProgramCounter();
 			currentOpcode = memoryBus.getByte(position);
 			switch (currentOpcode) {
 				case 0x00: // NOP
-					instuctionCycles = 3;
+					System.out.println("NOP");
 					break;
 				case 0x01: // LD BC,nn
-					instuctionCycles = 9;
+					System.out.println("LD BC,nn");
 					// Put 16 bits (nn) into register BC
-					registers.REG_BC.setData(cpuCore.read16bits((byte) (position + 2)));
+					registers.REG_BC.setData(read16bits((short) (position + 2)));
 					registers.incrementProgramCounter((short) 2);
 					break;
 				case 0x02: // LD (BC),A
-					instuctionCycles = 6;
+					System.out.println("LD (BC),A");
 					// Put the data in register A into the memory address specified in BC
 					memoryBus.putByte(registers.REG_BC.getData(), registers.REG_A.getData());
 					break;
 				case 0x03: // INC BC
-					instuctionCycles = 6;
-					// Increment (add one) to BC
+					System.out.println("INC BC");
 					registers.REG_BC.increment();
 					break;
 				case 0x06: // LD B,n
-					instuctionCycles = 6;
+					System.out.println("LD BC,n");
 					// Put 8 bits (n) into register B
 					registers.REG_B.setData(memoryBus.getByte(position + 1));
 					registers.incrementProgramCounter((short) 1);
 					break;
 				default:   // Error out
 					break;
-			}
-			registers.incrementProgramCounter();
+				}
+				registers.incrementProgramCounter();
+				// FIXME: is there another way to do this?
+				Thread.currentThread().suspend();
 		}
+	});
+
+	// TODO: Is there a more appropriate name?
+	public void cycle() {
+		// FIXME: is there another way to do this?
+		cycleThread.resume();
 	}
 
 
@@ -106,6 +106,6 @@ public class InstructionDecoder {
 	}
 
 	private void LDRegisterMemory(Register16 destination, short source) {
-		destination.setData(cpuCore.read16bits(source));
+		destination.setData(read16bits(source));
 	}
 }

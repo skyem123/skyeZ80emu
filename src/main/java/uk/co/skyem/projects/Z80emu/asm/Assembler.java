@@ -32,7 +32,7 @@ public class Assembler {
 		+       "(.*?[^\\\\]"       // Group 4, matches any character for 0 or more times, followed by any character that is not a \
 		+   	    "(\\\\{2})*"    // Group 5, matches escape characters, any \\, for 0 or more times
 		+       ")"
-		+   ")\\1"      // Matches the same as most recently matched by group 1
+		+   ")\\1"      // Matches what group one matched
 		    // Second alternative
 		+   "|("        // Group 6, matches repeated whitespaces
 		+   	"(?<![^\\s])"   // Negative look-behind, asserts that it is not possible to match any character that is not a blank
