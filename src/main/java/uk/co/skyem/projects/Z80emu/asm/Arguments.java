@@ -68,11 +68,27 @@ public class Arguments {
 
 	public static Arguments parse(String args) {
 		Arguments arguments = new Arguments();
-		for (String argument : args.split("\\s+")) {
-			try {
-				arguments.add(ArgumentType.REGISTER, Reg.valueOf(argument));
-			} catch (IllegalArgumentException e) {
-				// Parse everything else...
+
+		Matcher matcher = Patterns.ARGUMENTS.matcher(args);
+		while (matcher.find()) {
+			// If we could find a group 6 (which is the comma)
+			if (matcher.group(6) != null) {
+				int pos = matcher.start(6);
+				// Get the argument (and trim excess spaces)
+				String argument = Patterns.regexReplaceAll(Patterns.TRIM, args.substring(0, pos - 1), "");
+
+				// TODO: Work out what the argument IS
+				try {
+					arguments.add(ArgumentType.REGISTER, Reg.valueOf(argument));
+				} catch (IllegalArgumentException e) {
+					// Parse everything else...
+				}
+
+				// Take the current argument out
+				args = args.substring(pos);
+
+				// Feed the matcher with the new, replaced version
+				matcher.reset(args);
 			}
 		}
 		return arguments;
