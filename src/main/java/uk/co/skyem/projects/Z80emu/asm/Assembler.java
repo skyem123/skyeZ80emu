@@ -1,6 +1,5 @@
 package uk.co.skyem.projects.Z80emu.asm;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidASMDirectiveException;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidInstructionException;
 import uk.co.skyem.projects.Z80emu.asm.Token.*;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Assembler {
 
@@ -21,32 +19,6 @@ public class Assembler {
 	static {
 		registerToken("LD", instructionLD.class);
 	}
-	// Our regex patterns
-	// Gets rid of all unnecessary blanks
-	private static final Pattern PATTERN_UNNECESSARY_BLANKS = Pattern.compile(
-		    // First alternative, match quoted strings.
-			"([\"'])"   // Group 1, matches start of a quote, can either be " or '
-		+   "("         // Group 2, matches the rest of the quote
-		+       "(\\\\{2})*"        // Group 3, matches escape characters, any \\, for 0 or more times
-		+       "|"                 // Second alternative
-		+       "(.*?[^\\\\]"       // Group 4, matches any character for 0 or more times, followed by any character that is not a \
-		+   	    "(\\\\{2})*"    // Group 5, matches escape characters, any \\, for 0 or more times
-		+       ")"
-		+   ")\\1"      // Matches what group one matched
-		    // Second alternative
-		+   "|("        // Group 6, matches repeated whitespaces
-		+   	"(?<![^\\s])"   // Negative look-behind, asserts that it is not possible to match any character that is not a blank
-		+   	"\\s+"          // Match a blank, for 1 or more times
-		+   	"|"             // Second alternative
-		+       "\\s+$"         // Matches a blank, for 1 or more times, followed by the end of the line
-		+   ")"
-	);
-	// Gets rid of comments (things after ';')
-	private static final Pattern PATTERN_COMMENTS = Pattern.compile(";.*");
-	// Matches a label
-	private static final Pattern PATTERN_LABEL = Pattern.compile("^([a-zA-Z_]):\\s*");
-	// Matches an instruction
-	private static final Pattern PATTERN_INSTRUCTION = Pattern.compile("^((.)[A-Z.]|[a-z.])\\s*");
 
 	private String source;
 	private short origin;
@@ -62,10 +34,6 @@ public class Assembler {
 		if (clazz.isAssignableFrom(ASMDirective.class)) {
 			asmDirectives.put(name, (Class<? extends ASMDirective>) clazz);
 		}
-	}
-
-	private static String regexReplaceAll(Pattern pattern, String input, String replace) {
-		return pattern.matcher(input).replaceAll(replace);
 	}
 
 	private Instruction getInstruction(String name, String arguments) throws InvalidInstructionException {
@@ -105,10 +73,10 @@ public class Assembler {
 		for (int i = 0; i < splitted.length; i++) {
 			String line = splitted[i];
 
-			line = regexReplaceAll(PATTERN_COMMENTS, line, "");
+			line = Patterns.regexReplaceAll(Patterns.COMMENTS, line, "");
 
 			// Matcher for repeated blanks
-			Matcher matcher = PATTERN_UNNECESSARY_BLANKS.matcher(line);
+			Matcher matcher = Patterns.UNNECESSARY_BLANKS.matcher(line);
 			while (matcher.find()) {
 				// If we could find a group 6 (which is the repeated blank)
 				if (matcher.group(6) != null) {
@@ -137,7 +105,7 @@ public class Assembler {
 		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
 			line = input[lineNumber];
 
-			Matcher labelMatcher = PATTERN_LABEL.matcher(line);
+			Matcher labelMatcher = Patterns.LABEL.matcher(line);
 			if (labelMatcher.matches()) {
 				// The whole line matches, so we only have a label here
 				tokens.add(new Token.Label(labelMatcher.group(1)));
@@ -147,7 +115,7 @@ public class Assembler {
 				line = line.substring(labelMatcher.end());
 			}
 
-			Matcher instructionMatcher = PATTERN_INSTRUCTION.matcher(line);
+			Matcher instructionMatcher = Patterns.INSTRUCTION.matcher(line);
 			if (instructionMatcher.find()) {
 				if (instructionMatcher.group(2) != null) {
 					// We have an asm directive because it matches the starting dot

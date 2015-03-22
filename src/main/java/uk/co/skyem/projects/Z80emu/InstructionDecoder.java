@@ -15,7 +15,7 @@ public class InstructionDecoder {
 	}
 
 	public void decode(byte[] data) {
-		byte prefix;
+		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
 		byte displacement;
@@ -29,11 +29,12 @@ public class InstructionDecoder {
 				prefix = data[position++];
 		}
 		// Is there a second prefix?
-		if (data[position] == 0xCB) {
-			secondPrefix = true;
-			// Get the displacement byte
-			displacement = data[++position];
-		}
+		if (prefix == 0xFD || prefix == 0xDD)
+			if (data[position] == 0xCB) {
+				secondPrefix = true;
+				// Get the displacement byte
+				displacement = data[++position];
+			}
 		// Get the opcode of the instruction
 		opcode = data[position++];
 		// Get the immediate data (if there is no second prefix)
