@@ -1,6 +1,9 @@
 package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.Z80emu.bus.IBusDevice;
+import uk.co.skyem.projects.Z80emu.util.buffer.AbstractByteBuffer;
+import uk.co.skyem.projects.Z80emu.util.buffer.ByteBuffer;
+import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class Core {
 	IBusDevice memoryBus;
@@ -15,11 +18,18 @@ public class Core {
 		reset();
 	}
 
-	// The real Z80 CPU reads it as two bytes... so let's do that.
-	// TODO: use a bytebuffer!
-	protected short read16bits(short address) {
-		return (short) (memoryBus.getByte(address) & 0xFF | (memoryBus.getByte(address - 1) << 8 & 0xFF00));
-	}
+	// The real Z80 CPU reads bytes at a time... so let's do that.
+	IByteBuffer memoryBuffer = new AbstractByteBuffer(AbstractByteBuffer.Endian.LITTLE) {
+		@Override
+		public void putByte(int position, byte data) {
+			memoryBus.putByte(position, data);
+		}
+
+		@Override
+		public byte getByte(int position) {
+			return memoryBus.getByte(position);
+		}
+	};
 
 	public void reset() {
 		registers.clear();
