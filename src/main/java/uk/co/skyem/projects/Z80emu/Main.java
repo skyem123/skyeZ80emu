@@ -47,7 +47,7 @@ public class Main {
 		logger.log(Level.INFO, "test2!");
 		logger.log(Level.INFO, "test3!");
 
-		/*
+
 		String text = "" +
 				"				DI                    ; Disable interrupt\n\n\n" +
 				"				LD     SP,RAMTOP      ; Set stack pointer to top off ram\n" +
@@ -58,7 +58,7 @@ public class Main {
 		System.out.println(Arrays.toString(assembler.preparse()));
 
 
-		Scanner input = new Scanner(System.in);
+		/*Scanner input = new Scanner(System.in);
 		while(true) {
 			System.out.println(Arrays.toString(assembler.preparse()));
 		}*/

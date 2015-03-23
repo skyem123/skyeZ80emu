@@ -21,15 +21,23 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 		this.endian = endian;
 	}
 
+	/**
+	 * Gets the endian of this buffer
+	 * @return the endian that this buffer is set to
+	 */
 	public Endian getEndian() {
 		synchronized (this) {
 			return endian;
 		}
 	}
 
-	public Endian setEndian(Endian endian) {
+	/**
+	 * Sets the endian of this buffer
+	 * @param endian the endian to set the buffer to
+	 */
+	public void setEndian(Endian endian) {
 		synchronized (this) {
-			return this.endian = endian;
+			this.endian = endian;
 		}
 	}
 

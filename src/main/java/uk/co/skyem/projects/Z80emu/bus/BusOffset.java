@@ -1,5 +1,6 @@
 package uk.co.skyem.projects.Z80emu.bus;
 
+@Deprecated
 public class BusOffset implements IBusDevice {
 	int offset = 0;
 	IBusDevice toOffset;
