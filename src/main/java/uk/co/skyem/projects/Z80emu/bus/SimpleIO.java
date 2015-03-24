@@ -8,6 +8,9 @@ public class SimpleIO extends SimpleBusDevice {
 	}
 
 	@Override
+	/**
+	 * Read a character from the console.
+	 */
 	public byte getByte(int address) {
 		if (address == this.address) {
 			try {
@@ -21,9 +24,27 @@ public class SimpleIO extends SimpleBusDevice {
 	}
 
 	@Override
+	public int getSize() {
+		return 1;
+	}
+
+	@Override
+	/**
+	 * Write a character to the console.
+	 */
 	public void putByte(int address, byte data) {
 		if (address == this.address) {
 			System.out.print(Character.toChars(data)[0]);
 		}
+	}
+
+	@Override
+	public int getOffset() {
+		return address;
+	}
+
+	@Override
+	public void changeOffset(int offset) {
+		address = offset;
 	}
 }
