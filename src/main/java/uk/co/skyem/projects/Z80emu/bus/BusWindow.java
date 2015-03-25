@@ -1,6 +1,6 @@
 package uk.co.skyem.projects.Z80emu.bus;
 
-public class BusWindow extends BusOffset {
+public class BusWindow extends AbstractBusOffset {
 	int upperLimit = 0;
 	int lowerLimit = 0;
 
