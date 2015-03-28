@@ -9,6 +9,7 @@ import uk.co.skyem.projects.Z80emu.util.InternalException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 public class Assembler {
@@ -24,6 +25,7 @@ public class Assembler {
 	private short origin;
 	private int lineNumber;
 	private String line;
+	private HashMap<String, Label> labelMap = new HashMap<>();
 
 	public Assembler(String source) {
 		this.source = source;
@@ -39,7 +41,9 @@ public class Assembler {
 	private Instruction getInstruction(String name, String arguments) throws InvalidInstructionException {
 		if (instructions.containsKey(name)) {
 			try {
-				return instructions.get(name).getConstructor(String.class).newInstance(arguments);
+				Instruction instruction = instructions.get(name).newInstance();
+				instruction.create(this, arguments);
+				return instruction;
 			} catch (Exception e) {
 				throw new InternalException(e);
 			}
@@ -59,10 +63,24 @@ public class Assembler {
 		}
 	}
 
+	private void addLabel(Label label) {
+		labelMap.put(label.name, label);
+	}
+
+	public Optional<Label> getLabel(String name) {
+		return Optional.ofNullable(labelMap.get(name));
+	}
+
+	protected int getLineNumber() {
+		return lineNumber;
+	}
+
 	/**
 	 * Assemble Z80 asm to Z80 machine code.
 	 */
 	public void assemble() throws AssemblerException {
+		lineNumber = origin = 0;
+		labelMap.clear();
 		String[] preparsed = preparse();
 		List<Token> tokens = tokenize(preparsed);
 	}
@@ -108,13 +126,16 @@ public class Assembler {
 			Matcher labelMatcher = Patterns.LABEL.matcher(line);
 			if (labelMatcher.matches()) {
 				// The whole line matches, so we only have a label here
-				tokens.add(new Token.Label(labelMatcher.group(1)));
+				addLabel(new Label(labelMatcher.group(1)));
 				continue;
 			} else if(labelMatcher.find()) {
-				tokens.add(new Token.Label(labelMatcher.group(1)));
+				addLabel(new Label(labelMatcher.group(1)));
 				line = line.substring(labelMatcher.end());
 			}
+		}
 
+		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
+			line = input[lineNumber];
 			Matcher instructionMatcher = Patterns.INSTRUCTION.matcher(line);
 			if (instructionMatcher.find()) {
 				if (instructionMatcher.group(2) != null) {

@@ -44,6 +44,12 @@ public class Patterns {
 
 	public static final Pattern TRIM = Pattern.compile("^\\s+|\\s+$");
 
+	public static final Pattern NUMBER = Pattern.compile("^(0x|\\$)?(\\d+)(h)?$");
+
+	public static String regexRemoveAll(Pattern pattern, String input) {
+		return regexReplaceAll(pattern, input, "");
+	}
+
 	public static String regexReplaceAll(Pattern pattern, String input, String replace) {
 		return pattern.matcher(input).replaceAll(replace);
 	}

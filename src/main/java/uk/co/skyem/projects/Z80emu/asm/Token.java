@@ -3,7 +3,7 @@ package uk.co.skyem.projects.Z80emu.asm;
 abstract class Token {
 
 	public static abstract class Instruction extends Token {
-		public Instruction(String arguments) {
+		public void create(Assembler assembler, String arguments) {
 
 		}
 
@@ -11,29 +11,22 @@ abstract class Token {
 	}
 
 	public static class Label extends Token {
-		public String label;
+		public final String name;
 
-		public Label(String label) {
-			this.label = label;
+		public Label(String name) {
+			this.name = name;
 		}
 	}
 
 	public static abstract class ASMDirective extends Instruction {
-		public ASMDirective(String code) {
-			super(code);
-		}
+
 	}
 
 	public static abstract class CPUInstruction extends Instruction {
-		public CPUInstruction(String code) {
-			super(code);
-		}
+
 	}
 
 	public static class instructionLD extends CPUInstruction {
-		public instructionLD(String code) {
-			super(code);
-		}
 
 		@Override
 		public void insert(Program program, int offset) {
