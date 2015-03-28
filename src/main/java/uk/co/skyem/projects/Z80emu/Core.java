@@ -2,7 +2,6 @@ package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.Z80emu.bus.IBusDevice;
 import uk.co.skyem.projects.Z80emu.util.buffer.AbstractByteBuffer;
-import uk.co.skyem.projects.Z80emu.util.buffer.ByteBuffer;
 import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class Core {

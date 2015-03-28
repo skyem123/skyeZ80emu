@@ -1,17 +1,21 @@
 package uk.co.skyem.projects.Z80emu.bus;
 
-public class BusWindow extends AbstractBusOffset {
+public class BusWindow implements IBusDevice {
 	int upperLimit = 0;
 	int lowerLimit = 0;
+	int offset = 0;
+	IBusDevice toOffset;
 
 	public BusWindow(int offset, int upper, int lower, IBusDevice toOffset) {
-		super(offset, toOffset);
+		this.offset = offset;
+		this.toOffset = toOffset;
 		this.upperLimit = upper;
 		this.lowerLimit = lower;
 	}
 
 	public BusWindow(int offset, int upper, IBusDevice toOffset) {
-		super(offset, toOffset);
+		this.offset = offset;
+		this.toOffset = toOffset;
 		this.upperLimit = upper;
 		this.lowerLimit = offset;
 	}
@@ -94,5 +98,13 @@ public class BusWindow extends AbstractBusOffset {
 		if (!(position < lowerLimit || position + 7 > upperLimit)) {
 			toOffset.putQWord(position - offset, data);
 		}
+	}
+
+	public int getOffset() {
+		return offset;
+	}
+
+	public void changeOffset(int offset) {
+		this.offset = offset;
 	}
 }

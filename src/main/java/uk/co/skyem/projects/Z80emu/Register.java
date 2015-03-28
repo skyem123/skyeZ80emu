@@ -25,7 +25,7 @@ public abstract class Register<T extends Number> {
 	 * Set data with data from another register.
 	 * WARNING: This will cast, not error.
 	 */
-	public abstract void setData(Register register);
+	public abstract void setData(Register<?> register);
 
 	public abstract void increment();
 
@@ -71,7 +71,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void setData(Register register) {
+		public void setData(Register<?> register) {
 			setData((byte)register.getData());
 		}
 
@@ -156,7 +156,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void setData(Register register) {
+		public void setData(Register<?> register) {
 			setData((short)register.getData());
 		}
 

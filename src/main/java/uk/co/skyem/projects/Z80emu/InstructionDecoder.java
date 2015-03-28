@@ -39,6 +39,13 @@ public class InstructionDecoder {
 		opcode = data[position++];
 		// Get the immediate data (if there is no second prefix)
 		immediateData = secondPrefix ? data[position] : 0;
+
+		// split up the opcode for further processing
+		byte x = (byte) ((0b11000000 & opcode) >>> 6);
+		byte y = (byte) ((0b00111000 & opcode) >>> 3);
+		byte z = (byte)  (0b00000111 & opcode);
+		byte p = (byte)  (0b110 & y);
+		boolean q = (0b001 & y) == 0b1;
 	}
 
 	public void decode(long data) {
