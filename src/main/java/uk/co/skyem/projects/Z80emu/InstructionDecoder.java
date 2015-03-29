@@ -40,6 +40,10 @@ public class InstructionDecoder {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
 	};
 
+	private uk.co.skyem.projects.Z80emu.Register getRegister(Register register) {
+		throw new RuntimeException("getRegister is not yet implemented");
+	}
+
 	private enum Condition {
 		NZ, Z, NC, C, PO, PE, P, M
 	}
@@ -172,6 +176,21 @@ public class InstructionDecoder {
 						} else { // add
 							// ADD HL,rp[p]
 						}
+						break;
+					case 2: // z == 2  // Indirect loading
+						switch (decodedInstruction.p) {
+							case 0: // LD (BC), A or LD A,(BC) (depending on q)
+								break;
+							case 1: // LD (BC), A or LD A,(BC) (depending on q)
+								break;
+							case 2: // LD (nn),HL or LD HL,(nn) (depending on q)
+								break;
+							case 3: // LD A,(DE) or LD (DE), A (depending on q)
+								break;
+						}
+						break;
+					case 3: // z == 3  // 16-bit increment / decrement
+						break;
 				}
 				break;
 			case 1:
@@ -182,60 +201,34 @@ public class InstructionDecoder {
 	// TODO: Is there a more appropriate name?
 	public void cycle() {
 		short position = registers.getProgramCounter();
-		byte currentOpcode = memoryBuffer.getByte(position);
-		switch (currentOpcode) {
-			case 0x00: // NOP
-				System.out.println("NOP");
-				break;
-			case 0x01: // LD BC,nn
-				System.out.println("LD BC,nn");
-				// Put 16 bits (nn) into register BC
-				LDRegisterMemory(registers.REG_BC, position + 1);
-				registers.incrementProgramCounter((short) 2);
-				break;
-			case 0x02: // LD (BC),A
-				System.out.println("LD (BC),A");
-				// Put the data in register A into the memory address specified in BC
-				LDMemoryRegister(registers.REG_BC.getData(), registers.REG_A);
-				break;
-			case 0x03: // INC BC
-				System.out.println("INC BC");
-				registers.REG_BC.increment();
-				break;
-			case 0x06: // LD B,n
-				System.out.println("LD B,n");
-				// Put 8 bits (n) into register B
-				LDRegisterMemory(registers.REG_B, position + 1);
-				registers.incrementProgramCounter((short) 1);
-				break;
-			default:   // Be unpredictable! \o/
-				break;
-		}
+		// TODO: Short circuit for NOP?
+		// FIXME! Doesn't really work...
+		runOpcode(decode(memoryBuffer.getBytes(position, 4)));
 		registers.incrementProgramCounter();
 	}
 
 
-	private void LDRegisterFixed(Register8 destination, byte data) {
+	private void ldRegisterFixed(Register8 destination, byte data) {
 		destination.setData(data);
 	}
 
-	private void LDRegisterFixed(Register16 destination, short data) {
+	private void ldRegisterFixed(Register16 destination, short data) {
 		destination.setData(data);
 	}
 
-	private void LDRegisterRegister(Register8 destination, Register8 source) {
+	private void ldRegisterRegister(Register8 destination, Register8 source) {
 		destination.setData(source);
 	}
 
-	private void LDRegisterRegister(Register16 destination, Register16 source) {
+	private void ldRegisterRegister(Register16 destination, Register16 source) {
 		destination.setData(source);
 	}
 
-	private void LDMemoryRegister(short destination, Register8 source) {
+	private void ldMemoryRegister(short destination, Register8 source) {
 		memoryBuffer.putByte(destination, source.getData());
 	}
 
-	private void LDMemoryRegister(short destination, Register16 source) {
+	private void ldMemoryRegister(short destination, Register16 source) {
 		// TODO: Check that this is what it does.
 		memoryBuffer.putWord(destination + 1, source.getData());
 	}
