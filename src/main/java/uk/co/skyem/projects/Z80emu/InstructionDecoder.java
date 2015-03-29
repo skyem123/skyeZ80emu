@@ -1,6 +1,8 @@
 package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.Z80emu.Register.*;
+import uk.co.skyem.projects.Z80emu.Registers;
+import uk.co.skyem.projects.Z80emu.asm.Arguments;
 import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class InstructionDecoder {
@@ -16,59 +18,108 @@ public class InstructionDecoder {
 
 	// 8 Bit registers
 	// HL is (HL)
-	private enum RegisterTable {
+	// TODO: Use actual registers instead? Enum has link to registers?
+	private enum Register {
 		B, C, D, E, H, L, HL, A
 	}
 
+	private static final Register[] registerTable = {
+		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
+	};
+
 	// Register Pairs featuring SP
-	private enum RegisterPairTable {
-		BC, DE, HL, SP
+	private enum RegisterPair {
+		BC, DE, HL, SP, AF
 	}
 
-	// Register Pairs featuring AF
-	private enum RegisterPair2Table {
-		BC, DE, HL, AF
-	}
+	private static final RegisterPair[] registerPairTable1 = {
+		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
+	};
 
-	private enum ConditionTable {
+	private static final RegisterPair[] registerPairTable2 = {
+		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
+	};
+
+	private enum Condition {
 		NZ, Z, NC, C, PO, PE, P, M
 	}
 
+	private static final Condition[] conditionTable = {
+		Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
+	};
+
 	// Arithmetic and logic operations
-	private enum AluTable {
+	private enum AluOP {
 		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
 	}
 
+	private static final AluOP[] AluTable = {
+		AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
+	};
+
 	// Rotation and shift operations
-	private enum RotationTable {
+	private enum RotationOP {
 		RLC, RRC, RL, RR, SLA, SRA, SLL, SRL
 	}
 
-	private enum InterruptModeTable {
-		ZERO, ZERO_ONE, ONE, TWO, ZERO_B, ZERO_ONE_B, ONE_B, TWO_B
+	private static final RotationOP[] rotationTable = {
+		RotationOP.RLC, RotationOP.RRC, RotationOP.RL, RotationOP.RR, RotationOP.SLA, RotationOP.SRA, RotationOP.SLL, RotationOP.SRL
+	};
+
+	private enum InterruptMode {
+		ZERO, ZERO_ONE, ONE, TWO
 	}
 
-	private enum BlockInstructions {
+	private static final InterruptMode[] interruptModeTable = {
+		InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO, InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO
+	};
+
+	private enum BlockInstruction {
 		LDI, CPI, INI, OUTI,
 		LDD, CPD, IND, OUTD,
 		LDIR, CPIR, INIR, OTIR,
 		LDDR, CPDR, INDR, OTDR
 	}
 
-	private BlockInstructions[][] BlockInstructionTable = {
+	private static final BlockInstruction[][] BlockInstructionTable = {
 		{},{},{},{},
-		{BlockInstructions.LDI, BlockInstructions.CPI, BlockInstructions.INI, BlockInstructions.OUTI},
-		{BlockInstructions.LDD, BlockInstructions.CPD, BlockInstructions.IND, BlockInstructions.OUTD},
-		{BlockInstructions.LDIR, BlockInstructions.CPIR, BlockInstructions.INIR, BlockInstructions.OTIR},
-		{BlockInstructions.LDDR, BlockInstructions.CPDR, BlockInstructions.INDR, BlockInstructions.OTDR},
+		{ BlockInstruction.LDI, BlockInstruction.CPI, BlockInstruction.INI, BlockInstruction.OUTI},
+		{ BlockInstruction.LDD, BlockInstruction.CPD, BlockInstruction.IND, BlockInstruction.OUTD},
+		{ BlockInstruction.LDIR, BlockInstruction.CPIR, BlockInstruction.INIR, BlockInstruction.OTIR},
+		{ BlockInstruction.LDDR, BlockInstruction.CPDR, BlockInstruction.INDR, BlockInstruction.OTDR},
 	};
 
+	private static class DecodedInstruction {
+		DecodedInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
+			this.prefix = prefix;
+			this.opcode = opcode;
+			this.secondPrefix = secondPrefix;
+			this.displacement = displacement;
+			this.immediateData = immediateData;
+			// split up the opcode for further processing
+			this.x = (byte) ((0b11000000 & this.opcode) >>> 6);
+			this.y = (byte) ((0b00111000 & this.opcode) >>> 3);
+			this.z = (byte)  (0b00000111 & this.opcode);
+			this.p = (byte)  (0b110 & y);
+			this.q = (0b001 & y) == 0b1;
+		}
+
+		// The instruction
+		public byte prefix, opcode, displacement;
+		short immediateData;
+		boolean secondPrefix;
+
+		// The split up opcode
+		public byte x, y, z, p;
+		public boolean q;
+	}
+
 	// TODO: Make it fetch the least data necessary.
-	public void decode(byte[] data) {
+	public DecodedInstruction decode(byte[] data) {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
-		byte displacement;
+		byte displacement = 0;
 		short immediateData;
 
 		int position = 0;
@@ -91,16 +142,41 @@ public class InstructionDecoder {
 		// Get the immediate data (if there is no second prefix)
 		immediateData = secondPrefix ? data[position] : 0;
 
-		// split up the opcode for further processing
-		byte x = (byte) ((0b11000000 & opcode) >>> 6);
-		byte y = (byte) ((0b00111000 & opcode) >>> 3);
-		byte z = (byte)  (0b00000111 & opcode);
-		byte p = (byte)  (0b110 & y);
-		boolean q = (0b001 & y) == 0b1;
+		return new DecodedInstruction(prefix, opcode, secondPrefix, displacement, immediateData);
 	}
 
-	public void decode(long data) {
-		// Split the long into a byte array to give to decode
+	// TODO: Better name
+	// TODO: switch-case or if-else?
+	public void runOpcode(DecodedInstruction decodedInstruction) {
+		switch (decodedInstruction.x) {
+			case 0: // x == 0
+				switch (decodedInstruction.z) {
+					case 0: // z == 0  // Misc instructions and relative jumps
+						switch (decodedInstruction.y){
+							case 0: // NOP
+								break;
+							case 1: // EX AF,AF'
+								break;
+							case 2: // DJNZ d(isplacement)
+								break;
+							case 3: // JR d(isplacement)
+								break;
+							case 4:case 5:case 6:case 7: // JR cc[y-4],d
+								Condition condition = conditionTable[decodedInstruction.y - 4];
+								break;
+						}
+						break;
+					case 1: // z == 1  // 16bit load immediate and add
+						if (decodedInstruction.q) { // immediate load
+							// LD rp[p], nn
+						} else { // add
+							// ADD HL,rp[p]
+						}
+				}
+				break;
+			case 1:
+				break;
+		}
 	}
 
 	// TODO: Is there a more appropriate name?
