@@ -14,6 +14,56 @@ public class InstructionDecoder {
 		registers = cpu.registers;
 	}
 
+	// 8 Bit registers
+	// HL is (HL)
+	private enum RegisterTable {
+		B, C, D, E, H, L, HL, A
+	}
+
+	// Register Pairs featuring SP
+	private enum RegisterPairTable {
+		BC, DE, HL, SP
+	}
+
+	// Register Pairs featuring AF
+	private enum RegisterPair2Table {
+		BC, DE, HL, AF
+	}
+
+	private enum ConditionTable {
+		NZ, Z, NC, C, PO, PE, P, M
+	}
+
+	// Arithmetic and logic operations
+	private enum AluTable {
+		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
+	}
+
+	// Rotation and shift operations
+	private enum RotationTable {
+		RLC, RRC, RL, RR, SLA, SRA, SLL, SRL
+	}
+
+	private enum InterruptModeTable {
+		ZERO, ZERO_ONE, ONE, TWO, ZERO_B, ZERO_ONE_B, ONE_B, TWO_B
+	}
+
+	private enum BlockInstructions {
+		LDI, CPI, INI, OUTI,
+		LDD, CPD, IND, OUTD,
+		LDIR, CPIR, INIR, OTIR,
+		LDDR, CPDR, INDR, OTDR
+	}
+
+	private BlockInstructions[][] BlockInstructionTable = {
+		{},{},{},{},
+		{BlockInstructions.LDI, BlockInstructions.CPI, BlockInstructions.INI, BlockInstructions.OUTI},
+		{BlockInstructions.LDD, BlockInstructions.CPD, BlockInstructions.IND, BlockInstructions.OUTD},
+		{BlockInstructions.LDIR, BlockInstructions.CPIR, BlockInstructions.INIR, BlockInstructions.OTIR},
+		{BlockInstructions.LDDR, BlockInstructions.CPDR, BlockInstructions.INDR, BlockInstructions.OTDR},
+	};
+
+	// TODO: Make it fetch the least data necessary.
 	public void decode(byte[] data) {
 		byte prefix = 0;
 		byte opcode;
@@ -34,6 +84,7 @@ public class InstructionDecoder {
 				secondPrefix = true;
 				// Get the displacement byte
 				displacement = data[++position];
+				++position;
 			}
 		// Get the opcode of the instruction
 		opcode = data[position++];
