@@ -8,9 +8,14 @@ import uk.co.skyem.projects.Z80emu.util.InternalException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
+
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 public class Assembler {
 
@@ -25,7 +30,11 @@ public class Assembler {
 	private short origin;
 	private int lineNumber;
 	private String line;
-	private HashMap<String, Label> labelMap = new HashMap<>();
+
+	// Get me apache commons, it has multi-key-maps.
+	// Have to leave, I'm sorry. Its still bytecode...
+	//private Map<String, Label> labelMap = new HashMap<>();
+	private MultiKeyMap<Object, Label> labelMap = new MultiKeyMap<>();
 
 	public Assembler(String source) {
 		this.source = source;
@@ -63,8 +72,8 @@ public class Assembler {
 		}
 	}
 
-	private void addLabel(Label label) {
-		labelMap.put(label.name, label);
+	private void addLabel(Label label, int reference) {
+		labelMap.put(label.name, reference, label);
 	}
 
 	public Optional<Label> getLabel(String name) {
@@ -115,27 +124,24 @@ public class Assembler {
 
 	// Takes pre-parsed code and spits out tokens.
 	private List<Token> tokenize(String[] input) throws AssemblerException {
-
 		List<Token> tokens = new ArrayList<>();
 		// Turn ALL tokens to a token array
-		// Then sort out labels
 
+		int instructionNumber = 0;
 		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
 			line = input[lineNumber];
+			if (line == null) continue;
 
 			Matcher labelMatcher = Patterns.LABEL.matcher(line);
 			if (labelMatcher.matches()) {
 				// The whole line matches, so we only have a label here
-				addLabel(new Label(labelMatcher.group(1)));
+				addLabel(new Label(labelMatcher.group(1)), instructionNumber);
 				continue;
 			} else if(labelMatcher.find()) {
 				addLabel(new Label(labelMatcher.group(1)));
 				line = line.substring(labelMatcher.end());
 			}
-		}
 
-		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
-			line = input[lineNumber];
 			Matcher instructionMatcher = Patterns.INSTRUCTION.matcher(line);
 			if (instructionMatcher.find()) {
 				if (instructionMatcher.group(2) != null) {
@@ -148,6 +154,7 @@ public class Assembler {
 			} else {
 				throw new AssemblerException.SyntaxException(lineNumber, line);
 			}
+			++instructionNumber;
 		}
 
 		return tokens;
