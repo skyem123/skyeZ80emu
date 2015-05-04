@@ -115,7 +115,12 @@ public class Console {
 
 		private String getTrace() {
 			StackTraceElement traceElement = Thread.currentThread().getStackTrace()[3];
-			return "[" + traceElement.getFileName() + "@" + traceElement.getLineNumber() + "]: ";
+			String name = traceElement.getFileName();
+			if (name == null) {
+				name = traceElement.getClassName();
+				name = name.substring(name.lastIndexOf('.', name.length()) + 1);
+			}
+			return "[" + name + "@" + traceElement.getLineNumber() + "]: ";
 		}
 
 		@Override

@@ -36,9 +36,9 @@ public class Patterns {
 	// Gets rid of comments (things after ';')
 	public static final Pattern COMMENTS = Pattern.compile(";.*");
 	// Matches a label
-	public static final Pattern LABEL = Pattern.compile("^([a-zA-Z_]):\\s*");
+	public static final Pattern LABEL = Pattern.compile("^([A-z_])*:\\s*");
 	// Matches an instruction
-	public static final Pattern INSTRUCTION = Pattern.compile("^((.)[A-Z.]|[a-z.])\\s*");
+	public static final Pattern INSTRUCTION = Pattern.compile("^(\\.)?([A-z.]*)\\s?");
 
 	public static final Pattern ARGUMENTS = Pattern.compile(STRINGS + "|(,)");
 

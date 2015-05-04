@@ -3,6 +3,7 @@ package uk.co.skyem.projects.Z80emu;
 import uk.co.skyem.projects.Z80emu.Register.*;
 import uk.co.skyem.projects.Z80emu.Registers;
 import uk.co.skyem.projects.Z80emu.asm.Arguments;
+import uk.co.skyem.projects.Z80emu.instructionGroups.unprefixedOpcodes.Xis0;
 import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class InstructionDecoder {
@@ -19,73 +20,73 @@ public class InstructionDecoder {
 	// 8 Bit registers
 	// HL is (HL)
 	// TODO: Use actual registers instead? Enum has link to registers?
-	private enum Register {
+	public enum Register {
 		B, C, D, E, H, L, HL, A
 	}
 
-	private static final Register[] registerTable = {
+	public static final Register[] registerTable = {
 		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
 	// Register Pairs featuring SP
-	private enum RegisterPair {
+	public enum RegisterPair {
 		BC, DE, HL, SP, AF
 	}
 
-	private static final RegisterPair[] registerPairTable1 = {
+	public static final RegisterPair[] registerPairTable1 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
 	};
 
-	private static final RegisterPair[] registerPairTable2 = {
+	public static final RegisterPair[] registerPairTable2 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
 	};
 
-	private uk.co.skyem.projects.Z80emu.Register getRegister(Register register) {
+	public uk.co.skyem.projects.Z80emu.Register getRegister(Register register) {
 		throw new RuntimeException("getRegister is not yet implemented");
 	}
 
-	private enum Condition {
+	public enum Condition {
 		NZ, Z, NC, C, PO, PE, P, M
 	}
 
-	private static final Condition[] conditionTable = {
+	public static final Condition[] conditionTable = {
 		Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
 	};
 
 	// Arithmetic and logic operations
-	private enum AluOP {
+	public enum AluOP {
 		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
 	}
 
-	private static final AluOP[] AluTable = {
+	public static final AluOP[] AluTable = {
 		AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
 	};
 
 	// Rotation and shift operations
-	private enum RotationOP {
+	public enum RotationOP {
 		RLC, RRC, RL, RR, SLA, SRA, SLL, SRL
 	}
 
-	private static final RotationOP[] rotationTable = {
+	public static final RotationOP[] rotationTable = {
 		RotationOP.RLC, RotationOP.RRC, RotationOP.RL, RotationOP.RR, RotationOP.SLA, RotationOP.SRA, RotationOP.SLL, RotationOP.SRL
 	};
 
-	private enum InterruptMode {
+	public enum InterruptMode {
 		ZERO, ZERO_ONE, ONE, TWO
 	}
 
-	private static final InterruptMode[] interruptModeTable = {
+	public static final InterruptMode[] interruptModeTable = {
 		InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO, InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO
 	};
 
-	private enum BlockInstruction {
+	public enum BlockInstruction {
 		LDI, CPI, INI, OUTI,
 		LDD, CPD, IND, OUTD,
 		LDIR, CPIR, INIR, OTIR,
 		LDDR, CPDR, INDR, OTDR
 	}
 
-	private static final BlockInstruction[][] BlockInstructionTable = {
+	public static final BlockInstruction[][] BlockInstructionTable = {
 		{},{},{},{},
 		{ BlockInstruction.LDI, BlockInstruction.CPI, BlockInstruction.INI, BlockInstruction.OUTI},
 		{ BlockInstruction.LDD, BlockInstruction.CPD, BlockInstruction.IND, BlockInstruction.OUTD},
@@ -93,8 +94,8 @@ public class InstructionDecoder {
 		{ BlockInstruction.LDDR, BlockInstruction.CPDR, BlockInstruction.INDR, BlockInstruction.OTDR},
 	};
 
-	private static class DecodedInstruction {
-		DecodedInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
+	public static class DecodedInstruction {
+		private DecodedInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
 			this.prefix = prefix;
 			this.opcode = opcode;
 			this.secondPrefix = secondPrefix;
@@ -154,44 +155,7 @@ public class InstructionDecoder {
 	public void runOpcode(DecodedInstruction decodedInstruction) {
 		switch (decodedInstruction.x) {
 			case 0: // x == 0
-				switch (decodedInstruction.z) {
-					case 0: // z == 0  // Misc instructions and relative jumps
-						switch (decodedInstruction.y){
-							case 0: // NOP
-								break;
-							case 1: // EX AF,AF'
-								break;
-							case 2: // DJNZ d(isplacement)
-								break;
-							case 3: // JR d(isplacement)
-								break;
-							case 4:case 5:case 6:case 7: // JR cc[y-4],d
-								Condition condition = conditionTable[decodedInstruction.y - 4];
-								break;
-						}
-						break;
-					case 1: // z == 1  // 16bit load immediate and add
-						if (decodedInstruction.q) { // immediate load
-							// LD rp[p], nn
-						} else { // add
-							// ADD HL,rp[p]
-						}
-						break;
-					case 2: // z == 2  // Indirect loading
-						switch (decodedInstruction.p) {
-							case 0: // LD (BC), A or LD A,(BC) (depending on q)
-								break;
-							case 1: // LD (BC), A or LD A,(BC) (depending on q)
-								break;
-							case 2: // LD (nn),HL or LD HL,(nn) (depending on q)
-								break;
-							case 3: // LD A,(DE) or LD (DE), A (depending on q)
-								break;
-						}
-						break;
-					case 3: // z == 3  // 16-bit increment / decrement
-						break;
-				}
+				Xis0.runOpcode(decodedInstruction);
 				break;
 			case 1:
 				break;
@@ -202,7 +166,6 @@ public class InstructionDecoder {
 	public void cycle() {
 		short position = registers.getProgramCounter();
 		// TODO: Short circuit for NOP?
-		// FIXME! Doesn't really work...
 		runOpcode(decode(memoryBuffer.getBytes(position, 4)));
 		registers.incrementProgramCounter();
 	}

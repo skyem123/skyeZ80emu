@@ -3,7 +3,8 @@ package uk.co.skyem.projects.Z80emu.asm;
 abstract class Token {
 
 	public static abstract class Instruction extends Token {
-		public void create(Assembler assembler, String arguments) {
+
+		public void create(Assembler assembler, Arguments arguments) {
 
 		}
 
@@ -26,11 +27,24 @@ abstract class Token {
 
 	}
 
-	public static class instructionLD extends CPUInstruction {
+	public static class LD extends CPUInstruction {
+
+		@Override
+		public void create(Assembler assembler, Arguments arguments) {
+
+		}
 
 		@Override
 		public void insert(Program program, int offset) {
 
+		}
+	}
+
+	public static class NOP extends CPUInstruction {
+
+		@Override
+		public void insert(Program program, int offset) {
+			program.appendByte((byte) 0);
 		}
 	}
 

@@ -8,22 +8,21 @@ import uk.co.skyem.projects.Z80emu.util.InternalException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
-import org.apache.commons.collections4.keyvalue.MultiKey;
 import org.apache.commons.collections4.map.MultiKeyMap;
 
 public class Assembler {
 
-	private static final HashMap<String, Class<? extends Instruction>> instructions = new HashMap<>();
-	private static final HashMap<String, Class<? extends ASMDirective>> asmDirectives = new HashMap<>();
+	private static final HashMap<String, Supplier<Instruction>> instructions = new HashMap<>();
+	private static final HashMap<String, Supplier<ASMDirective>> asmDirectives = new HashMap<>();
 
 	static {
-		registerToken("LD", instructionLD.class);
+		registerInstruction("LD", LD::new);
+		registerInstruction("NOP", NOP::new);
 	}
 
 	private String source;
@@ -31,27 +30,27 @@ public class Assembler {
 	private int lineNumber;
 	private String line;
 
-	// Get me apache commons, it has multi-key-maps.
-	// Have to leave, I'm sorry. Its still bytecode...
-	//private Map<String, Label> labelMap = new HashMap<>();
 	private MultiKeyMap<Object, Label> labelMap = new MultiKeyMap<>();
 
 	public Assembler(String source) {
 		this.source = source;
 	}
 
-	private static void registerToken(String name, Class<? extends Instruction> clazz) {
-		instructions.put(name, clazz);
-		if (clazz.isAssignableFrom(ASMDirective.class)) {
-			asmDirectives.put(name, (Class<? extends ASMDirective>) clazz);
-		}
+	private static void registerASMDirective(String name,  Supplier<ASMDirective> supplier) {
+		asmDirectives.put(name, supplier);
+		registerInstruction(name, supplier::get);
+	}
+
+	private static void registerInstruction(String name,  Supplier<Instruction> supplier) {
+		instructions.put(name, supplier);
 	}
 
 	private Instruction getInstruction(String name, String arguments) throws InvalidInstructionException {
+		name = name.toUpperCase();
 		if (instructions.containsKey(name)) {
 			try {
-				Instruction instruction = instructions.get(name).newInstance();
-				instruction.create(this, arguments);
+				Instruction instruction = instructions.get(name).get();
+				instruction.create(this, Arguments.parse(arguments, lineNumber));
 				return instruction;
 			} catch (Exception e) {
 				throw new InternalException(e);
@@ -116,46 +115,56 @@ public class Assembler {
 				}
 			}
 
-			if (line.length() == 0) line = null;
+			if (line.length() == 0)
+				line = null;
 			splitted[i] = line;
 		}
 		return splitted;
 	}
 
 	// Takes pre-parsed code and spits out tokens.
-	private List<Token> tokenize(String[] input) throws AssemblerException {
+	public List<Token> tokenize(String[] input) throws AssemblerException {
 		List<Token> tokens = new ArrayList<>();
 		// Turn ALL tokens to a token array
 
 		int instructionNumber = 0;
 		for (lineNumber = 0; lineNumber < input.length; lineNumber++) {
 			line = input[lineNumber];
-			if (line == null) continue;
+			if (line == null)
+				continue;
 
 			Matcher labelMatcher = Patterns.LABEL.matcher(line);
 			if (labelMatcher.matches()) {
 				// The whole line matches, so we only have a label here
 				addLabel(new Label(labelMatcher.group(1)), instructionNumber);
 				continue;
-			} else if(labelMatcher.find()) {
-				addLabel(new Label(labelMatcher.group(1)));
-				line = line.substring(labelMatcher.end());
+			} else {
+				labelMatcher.reset();
+				if (labelMatcher.find()) {
+					addLabel(new Label(labelMatcher.group(1)), instructionNumber);
+					line = line.substring(labelMatcher.end());
+				}
 			}
 
 			Matcher instructionMatcher = Patterns.INSTRUCTION.matcher(line);
 			if (instructionMatcher.find()) {
-				if (instructionMatcher.group(2) != null) {
+				if (instructionMatcher.group(1) != null) {
 					// We have an asm directive because it matches the starting dot
-					tokens.add(getASMDirective(instructionMatcher.group(1), line.substring(instructionMatcher.end())));
+					tokens.add(getASMDirective(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
 				} else {
 					// We have an unspecified instruction
-					tokens.add(getInstruction(instructionMatcher.group(1), line.substring(instructionMatcher.end())));
+					tokens.add(getInstruction(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
 				}
 			} else {
 				throw new AssemblerException.SyntaxException(lineNumber, line);
 			}
 			++instructionNumber;
 		}
+
+		System.out.println("Token list:");
+		tokens.forEach(System.out::println);
+		System.out.println("Label map:");
+		labelMap.entrySet().forEach(System.out::println);
 
 		return tokens;
 	}

@@ -47,21 +47,24 @@ public class Main {
 		logger.log(Level.INFO, "test2!");
 		logger.log(Level.INFO, "test3!");
 
-
+		/*
 		String text = "" +
 				"				DI                    ; Disable interrupt\n\n\n" +
 				"				LD     SP,RAMTOP      ; Set stack pointer to top off ram\n" +
 				"      			IM     1              ; Set interrupt mode 1\n" +
 				"            	JP     $100           ; jump to Start of program\n" +
 				"            	.blah     \"I am a string   \\\\\\\"he   llo!\\\"    with spaces\"";
-		Assembler assembler = new Assembler(text);
-		System.out.println(Arrays.toString(assembler.preparse()));
+		Assembler assembler = new Assembler("NOP\nNOP\nNOP\nLD\nLD\nNOP\nLD\nLD\nLD\nLD\n"
+			+ "Nothing:\n"
+			+ "nop\n"
+			+ "Load: LD");
+		//System.out.println(Arrays.toString(assembler.preparse()));
 
 
-		/*Scanner input = new Scanner(System.in);
-		while(true) {
-			System.out.println(Arrays.toString(assembler.preparse()));
-		}*/
+
+		Scanner input = new Scanner(System.in);
+		assembler.tokenize(assembler.preparse());
+		*/
 
 		Bus bus = new Bus();
 		Memory memory = new Memory(1024);
@@ -91,9 +94,9 @@ public class Main {
 		// Load the ROM from a file
 		Memory cpuROM = new Memory(32768, 0);
 		byte[] ROMdata = new byte[4];
-		ROMdata[0] = (byte) 0x01; // LD BC
-		ROMdata[1] = (byte) 0x42; //      ,$42
-		ROMdata[2] = (byte) 0xFE; //          FE
+		//ROMdata[0] = (byte) 0x01; // LD BC
+		//ROMdata[1] = (byte) 0x42; //      ,$42
+		//ROMdata[2] = (byte) 0xFE; //          FE
 		cpuROM.putBytes(0, ROMdata);
 		System.out.println("Next, we need RAM...");
 		Memory cpuMemory = new Memory(32768, 32768);
@@ -138,7 +141,9 @@ public class Main {
 			}
 		});
 		processor1.start();
-		processor2.start();*/
+		processor2.start();
+
+		*/
 
 		// TODO: Run the thing.
 		while (System.in.read() != "s".getBytes()[0]) {
@@ -146,6 +151,7 @@ public class Main {
 			cpu.cycle();
 		}
 		System.out.println("\nDone!");
+
 	}
 
 }
