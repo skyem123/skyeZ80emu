@@ -1,9 +1,8 @@
 package uk.co.skyem.projects.Z80emu;
 
 import uk.co.skyem.projects.Z80emu.Register.*;
-import uk.co.skyem.projects.Z80emu.Registers;
-import uk.co.skyem.projects.Z80emu.asm.Arguments;
-import uk.co.skyem.projects.Z80emu.instructionGroups.unprefixedOpcodes.Xis0;
+import uk.co.skyem.projects.Z80emu.instructionGroups.InstructionGroups;
+import uk.co.skyem.projects.Z80emu.util.buffer.ByteBuffer;
 import uk.co.skyem.projects.Z80emu.util.buffer.IByteBuffer;
 
 public class InstructionDecoder {
@@ -11,82 +10,85 @@ public class InstructionDecoder {
 	private Registers registers;
 	private Core cpuCore;
 
+	private InstructionGroups instructionGroups;
+
 	InstructionDecoder(Core cpu) {
 		memoryBuffer = cpu.memoryBuffer;
 		cpuCore = cpu;
 		registers = cpu.registers;
+		instructionGroups = new InstructionGroups(this);
 	}
 
 	// 8 Bit registers
 	// HL is (HL)
 	// TODO: Use actual registers instead? Enum has link to registers?
-	public enum Register {
+	private enum Register {
 		B, C, D, E, H, L, HL, A
 	}
 
-	public static final Register[] registerTable = {
+	private static final Register[] registerTable = {
 		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
 	// Register Pairs featuring SP
-	public enum RegisterPair {
+	private enum RegisterPair {
 		BC, DE, HL, SP, AF
 	}
 
-	public static final RegisterPair[] registerPairTable1 = {
+	private static final RegisterPair[] registerPairTable1 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
 	};
 
-	public static final RegisterPair[] registerPairTable2 = {
+	private static final RegisterPair[] registerPairTable2 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
 	};
 
-	public uk.co.skyem.projects.Z80emu.Register getRegister(Register register) {
+	private uk.co.skyem.projects.Z80emu.Register getRegister(Register register) {
 		throw new RuntimeException("getRegister is not yet implemented");
 	}
 
-	public enum Condition {
+	private enum Condition {
 		NZ, Z, NC, C, PO, PE, P, M
 	}
 
-	public static final Condition[] conditionTable = {
+	private static final Condition[] conditionTable = {
 		Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
 	};
 
 	// Arithmetic and logic operations
-	public enum AluOP {
+	private enum AluOP {
 		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
 	}
 
-	public static final AluOP[] AluTable = {
+	private static final AluOP[] AluTable = {
 		AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
 	};
 
 	// Rotation and shift operations
-	public enum RotationOP {
+	private enum RotationOP {
 		RLC, RRC, RL, RR, SLA, SRA, SLL, SRL
 	}
 
-	public static final RotationOP[] rotationTable = {
+	private static final RotationOP[] rotationTable = {
 		RotationOP.RLC, RotationOP.RRC, RotationOP.RL, RotationOP.RR, RotationOP.SLA, RotationOP.SRA, RotationOP.SLL, RotationOP.SRL
 	};
 
-	public enum InterruptMode {
+	private enum InterruptMode {
 		ZERO, ZERO_ONE, ONE, TWO
 	}
 
-	public static final InterruptMode[] interruptModeTable = {
+	private static final InterruptMode[] interruptModeTable = {
 		InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO, InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO
 	};
 
-	public enum BlockInstruction {
+	private enum BlockInstruction {
 		LDI, CPI, INI, OUTI,
 		LDD, CPD, IND, OUTD,
 		LDIR, CPIR, INIR, OTIR,
 		LDDR, CPDR, INDR, OTDR
 	}
 
-	public static final BlockInstruction[][] BlockInstructionTable = {
+	private static final BlockInstruction[][] BlockInstructionTable = {
 		{},{},{},{},
 		{ BlockInstruction.LDI, BlockInstruction.CPI, BlockInstruction.INI, BlockInstruction.OUTI},
 		{ BlockInstruction.LDD, BlockInstruction.CPD, BlockInstruction.IND, BlockInstruction.OUTD},
@@ -94,8 +96,8 @@ public class InstructionDecoder {
 		{ BlockInstruction.LDDR, BlockInstruction.CPDR, BlockInstruction.INDR, BlockInstruction.OTDR},
 	};
 
-	public static class DecodedInstruction {
-		private DecodedInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
+	public static class SplitInstruction {
+		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
 			this.prefix = prefix;
 			this.opcode = opcode;
 			this.secondPrefix = secondPrefix;
@@ -119,43 +121,78 @@ public class InstructionDecoder {
 		public boolean q;
 	}
 
-	// TODO: Make it fetch the least data necessary.
-	public DecodedInstruction decode(byte[] data) {
+	public SplitInstruction decode(ByteBuffer buffer, int position) {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
 		byte displacement = 0;
 		short immediateData;
 
-		int position = 0;
-		// The cleanest way I could do this...
+		// The shortest way I could do this...
 		// Find out the prefix (if there is one)
-		switch ((int) data[position]) {
+		switch ((int) buffer.getByte(position)) {
 			case 0xDD:case 0xFD:case 0xCB:case 0xED:
-				prefix = data[position++];
+				prefix = buffer.getByte(position++);
 		}
 		// Is there a second prefix?
 		if (prefix == 0xFD || prefix == 0xDD)
-			if (data[position] == 0xCB) {
+			if (buffer.getByte(position) == 0xCB) {
 				secondPrefix = true;
 				// Get the displacement byte
-				displacement = data[++position];
+				displacement = buffer.getByte(++position);
 				++position;
 			}
 		// Get the opcode of the instruction
-		opcode = data[position++];
+		opcode = buffer.getByte(position++);
 		// Get the immediate data (if there is no second prefix)
-		immediateData = secondPrefix ? data[position] : 0;
+		immediateData = secondPrefix ? buffer.getByte(position) : 0;
 
-		return new DecodedInstruction(prefix, opcode, secondPrefix, displacement, immediateData);
+		return new SplitInstruction(prefix, opcode, secondPrefix, displacement, immediateData);
 	}
 
 	// TODO: Better name
 	// TODO: switch-case or if-else?
-	public void runOpcode(DecodedInstruction decodedInstruction) {
-		switch (decodedInstruction.x) {
+	public void runOpcode(SplitInstruction splitInstruction) {
+		switch (splitInstruction.x) {
 			case 0: // x == 0
-				Xis0.runOpcode(decodedInstruction);
+				switch (splitInstruction.z) {
+					case 0: // z == 0  // Misc instructions and relative jumps
+						switch (splitInstruction.y){
+							case 0: // NOP
+								break;
+							case 1: // EX AF,AF'
+								break;
+							case 2: // DJNZ d(isplacement)
+								break;
+							case 3: // JR d(isplacement)
+								break;
+							case 4:case 5:case 6:case 7: // JR cc[y-4],d
+								Condition condition = conditionTable[splitInstruction.y - 4];
+								break;
+						}
+						break;
+					case 1: // z == 1  // 16bit load immediate and add
+						if (splitInstruction.q) { // immediate load
+							// LD rp[p], nn
+						} else { // add
+							// ADD HL,rp[p]
+						}
+						break;
+					case 2: // z == 2  // Indirect loading
+						switch (splitInstruction.p) {
+							case 0: // LD (BC), A or LD A,(BC) (depending on q)
+								break;
+							case 1: // LD (BC), A or LD A,(BC) (depending on q)
+								break;
+							case 2: // LD (nn),HL or LD HL,(nn) (depending on q)
+								break;
+							case 3: // LD A,(DE) or LD (DE), A (depending on q)
+								break;
+						}
+						break;
+					case 3: // z == 3  // 16-bit increment / decrement
+						break;
+				}
 				break;
 			case 1:
 				break;
@@ -166,7 +203,8 @@ public class InstructionDecoder {
 	public void cycle() {
 		short position = registers.getProgramCounter();
 		// TODO: Short circuit for NOP?
-		runOpcode(decode(memoryBuffer.getBytes(position, 4)));
+		// FIXME! Doesn't really work...
+		//runOpcode(decode(memoryBuffer.getBytes(position, 4)));
 		registers.incrementProgramCounter();
 	}
 

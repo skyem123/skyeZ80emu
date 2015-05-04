@@ -12,6 +12,8 @@ abstract class Token {
 	}
 
 	public static class Label extends Token {
+
+		public int position;
 		public final String name;
 
 		public Label(String name) {
@@ -25,6 +27,9 @@ abstract class Token {
 
 	public static abstract class CPUInstruction extends Instruction {
 
+		public int position;
+
+		public void insertLabel(Assembler assembler, Label label) {}
 	}
 
 	public static class LD extends CPUInstruction {

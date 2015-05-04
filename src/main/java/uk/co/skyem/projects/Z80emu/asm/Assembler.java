@@ -1,5 +1,7 @@
 package uk.co.skyem.projects.Z80emu.asm;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidASMDirectiveException;
 import uk.co.skyem.projects.Z80emu.asm.AssemblerException.InvalidInstructionException;
 import uk.co.skyem.projects.Z80emu.asm.Token.*;
@@ -28,9 +30,13 @@ public class Assembler {
 	private String source;
 	private short origin;
 	private int lineNumber;
+	private int instructionPosition;
 	private String line;
+	private Program program;
 
+	private List<Instruction> instructionList = new ArrayList<>();
 	private MultiKeyMap<Object, Label> labelMap = new MultiKeyMap<>();
+	private List<Pair<CPUInstruction, Label>> labelsToInsert = new ArrayList<>();
 
 	public Assembler(String source) {
 		this.source = source;
@@ -75,6 +81,11 @@ public class Assembler {
 		labelMap.put(label.name, reference, label);
 	}
 
+	public void insertLabel(Label label, int position) {
+		//Instruction in
+		//labelsToInsert.add(new ImmutablePair<>(, label));
+	}
+
 	public Optional<Label> getLabel(String name) {
 		return Optional.ofNullable(labelMap.get(name));
 	}
@@ -83,14 +94,21 @@ public class Assembler {
 		return lineNumber;
 	}
 
+	protected Program getProgram() {
+		return program;
+	}
+
 	/**
 	 * Assemble Z80 asm to Z80 machine code.
 	 */
 	public void assemble() throws AssemblerException {
 		lineNumber = origin = 0;
 		labelMap.clear();
+		labelsToInsert.clear();
+
 		String[] preparsed = preparse();
-		List<Token> tokens = tokenize(preparsed);
+		tokenize(preparsed);
+		write();
 	}
 
 	// Public for now...
@@ -123,8 +141,8 @@ public class Assembler {
 	}
 
 	// Takes pre-parsed code and spits out tokens.
-	public List<Token> tokenize(String[] input) throws AssemblerException {
-		List<Token> tokens = new ArrayList<>();
+	public void tokenize(String[] input) throws AssemblerException {
+		instructionList.clear();
 		// Turn ALL tokens to a token array
 
 		int instructionNumber = 0;
@@ -150,22 +168,29 @@ public class Assembler {
 			if (instructionMatcher.find()) {
 				if (instructionMatcher.group(1) != null) {
 					// We have an asm directive because it matches the starting dot
-					tokens.add(getASMDirective(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
+					instructionList.add(getASMDirective(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
 				} else {
 					// We have an unspecified instruction
-					tokens.add(getInstruction(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
+					instructionList.add(getInstruction(instructionMatcher.group(2), line.substring(instructionMatcher.end())));
 				}
 			} else {
 				throw new AssemblerException.SyntaxException(lineNumber, line);
 			}
 			++instructionNumber;
 		}
+	}
 
-		System.out.println("Token list:");
-		tokens.forEach(System.out::println);
-		System.out.println("Label map:");
-		labelMap.entrySet().forEach(System.out::println);
+	public void write() {
+		program = new Program(origin);
+		for(instructionPosition = 0; instructionPosition < instructionList.size(); instructionPosition++) {
+			Label label = labelMap.get(instructionPosition);
 
-		return tokens;
+			if(label != null) {
+				label.position = program.getSize();
+			}
+
+			Instruction instruction = instructionList.get(instructionPosition);
+			instruction.insert(program, program.getSize());
+		}
 	}
 }
