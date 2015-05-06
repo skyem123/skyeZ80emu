@@ -1,7 +1,18 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+group = 'uk.co.skyem.projects'
+version = 0.1
+mainClassName = 'uk.co.skyem.projects.z80emu.Main'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    sourceCompatibility = 1.8
+}
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 

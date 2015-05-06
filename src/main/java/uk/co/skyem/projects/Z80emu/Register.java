@@ -72,7 +72,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((byte)register.getData());
+			setData((Byte)register.getData());
 		}
 
 		@Override
@@ -157,7 +157,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((short)register.getData());
+			setData((Short)register.getData());
 		}
 
 		@Override

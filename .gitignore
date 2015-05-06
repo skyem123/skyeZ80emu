@@ -15,6 +15,7 @@ hs_err_pid*
 out/
 
 skyeZ80emu.iml
+Z80emu.iml
 
 JavaDoc/*
 
