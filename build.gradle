@@ -5,7 +5,7 @@ apply plugin: 'application'
 
 group = 'uk.co.skyem.projects'
 version = 0.1
-mainClassName = 'uk.co.skyem.projects.z80emu.Main'
+mainClassName = 'uk.co.skyem.projects.emuZ80.Main'
 
 compileJava {
     options.encoding = 'UTF-8'
