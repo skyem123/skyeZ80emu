@@ -35,6 +35,14 @@ public abstract class Register<T extends Number> {
 
 	public abstract void decrement(T value);
 
+	public void add(Number value) {
+		increment((T) value);
+	}
+
+	public void subtract(Number value) {
+		decrement((T) value);
+	}
+
 	public abstract void clear();
 
 	public static final class Register8 extends Register<Byte> {

@@ -7,8 +7,8 @@ import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
 
 public class InstructionDecoder {
 	private IByteBuffer memoryBuffer;
-	private Registers registers;
-	private Core cpuCore;
+	public Registers registers;
+	public Core cpuCore;
 
 	private InstructionGroups instructionGroups;
 
@@ -97,12 +97,13 @@ public class InstructionDecoder {
 	};
 
 	public static class SplitInstruction {
-		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte displacement, short immediateData) {
+		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte secondPrefixDisplacement, IByteBuffer buffer, int position) {
 			this.prefix = prefix;
 			this.opcode = opcode;
 			this.secondPrefix = secondPrefix;
-			this.displacement = displacement;
-			this.immediateData = immediateData;
+			this.secondPrefixDisplacement = secondPrefixDisplacement;
+			this.buffer = buffer;
+			this.position = position;
 			// split up the opcode for further processing
 			this.x = (byte) ((0b11000000 & this.opcode) >>> 6);
 			this.y = (byte) ((0b00111000 & this.opcode) >>> 3);
@@ -110,9 +111,13 @@ public class InstructionDecoder {
 			this.p = (byte)  (0b110 & y);
 			this.q = (0b001 & y) == 0b1;
 		}
+		// Used to get more data, like the immediate value and displacement.
+		public IByteBuffer buffer;
+		// position MUST be the byte after the opcode. also, MUST be incremented if data is fetched so that the CPU doesn't think the displacement byte / immediate data is the next instruction.
+		public int position;
 
 		// The instruction
-		public byte prefix, opcode, displacement;
+		public byte prefix, opcode, secondPrefixDisplacement;
 		short immediateData;
 		boolean secondPrefix;
 
@@ -125,8 +130,7 @@ public class InstructionDecoder {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
-		byte displacement = 0;
-		short immediateData;
+		byte secondPrefixDisplacement = 0;
 
 		// The shortest way I could do this...
 		// Find out the prefix (if there is one)
@@ -139,19 +143,18 @@ public class InstructionDecoder {
 			if (buffer.getByte(position) == 0xCB) {
 				secondPrefix = true;
 				// Get the displacement byte
-				displacement = buffer.getByte(++position);
+				secondPrefixDisplacement = buffer.getByte(++position);
 				++position;
 			}
 		// Get the opcode of the instruction
 		opcode = buffer.getByte(position++);
-		// Get the immediate data (if there is no second prefix)
-		immediateData = secondPrefix ? buffer.getByte(position) : 0;
 
-		return new SplitInstruction(prefix, opcode, secondPrefix, displacement, immediateData);
+		return new SplitInstruction(prefix, opcode, secondPrefix, secondPrefixDisplacement, buffer, position);
 	}
 
 	// TODO: Better name
 	// TODO: switch-case or if-else?
+	// TODO: What are disassembly tables? Would they do better for this?
 	public void runOpcode(SplitInstruction splitInstruction) {
 		switch (splitInstruction.x) {
 			case 0: // x == 0
@@ -207,7 +210,6 @@ public class InstructionDecoder {
 		//runOpcode(decode(memoryBuffer.getBytes(position, 4)));
 		registers.incrementProgramCounter();
 	}
-
 
 	private void ldRegisterFixed(Register8 destination, byte data) {
 		destination.setData(data);

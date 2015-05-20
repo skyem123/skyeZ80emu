@@ -16,6 +16,11 @@ public class UnprefixedInstruction extends Instruction {
 	Instruction loadImmediate8 = new LoadImmediate8(instructionDecoder);
 	Instruction miscOP = new MiscOP(instructionDecoder);
 
+	// x == 1
+	Instruction load8Halt = new Load8Halt(instructionDecoder);
+	// x == 2
+	Instruction aluRegister = new ALURegister(instructionDecoder);
+
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.x) {
@@ -40,6 +45,12 @@ public class UnprefixedInstruction extends Instruction {
 						miscOP.runOpcode(splitInstruction);
 						break;
 				}
+				break;
+			case 1:
+				load8Halt.runOpcode(splitInstruction);
+				break;
+			case 2:
+				aluRegister.runOpcode(splitInstruction);
 		}
 	}
 }

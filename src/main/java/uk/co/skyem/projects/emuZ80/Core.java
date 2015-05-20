@@ -30,6 +30,14 @@ public class Core {
 		}
 	};
 
+	public void relativeJump(byte displacement) {
+		registers.programCounter.add(displacement);
+	}
+
+	public void jump(short address) {
+		registers.programCounter.setData(address);
+	}
+
 	public void reset() {
 		registers.clear();
 	}
