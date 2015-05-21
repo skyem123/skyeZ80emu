@@ -2,6 +2,7 @@ package uk.co.skyem.projects.emuZ80;
 
 import uk.co.skyem.projects.emuZ80.Register.*;
 import uk.co.skyem.projects.emuZ80.instructionGroups.InstructionGroups;
+import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 import uk.co.skyem.projects.emuZ80.util.buffer.ByteBuffer;
 import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
 
@@ -47,11 +48,11 @@ public class InstructionDecoder {
 		throw new RuntimeException("getRegister is not yet implemented");
 	}
 
-	private enum Condition {
+	public enum Condition {
 		NZ, Z, NC, C, PO, PE, P, M
 	}
 
-	private static final Condition[] conditionTable = {
+	public static final Condition[] conditionTable = {
 		Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
 	};
 
@@ -124,9 +125,13 @@ public class InstructionDecoder {
 		// The split up opcode
 		public byte x, y, z, p;
 		public boolean q;
+
+		public byte getByteInc() {
+			return buffer.getByte(position++);
+		}
 	}
 
-	public SplitInstruction decode(ByteBuffer buffer, int position) {
+	public SplitInstruction decode(IByteBuffer buffer, int position) {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
@@ -152,54 +157,9 @@ public class InstructionDecoder {
 		return new SplitInstruction(prefix, opcode, secondPrefix, secondPrefixDisplacement, buffer, position);
 	}
 
-	// TODO: Better name
-	// TODO: switch-case or if-else?
 	// TODO: What are disassembly tables? Would they do better for this?
 	public void runOpcode(SplitInstruction splitInstruction) {
-		switch (splitInstruction.x) {
-			case 0: // x == 0
-				switch (splitInstruction.z) {
-					case 0: // z == 0  // Misc instructions and relative jumps
-						switch (splitInstruction.y){
-							case 0: // NOP
-								break;
-							case 1: // EX AF,AF'
-								break;
-							case 2: // DJNZ d(isplacement)
-								break;
-							case 3: // JR d(isplacement)
-								break;
-							case 4:case 5:case 6:case 7: // JR cc[y-4],d
-								Condition condition = conditionTable[splitInstruction.y - 4];
-								break;
-						}
-						break;
-					case 1: // z == 1  // 16bit load immediate and add
-						if (splitInstruction.q) { // immediate load
-							// LD rp[p], nn
-						} else { // add
-							// ADD HL,rp[p]
-						}
-						break;
-					case 2: // z == 2  // Indirect loading
-						switch (splitInstruction.p) {
-							case 0: // LD (BC), A or LD A,(BC) (depending on q)
-								break;
-							case 1: // LD (BC), A or LD A,(BC) (depending on q)
-								break;
-							case 2: // LD (nn),HL or LD HL,(nn) (depending on q)
-								break;
-							case 3: // LD A,(DE) or LD (DE), A (depending on q)
-								break;
-						}
-						break;
-					case 3: // z == 3  // 16-bit increment / decrement
-						break;
-				}
-				break;
-			case 1:
-				break;
-		}
+		instructionGroups.runOpcode(splitInstruction);
 	}
 
 	// TODO: Is there a more appropriate name?
@@ -207,7 +167,7 @@ public class InstructionDecoder {
 		short position = registers.getProgramCounter();
 		// TODO: Short circuit for NOP?
 		// FIXME! Doesn't really work...
-		//runOpcode(decode(memoryBuffer.getBytes(position, 4)));
+		runOpcode(decode(memoryBuffer, position));
 		registers.incrementProgramCounter();
 	}
 
