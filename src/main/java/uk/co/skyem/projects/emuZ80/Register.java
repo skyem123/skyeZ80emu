@@ -1,5 +1,7 @@
 package uk.co.skyem.projects.emuZ80;
 
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+
 /**
  * A register is an object that can hold data, in the form of a primitive.
  * You can set and get individual flags, the flags are located in {@link Registers}
@@ -45,7 +47,7 @@ public abstract class Register<T extends Number> {
 
 	public abstract void clear();
 
-	public static final class Register8 extends Register<Byte> {
+	public static class Register8 extends Register<Byte> {
 
 		public byte data;
 
@@ -109,7 +111,7 @@ public abstract class Register<T extends Number> {
 		}
 	}
 
-	public static final class Register16 extends Register<Short> {
+	public static class Register16 extends Register<Short> {
 
 		private final Register8 lower;
 		private final Register8 upper;
@@ -191,6 +193,83 @@ public abstract class Register<T extends Number> {
 		@Override
 		public void clear() {
 			setData((short) 0);
+		}
+	}
+
+	public static class MemoryRegister8 extends Register8 {
+		private final IByteBuffer memory;
+		private final int position;
+
+		public MemoryRegister8(IByteBuffer memory, int position) {
+			this.memory = memory;
+			this.position = position;
+		}
+
+		private byte data() {
+			return memory.getByte(position);
+		}
+
+		private void data(byte data) {
+			memory.putByte(position, data);
+		}
+
+		@Override
+		public boolean getFlag(int flag) {
+			return (data() & flag) != 0;
+		}
+
+		@Override
+		public void setFlag(int flag, boolean value) {
+			if (value) {
+				data((byte) (data() | flag));
+			} else {
+				data((byte) (data() & ~flag));
+			}
+		}
+
+		@Override
+		public void toggleFlag(int flag) {
+			data((byte) (data() ^ flag));
+		}
+
+		@Override
+		public Byte getData() {
+			return data();
+		}
+
+		@Override
+		public void setData(Byte data) {
+			data(data);
+		}
+
+		@Override
+		public void setData(Register<?> register) {
+			data((byte) register.getData());
+		}
+
+		@Override
+		public void increment() {
+			data((byte) (data() + 1));
+		}
+
+		@Override
+		public void decrement() {
+			data((byte) (data() - 1));
+		}
+
+		@Override
+		public void increment(Byte value) {
+			data((byte) (data() + value));
+		}
+
+		@Override
+		public void decrement(Byte value) {
+			data((byte) (data() - value));
+		}
+
+		@Override
+		public void clear() {
+			data((byte) 0);
 		}
 	}
 }

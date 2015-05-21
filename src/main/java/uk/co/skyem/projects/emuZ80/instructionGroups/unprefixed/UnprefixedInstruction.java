@@ -12,8 +12,7 @@ public class UnprefixedInstruction extends Instruction {
 	Instruction miscInstruction = new MiscInstruction(instructionDecoder);
 	Instruction loadAdd16 = new LoadAdd16(instructionDecoder);
 	Instruction indirectLoad = new IndirectLoad(instructionDecoder);
-	Instruction incrementDecrement = new IncrementDecrement(instructionDecoder);
-	Instruction loadImmediate8 = new LoadImmediate8(instructionDecoder);
+	Instruction incrementDecrement = new IncrementDecrement8LD(instructionDecoder);
 	Instruction miscOP = new MiscOP(instructionDecoder);
 
 	// x == 1
@@ -35,15 +34,14 @@ public class UnprefixedInstruction extends Instruction {
 					case 2:
 						indirectLoad.runOpcode(splitInstruction);
 						break;
-					case 3:case 4:case 5:
+					case 3:case 4:case 5:case 6:
 						incrementDecrement.runOpcode(splitInstruction);
-						break;
-					case 6:
-						loadImmediate8.runOpcode(splitInstruction);
 						break;
 					case 7:
 						miscOP.runOpcode(splitInstruction);
 						break;
+					default:
+						throw new RuntimeException("We should NEVER be here...");
 				}
 				break;
 			case 1:
@@ -51,6 +49,9 @@ public class UnprefixedInstruction extends Instruction {
 				break;
 			case 2:
 				aluRegister.runOpcode(splitInstruction);
+				break;
+			default:
+				throw new RuntimeException("We should NEVER be here...");
 		}
 	}
 }

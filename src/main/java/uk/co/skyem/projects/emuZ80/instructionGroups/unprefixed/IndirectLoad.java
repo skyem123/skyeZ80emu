@@ -10,6 +10,6 @@ public class IndirectLoad extends Instruction{
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
-
+		// TODO
 	}
 }

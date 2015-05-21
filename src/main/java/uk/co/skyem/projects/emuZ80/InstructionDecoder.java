@@ -1,10 +1,8 @@
 package uk.co.skyem.projects.emuZ80;
 
-import uk.co.skyem.projects.emuZ80.Register.*;
 import uk.co.skyem.projects.emuZ80.instructionGroups.InstructionGroups;
-import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
-import uk.co.skyem.projects.emuZ80.util.buffer.ByteBuffer;
 import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+import uk.co.skyem.projects.emuZ80.Register.*;
 
 public class InstructionDecoder {
 	private IByteBuffer memoryBuffer;
@@ -23,29 +21,98 @@ public class InstructionDecoder {
 	// 8 Bit registers
 	// HL is (HL)
 	// TODO: Use actual registers instead? Enum has link to registers?
-	private enum Register {
+	public enum Register {
 		B, C, D, E, H, L, HL, A
 	}
 
-	private static final Register[] registerTable = {
+	public static final Register[] registerTable = {
 		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
+	public uk.co.skyem.projects.emuZ80.Register.Register8 getRegister(Register register) {
+		switch (register) {
+			case B:
+				return registers.REG_B;
+			case C:
+				return registers.REG_C;
+			case D:
+				return registers.REG_D;
+			case E:
+				return registers.REG_E;
+			case H:
+				return registers.REG_H;
+			case L:
+				return registers.REG_L;
+			case A:
+				return registers.REG_L;
+			case HL:
+				return new MemoryRegister8(memoryBuffer, registers.REG_HL.getData());
+		}
+		throw new RuntimeException("This shouldn't happen / get here.");
+	}
+
 	// Register Pairs featuring SP
-	private enum RegisterPair {
+	public enum RegisterPair {
 		BC, DE, HL, SP, AF
 	}
 
-	private static final RegisterPair[] registerPairTable1 = {
+	public static final RegisterPair[] registerPairTable1 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
 	};
 
-	private static final RegisterPair[] registerPairTable2 = {
+	public static final RegisterPair[] registerPairTable2 = {
 		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
 	};
 
-	private uk.co.skyem.projects.emuZ80.Register getRegister(Register register) {
-		throw new RuntimeException("getRegister is not yet implemented");
+	public void setRegisterPairData(RegisterPair registerPair, short data) {
+		switch (registerPair) {
+			case BC:
+				registers.REG_BC.setData(data);
+				break;
+			case DE:
+				registers.REG_DE.setData(data);
+				break;
+			case HL:
+				registers.REG_HL.setData(data);
+				break;
+			case SP:
+				registers.stackPointer.setData(data);
+				break;
+			case AF:
+				registers.REG_AF.setData(data);
+				break;
+		}
+	}
+	public short getRegisterPairData(RegisterPair registerPair) {
+		switch (registerPair) {
+			case BC:
+				return registers.REG_BC.getData();
+			case DE:
+				return registers.REG_DE.getData();
+			case HL:
+				return registers.REG_HL.getData();
+			case SP:
+				return registers.stackPointer.getData();
+			case AF:
+				return registers.REG_AF.getData();
+		}
+		throw new RuntimeException("This shouldn't happen / get here.");
+	}
+
+	public uk.co.skyem.projects.emuZ80.Register.Register16 getRegisterPair(RegisterPair registerPair) {
+		switch (registerPair) {
+			case BC:
+				return registers.REG_BC;
+			case DE:
+				return registers.REG_DE;
+			case HL:
+				return registers.REG_HL;
+			case SP:
+				return registers.stackPointer;
+			case AF:
+				return registers.REG_AF;
+		}
+		throw new RuntimeException("This shouldn't happen / get here.");
 	}
 
 	public enum Condition {
@@ -129,6 +196,9 @@ public class InstructionDecoder {
 		public byte getByteInc() {
 			return buffer.getByte(position++);
 		}
+		public short getShortInc() {
+			return buffer.getWord(position++);
+		}
 	}
 
 	public SplitInstruction decode(IByteBuffer buffer, int position) {
@@ -166,42 +236,9 @@ public class InstructionDecoder {
 	public void cycle() {
 		short position = registers.getProgramCounter();
 		// TODO: Short circuit for NOP?
-		// FIXME! Doesn't really work...
+		// FIXME! Does this actually work?
 		runOpcode(decode(memoryBuffer, position));
+		// TODO: Set the program counter to the final position (set by the instruction?)
 		registers.incrementProgramCounter();
-	}
-
-	private void ldRegisterFixed(Register8 destination, byte data) {
-		destination.setData(data);
-	}
-
-	private void ldRegisterFixed(Register16 destination, short data) {
-		destination.setData(data);
-	}
-
-	private void ldRegisterRegister(Register8 destination, Register8 source) {
-		destination.setData(source);
-	}
-
-	private void ldRegisterRegister(Register16 destination, Register16 source) {
-		destination.setData(source);
-	}
-
-	private void ldMemoryRegister(short destination, Register8 source) {
-		memoryBuffer.putByte(destination, source.getData());
-	}
-
-	private void ldMemoryRegister(short destination, Register16 source) {
-		// TODO: Check that this is what it does.
-		memoryBuffer.putWord(destination + 1, source.getData());
-	}
-
-	private void LDRegisterMemory(Register8 destination, int source) {
-		destination.setData(memoryBuffer.getByte(source));
-	}
-
-	private void LDRegisterMemory(Register16 destination, int source) {
-		// TODO: Check that this is what it does.
-		destination.setData(memoryBuffer.getWord(source + 1));
 	}
 }
