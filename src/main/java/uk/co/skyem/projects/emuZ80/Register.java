@@ -37,14 +37,6 @@ public abstract class Register<T extends Number> {
 
 	public abstract void decrement(T value);
 
-	public void add(Number value) {
-		increment((T) value);
-	}
-
-	public void subtract(Number value) {
-		decrement((T) value);
-	}
-
 	public abstract void clear();
 
 	public static class Register8 extends Register<Byte> {
@@ -244,13 +236,14 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			data((byte) register.getData());
+			data((Byte) register.getData());
 		}
 
 		@Override
 		public void increment() {
 			data((byte) (data() + 1));
 		}
+
 
 		@Override
 		public void decrement() {

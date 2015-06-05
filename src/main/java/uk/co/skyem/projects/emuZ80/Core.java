@@ -9,11 +9,13 @@ public class Core {
 	IBusDevice IOBus;
 	Registers registers = new Registers();
 	InstructionDecoder instructionDecoder;
+	ALU alu;
 
 	public Core(IBusDevice memory, IBusDevice IO) {
 		memoryBus = memory;
 		IOBus = IO;
 		instructionDecoder = new InstructionDecoder(this);
+		alu = new ALU(this);
 		reset();
 	}
 
@@ -31,7 +33,7 @@ public class Core {
 	};
 
 	public void relativeJump(byte displacement) {
-		registers.programCounter.add(displacement);
+		registers.programCounter.increment((short)displacement);
 	}
 
 	public void jump(short address) {

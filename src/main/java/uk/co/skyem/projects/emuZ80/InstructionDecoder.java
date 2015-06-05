@@ -8,6 +8,7 @@ public class InstructionDecoder {
 	private IByteBuffer memoryBuffer;
 	public Registers registers;
 	public Core cpuCore;
+	public ALU alu;
 
 	private InstructionGroups instructionGroups;
 
@@ -16,6 +17,7 @@ public class InstructionDecoder {
 		cpuCore = cpu;
 		registers = cpu.registers;
 		instructionGroups = new InstructionGroups(this);
+		alu = cpu.alu;
 	}
 
 	// 8 Bit registers

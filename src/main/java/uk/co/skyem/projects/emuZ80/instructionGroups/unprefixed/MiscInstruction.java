@@ -24,9 +24,7 @@ public class MiscInstruction extends Instruction {
 				break;
 			case 1:
 				// EX AF,AF' -- Swap AF with its shadow register.
-				Register.Register16 AFT = registers.REG_AF;
-				registers.REG_AF = registers.REG_AFS;
-				registers.REG_AFS = AFT;
+				registers.swapRegisters(registers.REG_AF, registers.REG_AFS);
 				break;
 			case 2:
 				// DJNZ d -- Decrement B by one, then relative jump if B is not zero.

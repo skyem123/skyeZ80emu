@@ -71,6 +71,14 @@ public class Registers {
 		return new Register16(upper, lower);
 	}
 
+	// TODO: This should work b, but it isn't very pretty.
+	// Note that the Z80 only swaps register pairs.
+	public void swapRegisters(Register16 a, Register16 b) {
+		short oldData = a.getData();
+		a.setData(b);
+		b.setData(oldData);
+	}
+
 	/**
 	 * Clears all registers.
 	 */
