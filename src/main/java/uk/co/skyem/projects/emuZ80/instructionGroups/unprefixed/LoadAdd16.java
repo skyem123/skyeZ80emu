@@ -20,7 +20,7 @@ public class LoadAdd16 extends Instruction{
 			alu.add16Register(instructionDecoder.registers.REG_HL, instructionDecoder.getRegisterPair(registerPair));
 		} else {
 			// LD rp[p],nn
-			instructionDecoder.setRegisterPairData(registerPair, splitInstruction.getShortInc());
+			alu.load16(instructionDecoder.getRegisterPair(registerPair), splitInstruction.getShortInc());
 		}
 	}
 }

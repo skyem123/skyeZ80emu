@@ -1,13 +1,16 @@
 package uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed;
 
+import uk.co.skyem.projects.emuZ80.ALU;
 import uk.co.skyem.projects.emuZ80.InstructionDecoder;
 import uk.co.skyem.projects.emuZ80.Register;
 import uk.co.skyem.projects.emuZ80.asm.Patterns;
 import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
 
 public class IncrementDecrement8LD extends Instruction{
+	ALU alu;
 	public IncrementDecrement8LD(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
+		this.alu = instructionDecoder.alu;
 	}
 
 	@Override
@@ -16,13 +19,13 @@ public class IncrementDecrement8LD extends Instruction{
 			case 3:
 				// 16 bit INC/DEC
 				// rp[p]
-				InstructionDecoder.RegisterPair registerPair = InstructionDecoder.registerPairTable1[splitInstruction.p];
+				Register.Register16 registerPair = instructionDecoder.getRegisterPair(InstructionDecoder.registerPairTable1[splitInstruction.p]);
 				if (splitInstruction.q) {
 					// DEC rp[p]
-					instructionDecoder.getRegisterPair(registerPair).decrement();
+					alu.increment16(registerPair);
 				} else {
 					// INC rp[p]
-					instructionDecoder.getRegisterPair(registerPair).increment();
+					alu.decrement16(registerPair);
 				}
 				break;
 			case 4:case 5:case 6:
@@ -32,16 +35,16 @@ public class IncrementDecrement8LD extends Instruction{
 					case 4:
 						// 8 bit INC
 						// INC r[y]
-						register.increment();
+						alu.increment8(register);
 						break;
 					case 5:
 						// 8 bit DEC
 						// DEC r[y]
-						register.decrement();
+						alu.decrement8(register);
 						break;
 					case 6:
 						// 8 bit immediate load
-						register.setData(splitInstruction.getByteInc());
+						alu.load8(register, splitInstruction.getByteInc());
 						break;
 					default:
 						throw new RuntimeException("We should NEVER be here...");
