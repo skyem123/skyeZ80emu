@@ -1,6 +1,7 @@
 package uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed;
 
 import uk.co.skyem.projects.emuZ80.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.Register.*;
 import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
 
 public class Load8Halt extends Instruction {
@@ -10,6 +11,14 @@ public class Load8Halt extends Instruction {
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+		// Exception to this instruction.
+		// Replaces LD(HL),(HL)
+		if (splitInstruction.z == 6 && splitInstruction.y == 6) {
+			// HALT
+			instructionDecoder.cpuCore.halt();
+		}
 
+		// LD r[y],r[z]
+		instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.y]).setData(instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.z]));
 	}
 }

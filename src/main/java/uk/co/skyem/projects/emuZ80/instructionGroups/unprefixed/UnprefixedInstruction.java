@@ -9,16 +9,16 @@ public class UnprefixedInstruction extends Instruction {
 	}
 
 	// x == 0
-	Instruction miscInstruction = new MiscInstruction(instructionDecoder);
-	Instruction loadAdd16 = new LoadAdd16(instructionDecoder);
-	Instruction indirectLoad = new IndirectLoad(instructionDecoder);
-	Instruction incrementDecrement = new IncrementDecrement8LD(instructionDecoder);
-	Instruction miscOP = new MiscOP(instructionDecoder);
+	MiscInstruction miscInstruction = new MiscInstruction(instructionDecoder);
+	LoadAdd16 loadAdd16 = new LoadAdd16(instructionDecoder);
+	IndirectLoad indirectLoad = new IndirectLoad(instructionDecoder);
+	IncrementDecrement8LDI incrementDecrement = new IncrementDecrement8LDI(instructionDecoder);
+	MiscOP miscOP = new MiscOP(instructionDecoder);
 
 	// x == 1
-	Instruction load8Halt = new Load8Halt(instructionDecoder);
+	Load8Halt load8Halt = new Load8Halt(instructionDecoder);
 	// x == 2
-	Instruction aluRegister = new ALURegister(instructionDecoder);
+	ALURegister aluRegister = new ALURegister(instructionDecoder);
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {

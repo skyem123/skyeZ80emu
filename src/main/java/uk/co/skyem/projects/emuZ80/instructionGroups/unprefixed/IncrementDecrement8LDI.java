@@ -6,9 +6,9 @@ import uk.co.skyem.projects.emuZ80.Register;
 import uk.co.skyem.projects.emuZ80.asm.Patterns;
 import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
 
-public class IncrementDecrement8LD extends Instruction{
+public class IncrementDecrement8LDI extends Instruction{
 	ALU alu;
-	public IncrementDecrement8LD(InstructionDecoder instructionDecoder) {
+	public IncrementDecrement8LDI(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		this.alu = instructionDecoder.alu;
 	}

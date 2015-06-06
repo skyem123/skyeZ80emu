@@ -137,4 +137,24 @@ public class ALU {
 	public void load8(Register8 register, byte data) {
 		register.setData(data);
 	}
+
+	/** Loads a register with a value from a memory address **/
+	public void indirectLoad8(Register8 register, short address) {
+		register.setData(core.memoryBuffer.getByte(address));
+	}
+
+	/** Load contents of register into memory location **/
+	public void memoryLoad8(short address, Register8 register) {
+		core.memoryBuffer.putByte(address, register.getData());
+	}
+
+	/** Loads a register with a value from a memory address **/
+	public void indirectLoad16(Register16 register, short address) {
+		register.setData(core.memoryBuffer.getWord(address));
+	}
+
+	/** Load contents of register into memory location **/
+	public void memoryLoad16(short address, Register16 register) {
+		core.memoryBuffer.putWord(address, register.getData());
+	}
 }

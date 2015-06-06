@@ -7,6 +7,7 @@ package uk.co.skyem.projects.emuZ80.util.buffer;
  */
 public abstract class AbstractByteBuffer implements IByteBuffer {
 
+	// TODO: Make sure that the way the ByteBuffer handles BIG endian fetches is the same as the Z80
 	public static enum Endian {
 		BIG, LITTLE
 	}

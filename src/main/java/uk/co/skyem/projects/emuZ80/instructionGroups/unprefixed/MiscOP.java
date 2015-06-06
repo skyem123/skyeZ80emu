@@ -10,6 +10,6 @@ public class MiscOP extends Instruction{
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
-
+		// TODO
 	}
 }

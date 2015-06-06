@@ -10,6 +10,7 @@ public class Core {
 	Registers registers = new Registers();
 	InstructionDecoder instructionDecoder;
 	ALU alu;
+	private boolean halted = true;
 
 	public Core(IBusDevice memory, IBusDevice IO) {
 		memoryBus = memory;
@@ -33,7 +34,7 @@ public class Core {
 	};
 
 	public void relativeJump(byte displacement) {
-		registers.programCounter.increment((short)displacement);
+		registers.programCounter.increment((short) displacement);
 	}
 
 	public void jump(short address) {
@@ -42,9 +43,26 @@ public class Core {
 
 	public void reset() {
 		registers.clear();
+		halted = false;
 	}
 
 	public void cycle() {
 		instructionDecoder.cycle();
+	}
+
+	public void halt() {
+		halt(true);
+	}
+
+	public void halt(boolean state) {
+		this.halted = state;
+	}
+
+	public void unhalt() {
+		halt(false);
+	}
+
+	public boolean halted() {
+		return halted;
 	}
 }
