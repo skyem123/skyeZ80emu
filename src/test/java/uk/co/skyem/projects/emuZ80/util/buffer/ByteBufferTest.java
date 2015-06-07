@@ -32,8 +32,13 @@ public class ByteBufferTest {
 
 		System.out.println("Testing put WORD little endian");
 		ByteBuffer bblittle = new ByteBuffer(Endian.LITTLE, 42);
-		bblittle.putWord(1, (short) 0x4342);
-		assertThat(bblittle.getWord(1)).isEqualTo((short) 0x4342);
+		bblittle.putWord(0, (short) 0x4342);
+		assertThat(bblittle.getWord(0)).isEqualTo((short) 0x4342);
+
+		System.out.println("Testing put WORD little endian (alternate)");
+		ByteBuffer bblittlealt = new ByteBuffer(Endian.LITTLE_ALT, 42);
+		bblittlealt.putWord(1, (short) 0x4342);
+		assertThat(bblittlealt.getWord(1)).isEqualTo((short) 0x4342);
 	}
 
 	@Test
@@ -46,9 +51,14 @@ public class ByteBufferTest {
 		assertThat(bbbig.getDWord(0)).isEqualTo(0x43424140);
 
 		System.out.println("Testing put DWORD little endian");
-		ByteBuffer bblittle = new ByteBuffer(Endian.LITTLE, 42);
-		bblittle.putDWord(4, 0x43424140);
-		assertThat(bblittle.getDWord(4)).isEqualTo(0x43424140);
+		ByteBuffer bbalt = new ByteBuffer(Endian.LITTLE, 42);
+		bbalt.putDWord(0, 0x43424140);
+		assertThat(bbalt.getDWord(0)).isEqualTo(0x43424140);
+
+		System.out.println("Testing put DWORD little endian (alternate)");
+		ByteBuffer bblittlealt = new ByteBuffer(Endian.LITTLE_ALT, 42);
+		bblittlealt.putDWord(4, 0x43424140);
+		assertThat(bblittlealt.getDWord(4)).isEqualTo(0x43424140);
 	}
 
 	@Test
@@ -59,10 +69,15 @@ public class ByteBufferTest {
 		bbbig.putQWord(0, 0x4342414039383736L);
 		assertThat(bbbig.getQWord(0)).isEqualTo(0x4342414039383736L);
 
-		System.out.println("Testing put QWORD little endian");
+		System.out.println("Testing put QWORD little endian (alternate)");
 		ByteBuffer bblittle = new ByteBuffer(Endian.LITTLE, 42);
-		bblittle.putQWord(8, 0x4342414039383736L);
-		assertThat(bblittle.getQWord(8)).isEqualTo(0x4342414039383736L);
+		bblittle.putQWord(0, 0x4342414039383736L);
+		assertThat(bblittle.getQWord(0)).isEqualTo(0x4342414039383736L);
+
+		System.out.println("Testing put QWORD little endian (alternate)");
+		ByteBuffer bblittlealt = new ByteBuffer(Endian.LITTLE_ALT, 42);
+		bblittlealt.putQWord(8, 0x4342414039383736L);
+		assertThat(bblittlealt.getQWord(8)).isEqualTo(0x4342414039383736L);
 	}
 
 	@Test
@@ -122,10 +137,18 @@ public class ByteBufferTest {
 		System.out.println("Testing append WORD little endian");
 		ByteBuffer bb2 = new ByteBuffer(Endian.LITTLE);
 		bb2.appendWord((short) 0xAAAA);
-		assertThat(bb2.getWord(1)).isEqualTo((short) 0xAAAA);
+		assertThat(bb2.getWord(0)).isEqualTo((short) 0xAAAA);
 		bb2.appendWord((short) 0xBBBB);
-		assertThat(bb2.getWord(1)).isEqualTo((short) 0xAAAA);
-		assertThat(bb2.getWord(3)).isEqualTo((short) 0xBBBB);
+		assertThat(bb2.getWord(0)).isEqualTo((short) 0xAAAA);
+		assertThat(bb2.getWord(2)).isEqualTo((short) 0xBBBB);
+
+		System.out.println("Testing append WORD little endian (alternate)");
+		ByteBuffer bb3 = new ByteBuffer(Endian.LITTLE_ALT);
+		bb3.appendWord((short) 0xAAAA);
+		assertThat(bb3.getWord(1)).isEqualTo((short) 0xAAAA);
+		bb3.appendWord((short) 0xBBBB);
+		assertThat(bb3.getWord(1)).isEqualTo((short) 0xAAAA);
+		assertThat(bb3.getWord(3)).isEqualTo((short) 0xBBBB);
 	}
 
 	@Test
@@ -141,10 +164,18 @@ public class ByteBufferTest {
 		System.out.println("Testing append DWORD little endian");
 		ByteBuffer bb2 = new ByteBuffer(Endian.LITTLE);
 		bb2.appendDWord(0xAAAAAAAA);
-		assertThat(bb2.getDWord(3)).isEqualTo(0xAAAAAAAA);
+		assertThat(bb2.getDWord(0)).isEqualTo(0xAAAAAAAA);
 		bb2.appendDWord(0xBBBBBBBB);
-		assertThat(bb2.getDWord(3)).isEqualTo(0xAAAAAAAA);
-		assertThat(bb2.getDWord(7)).isEqualTo(0xBBBBBBBB);
+		assertThat(bb2.getDWord(0)).isEqualTo(0xAAAAAAAA);
+		assertThat(bb2.getDWord(4)).isEqualTo(0xBBBBBBBB);
+
+		System.out.println("Testing append DWORD little endian (alternate)");
+		ByteBuffer bb3 = new ByteBuffer(Endian.LITTLE_ALT);
+		bb3.appendDWord(0xAAAAAAAA);
+		assertThat(bb3.getDWord(3)).isEqualTo(0xAAAAAAAA);
+		bb3.appendDWord(0xBBBBBBBB);
+		assertThat(bb3.getDWord(3)).isEqualTo(0xAAAAAAAA);
+		assertThat(bb3.getDWord(7)).isEqualTo(0xBBBBBBBB);
 	}
 
 	@Test
@@ -157,13 +188,21 @@ public class ByteBufferTest {
 		assertThat(bb1.getQWord(0)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
 		assertThat(bb1.getQWord(8)).isEqualTo(0xBBBBBBBBBBBBBBBBL);
 
-		System.out.println("Testing append DWORD little endian");
+		System.out.println("Testing append DWORD little endian ");
 		ByteBuffer bb2 = new ByteBuffer(Endian.LITTLE);
 		bb2.appendQWord(0xAAAAAAAAAAAAAAAAL);
-		assertThat(bb2.getQWord(7)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
+		assertThat(bb2.getQWord(0)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
 		bb2.appendQWord(0xBBBBBBBBBBBBBBBBL);
-		assertThat(bb2.getQWord(7)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
-		assertThat(bb2.getQWord(15)).isEqualTo(0xBBBBBBBBBBBBBBBBL);
+		assertThat(bb2.getQWord(0)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
+		assertThat(bb2.getQWord(8)).isEqualTo(0xBBBBBBBBBBBBBBBBL);
+
+		System.out.println("Testing append DWORD little endian (alternate)");
+		ByteBuffer bb3 = new ByteBuffer(Endian.LITTLE_ALT);
+		bb3.appendQWord(0xAAAAAAAAAAAAAAAAL);
+		assertThat(bb3.getQWord(7)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
+		bb3.appendQWord(0xBBBBBBBBBBBBBBBBL);
+		assertThat(bb3.getQWord(7)).isEqualTo(0xAAAAAAAAAAAAAAAAL);
+		assertThat(bb3.getQWord(15)).isEqualTo(0xBBBBBBBBBBBBBBBBL);
 	}
 
 	@Test
@@ -198,5 +237,6 @@ public class ByteBufferTest {
 		assertThatThrownBy(() -> bb.putByte(-100, (byte) 0xFF)).isInstanceOf(ArrayIndexOutOfBoundsException.class);
 		assertThatThrownBy(() -> bb.putByte(+100, (byte) 0xFF)).isInstanceOf(ArrayIndexOutOfBoundsException.class);
 
+		// TODO: Test the "we should never be here" exceptions, somehow?
 	}
 }

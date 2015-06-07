@@ -10,7 +10,8 @@ public class Program extends ByteBuffer {
 	private final int origin;
 
 	public Program(int origin) {
-		super(Endian.LITTLE);
+		// TODO: Change this?
+		super(Endian.LITTLE_ALT);
 		this.origin = origin;
 	}
 

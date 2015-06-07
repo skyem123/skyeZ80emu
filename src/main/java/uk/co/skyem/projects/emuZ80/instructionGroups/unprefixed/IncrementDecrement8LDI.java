@@ -47,11 +47,11 @@ public class IncrementDecrement8LDI extends Instruction{
 						alu.load8(register, splitInstruction.getByteInc());
 						break;
 					default:
-						throw new RuntimeException("We should NEVER be here...");
+						throw new IllegalStateException("We should never be here.");
 				}
 				break;
 			default:
-				throw new RuntimeException("We should NEVER be here...");
+				throw new IllegalStateException("We should never be here.");
 		}
 	}
 }

@@ -9,7 +9,7 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 
 	// TODO: Make sure that the way the ByteBuffer handles BIG endian fetches is the same as the Z80
 	public static enum Endian {
-		BIG, LITTLE
+		BIG, LITTLE, LITTLE_ALT
 	}
 
 	private Endian endian;
@@ -56,45 +56,66 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 	@Override
 	public short getWord(int position) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				return (short) (getByte(position + 1) & 0xFF | (getByte(position) << 8 & 0xFF00));
-			} else {
-				return (short) (getByte(position) & 0xFF | (getByte(position - 1) << 8 & 0xFF00));
+			switch (endian) {
+				case BIG:
+					return (short) (getByte(position + 1) & 0xFF | (getByte(position) << 8 & 0xFF00));
+				case LITTLE:
+					return (short) (getByte(position) & 0xFF | (getByte(position + 1) << 8 & 0xFF00));
+				case LITTLE_ALT:
+					return (short) (getByte(position) & 0xFF | (getByte(position - 1) << 8 & 0xFF00));
 			}
 		}
+		throw new IllegalStateException("We should never be here.");
 	}
 
 	@Override
 	public int getDWord(int position) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				return getWord(position + 2) & 0xFFFF | (getWord(position) << 16 & 0xFFFF0000);
-			} else {
-				return getWord(position) & 0xFFFF | (getWord(position - 2) << 16 & 0xFFFF0000);
+			switch (endian) {
+				case BIG:
+					return getWord(position + 2) & 0xFFFF | (getWord(position) << 16 & 0xFFFF0000);
+				case LITTLE:
+					return getWord(position) & 0xFFFF | (getWord(position + 2) << 16 & 0xFFFF0000);
+				case LITTLE_ALT:
+					return getWord(position) & 0xFFFF | (getWord(position - 2) << 16 & 0xFFFF0000);
 			}
 		}
+		throw new IllegalStateException("We should never be here.");
 	}
 
 	@Override
 	public long getQWord(int position) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				return getDWord(position + 4) & 0xFFFFFFFFL | ((long) getDWord(position) << 32 & 0xFFFFFFFF00000000L);
-			} else {
-				return getDWord(position) & 0xFFFFFFFFL | ((long) getDWord(position - 4) << 32 & 0xFFFFFFFF00000000L);
+			switch (endian) {
+				case BIG:
+					return getDWord(position + 4) & 0xFFFFFFFFL | ((long) getDWord(position) << 32 & 0xFFFFFFFF00000000L);
+				case LITTLE:
+					return getDWord(position) & 0xFFFFFFFFL | ((long) getDWord(position + 4) << 32 & 0xFFFFFFFF00000000L);
+				case LITTLE_ALT:
+					return getDWord(position) & 0xFFFFFFFFL | ((long) getDWord(position - 4) << 32 & 0xFFFFFFFF00000000L);
 			}
 		}
+		throw new IllegalStateException("We should never be here.");
 	}
 
 	@Override
 	public void putWord(int position, short data) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				putByte(position + 1, (byte) (data & 0xFF));
-				putByte(position, (byte) (data >>> 8));
-			} else {
-				putByte(position, (byte) (data & 0xFF));
-				putByte(position - 1, (byte) (data >>> 8));
+			switch (endian) {
+				case BIG:
+					putByte(position + 1, (byte) (data & 0xFF));
+					putByte(position, (byte) (data >>> 8));
+					break;
+				case LITTLE:
+					putByte(position, (byte) (data & 0xFF));
+					putByte(position + 1, (byte) (data >>> 8));
+					break;
+				case LITTLE_ALT:
+					putByte(position, (byte) (data & 0xFF));
+					putByte(position - 1, (byte) (data >>> 8));
+					break;
+				default:
+					throw new IllegalStateException("We should never be here.");
 			}
 		}
 	}
@@ -102,12 +123,21 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 	@Override
 	public void putDWord(int position, int data) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				putWord(position + 2, (short) (data & 0xFFFF));
-				putWord(position, (short) (data >>> 16));
-			} else {
-				putWord(position, (short) (data & 0xFFFF));
-				putWord(position - 2, (short) (data >>> 16));
+			switch (endian) {
+				case BIG:
+					putWord(position + 2, (short) (data & 0xFFFF));
+					putWord(position, (short) (data >>> 16));
+					break;
+				case LITTLE:
+					putWord(position, (short) (data & 0xFFFF));
+					putWord(position + 2, (short) (data >>> 16));
+					break;
+				case LITTLE_ALT:
+					putWord(position, (short) (data & 0xFFFF));
+					putWord(position - 2, (short) (data >>> 16));
+					break;
+				default:
+					throw new IllegalStateException("We should never be here.");
 			}
 		}
 	}
@@ -115,12 +145,21 @@ public abstract class AbstractByteBuffer implements IByteBuffer {
 	@Override
 	public void putQWord(int position, long data) {
 		synchronized (this) {
-			if (endian == Endian.BIG) {
-				putDWord(position + 4, (int) (data & 0xFFFFFFFFL));
-				putDWord(position, (int) (data >>> 32));
-			} else {
-				putDWord(position, (int) (data & 0xFFFFFFFFL));
-				putDWord(position - 4, (int) (data >>> 32));
+			switch (endian) {
+				case BIG:
+					putDWord(position + 4, (int) (data & 0xFFFFFFFFL));
+					putDWord(position, (int) (data >>> 32));
+					break;
+				case LITTLE:
+					putDWord(position, (int) (data & 0xFFFFFFFFL));
+					putDWord(position + 4, (int) (data >>> 32));
+					break;
+				case LITTLE_ALT:
+					putDWord(position, (int) (data & 0xFFFFFFFFL));
+					putDWord(position - 4, (int) (data >>> 32));
+					break;
+				default:
+					throw new IllegalStateException("We should never be here.");
 			}
 		}
 	}

@@ -41,7 +41,7 @@ public class UnprefixedInstruction extends Instruction {
 						miscOP.runOpcode(splitInstruction);
 						break;
 					default:
-						throw new RuntimeException("We should NEVER be here...");
+						throw new IllegalStateException("We should never be here.");
 				}
 				break;
 			case 1:
@@ -51,7 +51,7 @@ public class UnprefixedInstruction extends Instruction {
 				aluRegister.runOpcode(splitInstruction);
 				break;
 			default:
-				throw new RuntimeException("We should NEVER be here...");
+				throw new IllegalStateException("We should never be here.");
 		}
 	}
 }

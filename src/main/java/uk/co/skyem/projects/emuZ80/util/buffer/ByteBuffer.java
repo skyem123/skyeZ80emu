@@ -2,6 +2,7 @@ package uk.co.skyem.projects.emuZ80.util.buffer;
 
 import java.util.Arrays;
 
+// TODO: Fix this to work with the different Little endian system.
 public class ByteBuffer extends AbstractByteBuffer {
 
 	private byte[] value;
@@ -104,6 +105,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 2);
 
+			// TODO: Cope with (non-alternate) little endian.
 			int position = value.length - 1 - (getEndian() == Endian.BIG ? 1 : 0);
 			putWord(position, data);
 			return position;
@@ -114,6 +116,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 4);
 
+			// TODO: Cope with (non-alternate) little endian.
 			int position = value.length - 1 - (getEndian() == Endian.BIG ? 3 : 0);
 			putDWord(position, data);
 			return position;
@@ -124,6 +127,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 8);
 
+			// TODO: Cope with (non-alternate) little endian.
 			int position = value.length - 1 - (getEndian() == Endian.BIG ? 7 : 0);
 			putQWord(position, data);
 			return position;

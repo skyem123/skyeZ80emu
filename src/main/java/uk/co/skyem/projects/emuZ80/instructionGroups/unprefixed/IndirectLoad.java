@@ -36,7 +36,7 @@ public class IndirectLoad extends Instruction{
 				address = splitInstruction.getShortInc();
 				break;
 			default:
-				throw new RuntimeException("This code shouldn't reach here!");
+				throw new IllegalStateException("We should never be here.");
 		}
 
 		if (splitInstruction.q) {
