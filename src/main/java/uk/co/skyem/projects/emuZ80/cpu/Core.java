@@ -1,4 +1,4 @@
-package uk.co.skyem.projects.emuZ80;
+package uk.co.skyem.projects.emuZ80.cpu;
 
 import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
 import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;

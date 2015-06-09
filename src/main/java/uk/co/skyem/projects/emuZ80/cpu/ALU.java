@@ -1,6 +1,6 @@
-package uk.co.skyem.projects.emuZ80;
-import uk.co.skyem.projects.emuZ80.Register.Register16;
-import uk.co.skyem.projects.emuZ80.Register.Register8;
+package uk.co.skyem.projects.emuZ80.cpu;
+import uk.co.skyem.projects.emuZ80.cpu.Register.Register16;
+import uk.co.skyem.projects.emuZ80.cpu.Register.Register8;
 
 public class ALU {
 	Registers registers;
@@ -58,7 +58,7 @@ public class ALU {
 
 	/** Adds two registers together. **/
 	public void add16Register (Register16 a, Register16 b) {
-		Register.Register8 flags = getFlags();
+		Register8 flags = getFlags();
 
 		// get the result
 		int result = a.getData() + b.getData();

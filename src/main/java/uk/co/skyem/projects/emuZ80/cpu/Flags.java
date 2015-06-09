@@ -1,4 +1,4 @@
-package uk.co.skyem.projects.emuZ80;
+package uk.co.skyem.projects.emuZ80.cpu;
 
 public class Flags {
 

@@ -1,8 +1,8 @@
-package uk.co.skyem.projects.emuZ80;
+package uk.co.skyem.projects.emuZ80.cpu;
 
-import uk.co.skyem.projects.emuZ80.instructionGroups.InstructionGroups;
+import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.InstructionGroups;
 import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
-import uk.co.skyem.projects.emuZ80.Register.*;
+import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
 public class InstructionDecoder {
 	private IByteBuffer memoryBuffer;
@@ -31,7 +31,7 @@ public class InstructionDecoder {
 		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
-	public uk.co.skyem.projects.emuZ80.Register.Register8 getRegister(Register register) {
+	public uk.co.skyem.projects.emuZ80.cpu.Register.Register8 getRegister(Register register) {
 		switch (register) {
 			case B:
 				return registers.REG_B;
@@ -101,7 +101,7 @@ public class InstructionDecoder {
 		throw new RuntimeException("This shouldn't happen / get here.");
 	}
 
-	public uk.co.skyem.projects.emuZ80.Register.Register16 getRegisterPair(RegisterPair registerPair) {
+	public uk.co.skyem.projects.emuZ80.cpu.Register.Register16 getRegisterPair(RegisterPair registerPair) {
 		switch (registerPair) {
 			case BC:
 				return registers.REG_BC;

@@ -1,11 +1,11 @@
-package uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed;
+package uk.co.skyem.projects.emuZ80.cpu.instructionGroups.unprefixed;
 
-import uk.co.skyem.projects.emuZ80.ALU;
-import uk.co.skyem.projects.emuZ80.InstructionDecoder;
-import uk.co.skyem.projects.emuZ80.Register;
-import uk.co.skyem.projects.emuZ80.Registers;
-import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
-import uk.co.skyem.projects.emuZ80.Register.*;
+import uk.co.skyem.projects.emuZ80.cpu.ALU;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.cpu.Register;
+import uk.co.skyem.projects.emuZ80.cpu.Registers;
+import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
+import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
 public class IndirectLoad extends Instruction{
 	Registers registers;

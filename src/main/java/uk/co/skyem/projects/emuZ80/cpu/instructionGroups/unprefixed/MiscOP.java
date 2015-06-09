@@ -1,7 +1,7 @@
-package uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed;
+package uk.co.skyem.projects.emuZ80.cpu.instructionGroups.unprefixed;
 
-import uk.co.skyem.projects.emuZ80.InstructionDecoder;
-import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 
 public class MiscOP extends Instruction{
 	public MiscOP(InstructionDecoder instructionDecoder) {

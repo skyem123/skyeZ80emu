@@ -1,10 +1,10 @@
-package uk.co.skyem.projects.emuZ80;
+package uk.co.skyem.projects.emuZ80.cpu;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-import uk.co.skyem.projects.emuZ80.Register.*;
+import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
 public class Registers {
 

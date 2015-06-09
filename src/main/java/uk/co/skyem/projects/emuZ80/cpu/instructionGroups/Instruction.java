@@ -1,6 +1,6 @@
-package uk.co.skyem.projects.emuZ80.instructionGroups;
+package uk.co.skyem.projects.emuZ80.cpu.instructionGroups;
 
-import uk.co.skyem.projects.emuZ80.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
 
 public abstract class Instruction {
 	public InstructionDecoder instructionDecoder;

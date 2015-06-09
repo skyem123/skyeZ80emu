@@ -1,11 +1,11 @@
-package uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed;
+package uk.co.skyem.projects.emuZ80.cpu.instructionGroups.unprefixed;
 
-import uk.co.skyem.projects.emuZ80.Core;
-import uk.co.skyem.projects.emuZ80.Flags;
-import uk.co.skyem.projects.emuZ80.InstructionDecoder;
-import uk.co.skyem.projects.emuZ80.Registers;
-import uk.co.skyem.projects.emuZ80.instructionGroups.Instruction;
-import uk.co.skyem.projects.emuZ80.InstructionDecoder.Condition;
+import uk.co.skyem.projects.emuZ80.cpu.Core;
+import uk.co.skyem.projects.emuZ80.cpu.Flags;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.cpu.Registers;
+import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder.Condition;
 
 public class MiscInstruction extends Instruction {
 

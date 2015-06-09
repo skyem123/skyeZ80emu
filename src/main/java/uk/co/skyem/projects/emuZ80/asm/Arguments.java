@@ -1,7 +1,7 @@
 package uk.co.skyem.projects.emuZ80.asm;
 
-import uk.co.skyem.projects.emuZ80.Register;
-import uk.co.skyem.projects.emuZ80.Registers;
+import uk.co.skyem.projects.emuZ80.cpu.Register;
+import uk.co.skyem.projects.emuZ80.cpu.Registers;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

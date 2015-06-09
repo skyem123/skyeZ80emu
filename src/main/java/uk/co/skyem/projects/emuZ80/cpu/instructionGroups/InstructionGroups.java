@@ -1,8 +1,7 @@
-package uk.co.skyem.projects.emuZ80.instructionGroups;
+package uk.co.skyem.projects.emuZ80.cpu.instructionGroups;
 
-import uk.co.skyem.projects.emuZ80.InstructionDecoder;
-import uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed.MiscInstruction;
-import uk.co.skyem.projects.emuZ80.instructionGroups.unprefixed.UnprefixedInstruction;
+import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
+import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.unprefixed.UnprefixedInstruction;
 
 public class InstructionGroups extends Instruction {
 	Instruction unprefixedInstruction = new UnprefixedInstruction(instructionDecoder);
