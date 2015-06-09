@@ -1,8 +1,109 @@
 package uk.co.skyem.projects.emuZ80.cpu;
+import javafx.scene.transform.Rotate;
 import uk.co.skyem.projects.emuZ80.cpu.Register.Register16;
 import uk.co.skyem.projects.emuZ80.cpu.Register.Register8;
 
 public class ALU {
+
+	/**
+	 * Rotates a long.
+	 *
+	 * @param data The long to be rotated.
+	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param dataLength The length of the data. If 0, assumes long length (65 bits).
+	 * @return The rotated byte.
+	 */
+	// TODO: optimise?
+	public static long rotate(long data, int dataLength, int amount) {
+		if (dataLength == 0) dataLength = Long.SIZE;
+		if (amount > 0) {
+			// Rotate Right
+			// Shift the whole thing right.
+			long rotated = data >>> amount;
+			// Get the chopped off bits and move them.
+			long removed = data << dataLength - amount;
+			// stick the chopped off bits back on.
+			rotated = rotated | removed;
+			return rotated;
+		} else if (amount < 0) {
+			amount = Math.abs(amount);
+			// Rotate Left
+			// Shift the whole thing left.
+			long rotated = data << amount;
+			// Get the chopped off bits and move them.
+			long removed = data >>> dataLength - amount;
+			// stick the chopped off bits back on.
+			rotated = rotated | removed;
+			return rotated;
+		} else {
+			// No Rotation
+			return data;
+		}
+	}
+
+	/**
+	 * Rotates an integer.
+	 *
+	 * @param data The integer to be rotated.
+	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param dataLength The length of the data. If 0, assumes integer length (32 bits).
+	 * @return The rotated byte.
+	 */
+	public static int rotate(int data, int dataLength, int amount) {
+		if (dataLength == 0) dataLength = Integer.SIZE;
+		if (amount > 0) {
+			return (data >>> amount) | (data << dataLength - amount);
+		} else if (amount < 0) {
+			amount = Math.abs(amount);
+			return (data << amount) | (data >>> dataLength - amount);
+		} else {
+			// No Rotation
+			return data;
+		}
+	}
+
+	/**
+	 * Rotates a short.
+	 *
+	 * @param data The integer to be rotated.
+	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
+	 * @return The rotated byte.
+	 */
+	public static short rotate(short data, int dataLength, int amount) {
+		if (dataLength == 0) dataLength = Byte.SIZE;
+		if (amount > 0) {
+			return (short)((data >>> amount) | (data << dataLength - amount));
+		} else if (amount < 0) {
+			amount = Math.abs(amount);
+			return (short)((data << amount) | (data >>> dataLength - amount));
+		} else {
+			// No Rotation
+			return data;
+		}
+	}
+
+	/**
+	 * Rotates a byte.
+	 *
+	 * @param data The integer to be rotated.
+	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
+	 * @return The rotated byte.
+	 */
+	public static byte rotate(byte data, int dataLength, int amount) {
+		if (dataLength == 0) dataLength = Byte.SIZE;
+		if (amount > 0) {
+			return (byte)((data >>> amount) | (data << dataLength - amount));
+		} else if (amount < 0) {
+			amount = Math.abs(amount);
+			return (byte)((data << amount) | (data >>> dataLength - amount));
+		} else {
+			// No Rotation
+			return data;
+		}
+	}
+
 	Registers registers;
 	Core core;
 
@@ -156,5 +257,32 @@ public class ALU {
 	/** Load contents of register into memory location **/
 	public void memoryLoad16(short address, Register16 register) {
 		core.memoryBuffer.putWord(address, register.getData());
+	}
+
+	/** Rotate register one bit to the left **/
+	public void rotateRegisterLeft(Register register) {
+		register.rotateLeft(1);
+	}
+
+	/** Rotate register one bit to the right **/
+	public void rotateRegisterRight(Register register) {
+		register.rotateRight(1);
+	}
+
+	/** Set the carry flag to the LSB and rotate the register one bit to the right. **/
+	public void rotateRegisterRightCarry(Register register) {
+		// Get the LSB and put it into the carry flag.
+		getFlags().setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
+		// Rotate the register
+		rotateRegisterRight(register);
+	}
+
+	/** Set the carry flag to the LSB and rotate the register one bit to the right. **/
+	public void rotateRegisterLeftCarry(Register register) {
+		// Get the MSB and put it into the carry flag.
+		// TODO: Does this work?
+		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << register.getSize())) == 0b1);
+		// Rotate the register
+		rotateRegisterLeft(register);
 	}
 }

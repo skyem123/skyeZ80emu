@@ -1,5 +1,6 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
+import uk.co.skyem.projects.emuZ80.util.InternalException;
 import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
 
 /**
@@ -39,9 +40,22 @@ public abstract class Register<T extends Number> {
 
 	public abstract void clear();
 
+	public abstract void rotate(int amount);
+
+	public void rotateLeft(int amount) {
+		rotate(-amount);
+	}
+
+	public void rotateRight(int amount) {
+		rotate(amount);
+	}
+
+	public abstract int getSize();
+
 	public static class Register8 extends Register<Byte> {
 
 		public byte data;
+		public static final int SIZE = Byte.SIZE;
 
 		@Override
 		public boolean getFlag(int flag) {
@@ -101,9 +115,21 @@ public abstract class Register<T extends Number> {
 		public void clear() {
 			setData((byte) 0);
 		}
+
+		@Override
+		public void rotate(int amount) {
+			setData(ALU.rotate(getData(), SIZE, amount));
+		}
+
+		@Override
+		public int getSize() {
+			return SIZE;
+		}
 	}
 
 	public static class Register16 extends Register<Short> {
+
+		public static final int SIZE = Short.SIZE;
 
 		private final Register8 lower;
 		private final Register8 upper;
@@ -185,6 +211,16 @@ public abstract class Register<T extends Number> {
 		@Override
 		public void clear() {
 			setData((short) 0);
+		}
+
+		@Override
+		public void rotate(int amount) {
+			setData(ALU.rotate(getData(), SIZE, amount));
+		}
+
+		@Override
+		public int getSize() {
+			return SIZE;
 		}
 	}
 
