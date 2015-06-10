@@ -261,11 +261,17 @@ public class ALU {
 
 	/** Rotate register one bit to the left **/
 	public void rotateRegisterLeft(Register register) {
+		// These flags are reset.
+		getFlags().setFlag(Flags.HALF_CARRY, false);
+		getFlags().setFlag(Flags.ADD_SUB, false);
 		register.rotateLeft(1);
 	}
 
 	/** Rotate register one bit to the right **/
 	public void rotateRegisterRight(Register register) {
+		// These flags are reset.
+		getFlags().setFlag(Flags.HALF_CARRY, false);
+		getFlags().setFlag(Flags.ADD_SUB, false);
 		register.rotateRight(1);
 	}
 
@@ -281,8 +287,34 @@ public class ALU {
 	public void rotateRegisterLeftCarry(Register register) {
 		// Get the MSB and put it into the carry flag.
 		// TODO: Does this work?
-		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << register.getSize())) == 0b1);
+		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
 		// Rotate the register
 		rotateRegisterLeft(register);
+	}
+
+	/** Rotate a register right though carry. The carry flag is used as an extra bit. **/
+	public void rotateRegisterRightThroughCarry(Register register) {
+		// Get the previous contents of the carry flag
+		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
+		// Get the LSB and put it into the carry flag.
+		getFlags().setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
+		// Rotate the register
+		rotateRegisterRight(register);
+		// Copy the flag into the register.
+		// TODO: Does this work?
+		register.setFlag(0b1 << (register.getSize() - 1), oldCarry);
+	}
+
+	/** Rotate a register left though carry. The carry flag is used as an extra bit. **/
+	public void rotateRegisterLeftThroughCarry(Register register) {
+		// Get the previous contents of the carry flag
+		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
+		// Get the MSB and put it into the carry flag.
+		// TODO: Does this work?
+		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
+		// Rotate the register
+		rotateRegisterLeft(register);
+		// Copy the flag into the register.
+		register.setFlag(0b1, oldCarry);
 	}
 }

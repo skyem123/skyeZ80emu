@@ -16,9 +16,9 @@ public abstract class Register<T extends Number> {
 
 	public abstract boolean getFlag(int flag);
 
-	public abstract void setFlag(int flag, boolean value);
+	public abstract void setFlag(long flag, boolean value);
 
-	public abstract void toggleFlag(int flag);
+	public abstract void toggleFlag(long flag);
 
 	public abstract T getData();
 
@@ -63,7 +63,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void setFlag(int flag, boolean value) {
+		public void setFlag(long flag, boolean value) {
 			if (value) {
 				data = (byte) (data | flag);
 			} else {
@@ -72,7 +72,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void toggleFlag(int flag) {
+		public void toggleFlag(long flag) {
 			data = (byte) (data ^ flag);
 		}
 
@@ -153,7 +153,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void setFlag(int flag, boolean value) {
+		public void setFlag(long flag, boolean value) {
 			if (flag > 127) {
 				upper.setFlag(flag >>> 8, value);
 			} else {
@@ -162,7 +162,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void toggleFlag(int flag) {
+		public void toggleFlag(long flag) {
 			if (flag > 127) {
 				upper.toggleFlag(flag >>> 8);
 			} else {
@@ -247,7 +247,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void setFlag(int flag, boolean value) {
+		public void setFlag(long flag, boolean value) {
 			if (value) {
 				data((byte) (data() | flag));
 			} else {
@@ -256,7 +256,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public void toggleFlag(int flag) {
+		public void toggleFlag(long flag) {
 			data((byte) (data() ^ flag));
 		}
 
