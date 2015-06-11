@@ -6,7 +6,7 @@ apply plugin: 'application'
 apply plugin: "jacoco"
 
 group = 'uk.co.skyem.projects'
-version = 0.1
+version = "${versionNum}"
 mainClassName = 'uk.co.skyem.projects.emuZ80.Main'
 
 compileJava {
