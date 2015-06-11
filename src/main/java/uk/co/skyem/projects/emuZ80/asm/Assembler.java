@@ -100,6 +100,8 @@ public class Assembler {
 
 	/**
 	 * Assemble Z80 asm to Z80 machine code.
+	 *
+	 * @throws AssemblerException
 	 */
 	public void assemble() throws AssemblerException {
 		lineNumber = origin = 0;

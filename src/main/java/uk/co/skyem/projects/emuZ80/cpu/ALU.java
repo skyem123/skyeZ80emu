@@ -9,7 +9,7 @@ public class ALU {
 	 * Rotates a long.
 	 *
 	 * @param data The long to be rotated.
-	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes long length (65 bits).
 	 * @return The rotated byte.
 	 */
@@ -45,7 +45,7 @@ public class ALU {
 	 * Rotates an integer.
 	 *
 	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes integer length (32 bits).
 	 * @return The rotated byte.
 	 */
@@ -66,7 +66,7 @@ public class ALU {
 	 * Rotates a short.
 	 *
 	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
 	 * @return The rotated byte.
 	 */
@@ -87,7 +87,7 @@ public class ALU {
 	 * Rotates a byte.
 	 *
 	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if > than 0, rotate right, if < than 0, rotate left.
+	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
 	 * @return The rotated byte.
 	 */
