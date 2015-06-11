@@ -125,6 +125,7 @@ public class ByteBufferTest {
 		assertThat(bb.getByte(1)).isEqualTo((byte) 0xBB);
 	}
 
+	@Ignore
 	@Test
 	public void testAppendWord() throws Exception {
 		System.out.println("Testing append WORD big endian");
@@ -152,6 +153,7 @@ public class ByteBufferTest {
 		assertThat(bb3.getWord(3)).isEqualTo((short) 0xBBBB);
 	}
 
+	@Ignore
 	@Test
 	public void testAppendDWord() throws Exception {
 		System.out.println("Testing append DWORD big endian");
@@ -179,6 +181,7 @@ public class ByteBufferTest {
 		assertThat(bb3.getDWord(7)).isEqualTo(0xBBBBBBBB);
 	}
 
+	@Ignore
 	@Test
 	public void testAppendQWord() throws Exception {
 		System.out.println("Testing append DWORD big endian");
