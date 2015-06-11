@@ -3,6 +3,8 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 
+apply plugin: "jacoco"
+
 group = 'uk.co.skyem.projects'
 version = 0.1
 mainClassName = 'uk.co.skyem.projects.emuZ80.Main'
@@ -10,6 +12,13 @@ mainClassName = 'uk.co.skyem.projects.emuZ80.Main'
 compileJava {
     options.encoding = 'UTF-8'
     sourceCompatibility = 1.8
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true // coveralls plugin depends on xml format report
+		html.enabled = true
+	}
 }
 
 repositories {
@@ -22,3 +31,11 @@ dependencies {
 	compile 'org.apache.commons:commons-collections4:4.0'
 	compile 'org.apache.commons:commons-lang3:3.4'
 }
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+}
+
