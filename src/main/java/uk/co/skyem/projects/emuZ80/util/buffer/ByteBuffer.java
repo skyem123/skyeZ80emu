@@ -104,9 +104,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendWord(short data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 2);
-
-			// TODO: Cope with (non-alternate) little endian.
-			int position = value.length - 1 - (getEndian() == Endian.BIG ? 1 : 0);
+			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 1);
 			putWord(position, data);
 			return position;
 		}
@@ -115,9 +113,10 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendDWord(int data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 4);
-
-			// TODO: Cope with (non-alternate) little endian.
-			int position = value.length - 1 - (getEndian() == Endian.BIG ? 3 : 0);
+			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 3);
+			System.out.println("length = " + value.length);
+			System.out.println("position = " + position);
+			System.out.println("data = " + Integer.toHexString(data));
 			putDWord(position, data);
 			return position;
 		}
@@ -126,9 +125,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendQWord(long data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 8);
-
-			// TODO: Cope with (non-alternate) little endian.
-			int position = value.length - 1 - (getEndian() == Endian.BIG ? 7 : 0);
+			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 7);
 			putQWord(position, data);
 			return position;
 		}

@@ -1,7 +1,6 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
-import uk.co.skyem.projects.emuZ80.util.InternalException;
-import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 
 /**
  * A register is an object that can hold data, in the form of a primitive.
@@ -225,10 +224,10 @@ public abstract class Register<T extends Number> {
 	}
 
 	public static class MemoryRegister8 extends Register8 {
-		private final IByteBuffer memory;
+		private final IByteHandler memory;
 		private final int position;
 
-		public MemoryRegister8(IByteBuffer memory, int position) {
+		public MemoryRegister8(IByteHandler memory, int position) {
 			this.memory = memory;
 			this.position = position;
 		}

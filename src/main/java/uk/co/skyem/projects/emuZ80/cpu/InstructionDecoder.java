@@ -1,11 +1,11 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.InstructionGroups;
-import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
 public class InstructionDecoder {
-	private IByteBuffer memoryBuffer;
+	private IByteHandler memoryBuffer;
 	public Registers registers;
 	public Core cpuCore;
 	public ALU alu;
@@ -167,7 +167,7 @@ public class InstructionDecoder {
 	};
 
 	public static class SplitInstruction {
-		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte secondPrefixDisplacement, IByteBuffer buffer, int position) {
+		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte secondPrefixDisplacement, IByteHandler buffer, int position) {
 			this.prefix = prefix;
 			this.opcode = opcode;
 			this.secondPrefix = secondPrefix;
@@ -182,7 +182,7 @@ public class InstructionDecoder {
 			this.q = (0b001 & y) == 0b1;
 		}
 		// Used to get more data, like the immediate value and displacement.
-		public IByteBuffer buffer;
+		public IByteHandler buffer;
 		// position MUST be the byte after the opcode. also, MUST be incremented if data is fetched so that the CPU doesn't think the displacement byte / immediate data is the next instruction.
 		public int position;
 
@@ -203,7 +203,7 @@ public class InstructionDecoder {
 		}
 	}
 
-	public SplitInstruction decode(IByteBuffer buffer, int position) {
+	public SplitInstruction decode(IByteHandler buffer, int position) {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;

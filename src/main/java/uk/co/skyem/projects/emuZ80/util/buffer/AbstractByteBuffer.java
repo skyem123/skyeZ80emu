@@ -5,10 +5,8 @@ package uk.co.skyem.projects.emuZ80.util.buffer;
  * If you are using this with two different threads that set different endian modes, make sure to synchronise the code
  * that sets the endian and accesses the buffer! Use: {@code synchronized (byteBuffer){}}
  */
-public abstract class AbstractByteBuffer implements IByteBuffer {
-
-	// TODO: Make sure that the way the ByteBuffer handles BIG endian fetches is the same as the Z80
-	public static enum Endian {
+public abstract class AbstractByteBuffer implements IByteHandler {
+	public enum Endian {
 		BIG, LITTLE, LITTLE_ALT
 	}
 

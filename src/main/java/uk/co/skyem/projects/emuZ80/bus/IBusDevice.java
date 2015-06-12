@@ -1,11 +1,11 @@
 package uk.co.skyem.projects.emuZ80.bus;
 
-import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 
 /**
  * An object that can connect as a device on the bus.
  */
-public interface IBusDevice extends IByteBuffer {
+public interface IBusDevice extends IByteHandler {
 
 	/**
 	 * Gets the offset of this bus device

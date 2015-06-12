@@ -1,11 +1,11 @@
 package uk.co.skyem.projects.emuZ80.util.buffer;
 
-public interface IByteBuffer {
+public interface IByteHandler {
 	/**
 	 * Gets the size of this buffer
 	 * @return the size of the buffer (can be -1 for no size limit)
 	 */
-	public default int getSize() {
+	default int getSize() {
 		return -1;
 	}
 

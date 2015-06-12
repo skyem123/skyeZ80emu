@@ -2,7 +2,7 @@ package uk.co.skyem.projects.emuZ80.cpu;
 
 import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
 import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
-import uk.co.skyem.projects.emuZ80.util.buffer.IByteBuffer;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 
 public class Core {
 	IBusDevice memoryBus;
@@ -21,7 +21,7 @@ public class Core {
 	}
 
 	// The real Z80 CPU reads bytes at a time... so let's do that.
-	IByteBuffer memoryBuffer = new AbstractByteBuffer(AbstractByteBuffer.Endian.LITTLE) {
+	IByteHandler memoryBuffer = new AbstractByteBuffer(AbstractByteBuffer.Endian.LITTLE) {
 		@Override
 		public void putByte(int position, byte data) {
 			memoryBus.putByte(position, data);
