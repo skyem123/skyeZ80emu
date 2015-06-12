@@ -3,6 +3,9 @@ jdk: oraclejdk8
 
 sudo: false
 
+install:
+  - chmod +x gradlew
+
 script:
   #- ./gradlew --continue check javadoc jacocoTestReport
   - ./gradlew --continue check jacocoTestReport
