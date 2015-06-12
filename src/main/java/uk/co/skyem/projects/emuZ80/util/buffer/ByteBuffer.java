@@ -114,9 +114,11 @@ public class ByteBuffer extends AbstractByteBuffer {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 4);
 			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 3);
+			/*
 			System.out.println("length = " + value.length);
 			System.out.println("position = " + position);
 			System.out.println("data = " + Integer.toHexString(data));
+			*/
 			putDWord(position, data);
 			return position;
 		}
