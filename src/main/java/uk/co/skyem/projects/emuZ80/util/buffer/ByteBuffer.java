@@ -104,7 +104,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendWord(short data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 2);
-			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 1);
+			int position = value.length - (getEndian() == Endian.LITTLE_ALT ? 1 : 2);
 			putWord(position, data);
 			return position;
 		}
@@ -113,7 +113,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendDWord(int data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 4);
-			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 3);
+			int position = value.length - (getEndian() == Endian.LITTLE_ALT ? 1 : 4);
 			/*
 			System.out.println("length = " + value.length);
 			System.out.println("position = " + position);
@@ -127,7 +127,7 @@ public class ByteBuffer extends AbstractByteBuffer {
 	public int appendQWord(long data) {
 		synchronized (this) {
 			value = Arrays.copyOf(value, value.length + 8);
-			int position = value.length - 1 - (getEndian() == Endian.LITTLE_ALT ? 0 : 7);
+			int position = value.length - (getEndian() == Endian.LITTLE_ALT ? 1 : 8);
 			putQWord(position, data);
 			return position;
 		}
