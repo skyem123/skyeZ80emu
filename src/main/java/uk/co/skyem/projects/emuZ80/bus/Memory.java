@@ -2,7 +2,6 @@ package uk.co.skyem.projects.emuZ80.bus;
 
 public class Memory extends SimpleBusDevice {
 	private byte[] storage;
-	private int offset = 0;
 
 	public Memory(int size) {
 		storage = new byte[size];

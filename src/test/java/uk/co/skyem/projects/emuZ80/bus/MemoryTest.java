@@ -14,6 +14,8 @@ import static uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer.Endian;
 public class MemoryTest {
 	int memory1size = 10;
 	Memory memory1;
+	int memory2offset = 5;
+	Memory memory2;
 	final byte[] testBytes1 = {(byte) 0x90, (byte) 0x29, (byte) 0x42, (byte) 0x12, (byte) 0x34};
 	final byte[] testBytes2 = {(byte) 0x6, (byte) 0x23, (byte) 0x86, (byte) 0x10, (byte) 0xFF, (byte) 0x01, (byte) 0xAA, (byte) 0xBB, (byte) 0x00, (byte) 0xDD}; //max sizes array
 	final byte[] testBytes3 = {(byte) 0xF0, (byte) 0xB0, (byte) 0x0B}; //smaller array
@@ -22,6 +24,8 @@ public class MemoryTest {
 	public void setUp() throws Exception {
 		System.out.println("Making new Memory of size " + memory1size);
 		memory1 = new Memory(memory1size);
+		System.out.println("Making new Memory of size " + memory1size + ", offset " + memory2offset);
+		memory2 = new Memory(memory1size, memory2offset);
 	}
 
 	/*
@@ -41,12 +45,15 @@ public class MemoryTest {
 	public void testPutByte() throws Exception {
 		System.out.println("Making sure that memory1 can set an retrieve a byte.");
 		byte testByte = (byte) 0x42;
-		memory1.putByte(0, testByte);
-		assertThat(memory1.getByte(0)).isEqualTo(testByte);
+		memory1.putByte(9, testByte);
+		assertThat(memory1.getByte(9)).isEqualTo(testByte);
 	}
 
 	@Test
 	public void testGetByte() throws Exception {
+		System.out.println("Making sure that memory1 returns nothing for an empty byte.");
+		assertThat(memory1.getByte(0)).isEqualTo((byte) 0);
+		
 		System.out.println("Making sure that memory1 can set and retrieve a bytes one by one.");
 		byte[] result;
 		IntStream.range(0, testBytes1.length)
@@ -114,25 +121,30 @@ public class MemoryTest {
 
 	@Test
 	public void testGetOffset() throws Exception {
-		System.out.println("Making sure that memory1 can get the correct offset | doing nothing");
-		//TODO ask skye about offset
+		System.out.println("Making sure that the memories can remember their offsets");
+		assertThat(memory1.getOffset()).isEqualTo(0);
+		assertThat(memory2.getOffset()).isEqualTo(5);
 	}
 
 	@Test
 	public void testChangeOffset() throws Exception {
-		System.out.println("Making sure that memory1 can set the offset and set and retrieve data | doing nothing");
-		//TODO ask skye about offset
+		System.out.println("Making sure that memory2 can set the offset and set and retrieve data");
+		assertThat(memory2.getOffset()).isEqualTo(5);
+		memory2.putByte(5, (byte)0x33);
+		assertThat(memory2.getByte(5)).isEqualTo((byte)0x33);
+		memory2.changeOffset(10);
+		assertThat(memory2.getByte(10)).isEqualTo((byte)0x33);
 	}
 
 	@Test
 	public void testGetEndian() throws Exception {
 		System.out.println("Making sure that memory1 can set endian and retrieve the correct value");
 
-		assertThat(memory1.getEndian().equals(Endian.BIG));
+		assertThat(memory1.getEndian()).isSameAs(Endian.BIG);
 		memory1.setEndian(Endian.LITTLE_ALT);
-		assertThat(memory1.getEndian().equals(Endian.LITTLE_ALT));
+		assertThat(memory1.getEndian()).isSameAs(Endian.LITTLE_ALT);
 		memory1.setEndian(Endian.LITTLE);
-		assertThat(memory1.getEndian().equals(Endian.LITTLE));
+		assertThat(memory1.getEndian()).isSameAs(Endian.LITTLE);
 	}
 
 	@Test
