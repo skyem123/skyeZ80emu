@@ -4,11 +4,12 @@ public class Memory extends SimpleBusDevice {
 	private byte[] storage;
 
 	public Memory(int size) {
+		super();
 		storage = new byte[size];
 	}
 
 	public Memory(int size, int offset) {
-		this.offset = offset;
+		super(offset);
 		this.storage = new byte[size];
 	}
 
@@ -27,14 +28,11 @@ public class Memory extends SimpleBusDevice {
 	}
 
 	@Override
-	// TODO: should this be synchronized
 	public byte getByte(int position) {
-		synchronized (this) {
-			if (position < offset || position >= storage.length + offset) {
-				return (byte) 0x00;
-			} else {
-				return storage[position - offset];
-			}
+		if (position < offset || position >= storage.length + offset) {
+			return (byte) 0x00;
+		} else {
+			return storage[position - offset];
 		}
 	}
 

@@ -47,6 +47,9 @@ public class MemoryTest {
 		byte testByte = (byte) 0x42;
 		memory1.putByte(9, testByte);
 		assertThat(memory1.getByte(9)).isEqualTo(testByte);
+
+		System.out.println("Making sure that memory1 doesn't crash for an address that isn't in it.");
+		memory1.putByte(100, (byte)0x44);
 	}
 
 	@Test
@@ -66,6 +69,9 @@ public class MemoryTest {
 		result = memory1.getBytes(0, testBytes1.length);
 
 		assertThat(Arrays.equals(result, testBytes1));
+
+		System.out.println("Making sure that memory1 returns nothing for an address that isn't in it.");
+		assertThat(memory1.getByte(100)).isEqualTo((byte) 0);
 	}
 
 	@Test

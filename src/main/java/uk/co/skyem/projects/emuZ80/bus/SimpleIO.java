@@ -1,10 +1,10 @@
 package uk.co.skyem.projects.emuZ80.bus;
 
 public class SimpleIO extends SimpleBusDevice {
-	int address;
+	int offset;
 
-	public SimpleIO(int address) {
-		this.address = address;
+	public SimpleIO(int offset) {
+		super(offset);
 	}
 
 	@Override
@@ -12,7 +12,7 @@ public class SimpleIO extends SimpleBusDevice {
 	 * Read a character from the console.
 	 */
 	public byte getByte(int address) {
-		if (address == this.address) {
+		if (address == this.offset) {
 			try {
 				return (byte) System.in.read();
 			} catch (java.io.IOException e) {
@@ -33,18 +33,8 @@ public class SimpleIO extends SimpleBusDevice {
 	 * Write a character to the console.
 	 */
 	public void putByte(int address, byte data) {
-		if (address == this.address) {
+		if (address == this.offset) {
 			System.out.print(Character.toChars(data)[0]);
 		}
-	}
-
-	@Override
-	public int getOffset() {
-		return address;
-	}
-
-	@Override
-	public void changeOffset(int offset) {
-		address = offset;
 	}
 }
