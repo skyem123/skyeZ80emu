@@ -153,6 +153,10 @@ public class ALU {
 		return ((number << bitNumber) & 0b1) == 1;
 	}
 
+	private boolean getBit(int number, int bitNumber) {
+		return ((number << bitNumber) & 0b1) == 1;
+	}
+
 	private boolean getBit(byte number, int bitNumber) {
 		return ((number << bitNumber) & 0b1) == 1;
 	}
@@ -402,5 +406,18 @@ public class ALU {
 
 		flags.setFlag(Flags.X_3, getBit(data, 3));
 		flags.setFlag(Flags.X_5, getBit(data, 5));
+	}
+
+	/** Sets the carry flag and some other flags **/
+	public void setCarry() {
+		Register8 flags = getFlags();
+
+		flags.setFlag(Flags.CARRY, true);
+		flags.setFlag(Flags.HALF_CARRY, false);
+		flags.setFlag(Flags.ADD_SUB, false);
+
+		byte regA = registers.REG_A.getData();
+		flags.setFlag(Flags.X_3, getBit(regA, 3));
+		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
 }

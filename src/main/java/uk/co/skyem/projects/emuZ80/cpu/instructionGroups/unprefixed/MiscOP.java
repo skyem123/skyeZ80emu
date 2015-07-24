@@ -45,6 +45,7 @@ public class MiscOP extends Instruction{
 				break;
 			case 6:
 				// SCF
+				alu.setCarry();
 				break;
 			case 7:
 				// CCF
