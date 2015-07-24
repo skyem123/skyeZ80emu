@@ -1,9 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'application'
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'application'
 
-apply plugin: "jacoco"
+	id 'jacoco'
+}
 
 group = 'uk.co.skyem.projects'
 version = "${versionNum}"
@@ -24,6 +25,12 @@ jacocoTestReport {
 
 repositories {
     mavenCentral()
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': mainClassName
+	}
 }
 
 dependencies {

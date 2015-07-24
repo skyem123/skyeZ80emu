@@ -37,6 +37,7 @@ public class MiscOP extends Instruction{
 			case 4:
 				// DAA
 				// Edits the accumulator after an operation with BCD input (ADD / SUB, etc...), to make the result BCD.
+				alu.bcdAdjust(registers.REG_A);
 				break;
 			case 5:
 				// CPL

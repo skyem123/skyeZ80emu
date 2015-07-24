@@ -3,7 +3,7 @@ Implemented Instructions
 
 ##CPU##
 The emulated Z80 CPU supports these instructions:
-(List may be incorrect.)
+(List may be incorrect, but I really hope not.)
 (List is not finished.)
 
 |Opcode|Memonic   |What it does                                                          |Effect on Flags
@@ -19,5 +19,6 @@ The emulated Z80 CPU supports these instructions:
 | 0x17 |rla       |Rotate accumulator (register A) one bit left trough carry.            |The carry flag is used as an "extra bit". Resets the subtraction and half-carry flags.
 | 0x18 |jr d      |Relative jump with offset d.                                          |No effect.
 | 0x1F |rra       |Rotate accumulator (register A) one bit right trough carry.           |The carry flag is used as an "extra bit". Resets the subtraction and half-carry flags.
+| 0x27 |daa       |Changes accumulator after an operation with BCD input, to make it BCD.|The addition / subtraction flag is not affected, others are.
 
 ##Assembler##

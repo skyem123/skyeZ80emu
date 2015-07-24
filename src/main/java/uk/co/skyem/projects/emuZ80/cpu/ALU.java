@@ -157,6 +157,10 @@ public class ALU {
 		return ((number << bitNumber) & 0b1) == 1;
 	}
 
+	private boolean betweenInclusive(int x, int min, int max) {
+		return x>=min && x<=max;
+	}
+
 	/** Adds two registers together. **/
 	public void add16Register (Register16 a, Register16 b) {
 		Register8 flags = getFlags();
@@ -316,5 +320,74 @@ public class ALU {
 		rotateRegisterLeft(register);
 		// Copy the flag into the register.
 		register.setFlag(0b1, oldCarry);
+	}
+
+	/** Edits the accumulator after an operation with BCD input (ADD / SUB, etc...), to make the result BCD. **/
+	public void bcdAdjust(Register8 toAdjust) {
+		// Get the flags register
+		Register8 flags = getFlags();
+
+		// Get the data in the register
+		int data = toAdjust.getData();
+
+		// Get the lower nibble
+		int lower = data & 0x0F;
+		// Get the upper nibble
+		int upper = (data >>> 4) & 0x0F;
+
+		// Get the H flag
+		boolean flagH = flags.getFlag(Flags.HALF_CARRY);
+		// Get the C flag
+		boolean flagC = flags.getFlag(Flags.CARRY);
+		// Get the N flag
+		boolean flagN = flags.getFlag(Flags.ADD_SUB);
+
+		// Set the C flag
+		if (!flagC) {
+			if (betweenInclusive(upper, 0x09, 0x0F) && betweenInclusive(lower, 0x0A, 0x0F)) {
+				flags.setFlag(Flags.CARRY, true);
+			} else if (betweenInclusive(upper, 0x0A, 0x0F) && betweenInclusive(lower, 0x00, 0x09)) {
+				flags.setFlag(Flags.CARRY, true);
+			}
+		}
+		// Set the H flag
+		if (!flagN) {
+			if (betweenInclusive(lower, 0x00, 0x09)) {
+				flags.setFlag(Flags.HALF_CARRY, false);
+			} else if (betweenInclusive(lower, 0x0A, 0x0F)) {
+				flags.setFlag(Flags.HALF_CARRY, true);
+			}
+		} else {
+			if (flagH) {
+				if (betweenInclusive(lower, 0x06, 0x0F)) {
+					flags.setFlag(Flags.HALF_CARRY, false);
+				}
+				if (betweenInclusive(lower, 0x00, 0x05)) {
+					flags.setFlag(Flags.HALF_CARRY, true);
+				}
+			}
+		}
+
+		// If the lower nibble is greater than 9 or there is a half carry, add 0x06 to the register
+		if (lower > 0x09 && flagH)
+			data += 0x06;
+		// If the upper nibble is greater than 9 or there is a carry, add 0x60 to the register
+		else if(upper > 0x09 && flagC)
+			data += 0x60;
+
+		// Set the S flag if the MSB is true
+		flags.setFlag(Flags.SIGN, getBit(data, 7));
+		// Set the Z flag if the result is 0
+		if (data == 0) flags.setFlag(Flags.ZERO, true);
+		else flags.setFlag(Flags.ZERO, false);
+		// Set the P flag if the result is even
+		flags.setFlag(Flags.PARITY_OVERFLOW, getBit(data, 0));
+
+		// Set the other flags
+		flags.setFlag(Flags.X_3, getBit(data, 3));
+		flags.setFlag(Flags.X_5, getBit(data, 5));
+
+
+		toAdjust.setData((byte) data);
 	}
 }
