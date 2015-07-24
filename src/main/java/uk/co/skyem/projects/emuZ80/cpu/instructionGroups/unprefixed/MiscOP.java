@@ -49,6 +49,7 @@ public class MiscOP extends Instruction{
 				break;
 			case 7:
 				// CCF
+				alu.invertCarry();
 				break;
 		}
 	}

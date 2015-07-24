@@ -21,6 +21,7 @@ The emulated Z80 CPU supports these instructions:
 | 0x1F |rra       |Rotate accumulator (register A) one bit right trough carry.           |The carry flag is used as an "extra bit". Resets the subtraction and half-carry flags.
 | 0x27 |daa       |Changes accumulator after an operation with BCD input, to make it BCD.|The addition / subtraction flag is not affected, others are.
 | 0x2F |cpl       |Inverts all the bits in the accumulator.                              |The addition / subtraction flag and the half carry flags are set.
-| 0x3F |scf       |Sets the carry flag.                                                  |Carry flag is set. Addition / subtraction flag is reset. Half-carry flag is reset.
+| 0x37 |scf       |Sets the carry flag.                                                  |Carry flag is set. Addition / subtraction flag is reset. Half-carry flag is reset.
+| 0x3F |ccf       |Inverts the carry flag.                                               |Carry is inverted. Addition / subtraction is reset. Half-carry is old carry.
 
 ##Assembler##

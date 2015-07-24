@@ -13,7 +13,7 @@ public abstract class Register<T extends Number> {
 	private Register() {
 	}
 
-	public abstract boolean getFlag(int flag);
+	public abstract boolean getFlag(long flag);
 
 	public abstract void setFlag(long flag, boolean value);
 
@@ -57,7 +57,7 @@ public abstract class Register<T extends Number> {
 		public static final int SIZE = Byte.SIZE;
 
 		@Override
-		public boolean getFlag(int flag) {
+		public boolean getFlag(long flag) {
 			return (data & flag) != 0;
 		}
 
@@ -143,7 +143,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public boolean getFlag(int flag) {
+		public boolean getFlag(long flag) {
 			if (flag > 127) {
 				return upper.getFlag(flag >>> 8);
 			} else {
@@ -241,7 +241,7 @@ public abstract class Register<T extends Number> {
 		}
 
 		@Override
-		public boolean getFlag(int flag) {
+		public boolean getFlag(long flag) {
 			return (data() & flag) != 0;
 		}
 

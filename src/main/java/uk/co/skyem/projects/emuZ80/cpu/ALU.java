@@ -420,4 +420,17 @@ public class ALU {
 		flags.setFlag(Flags.X_3, getBit(regA, 3));
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
+
+	/** Invert the carry flag **/
+	public void invertCarry() {
+		Register8 flags = getFlags();
+
+		flags.setFlag(Flags.HALF_CARRY, flags.getFlag(Flags.CARRY));
+		flags.toggleFlag(Flags.CARRY);
+		flags.setFlag(Flags.ADD_SUB, false);
+
+		byte regA = registers.REG_A.getData();
+		flags.setFlag(Flags.X_3, getBit(regA, 3));
+		flags.setFlag(Flags.X_5, getBit(regA, 5));
+	}
 }
