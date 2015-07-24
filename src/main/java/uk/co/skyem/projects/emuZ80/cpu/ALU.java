@@ -390,4 +390,17 @@ public class ALU {
 
 		toAdjust.setData((byte) data);
 	}
+
+	/** Invert register **/
+	public void complement(Register8 register) {
+		int data = ~register.getData() & 0xFF;
+		register.setData((byte) data);
+
+		Register8 flags = getFlags();
+		flags.setFlag(Flags.HALF_CARRY, true);
+		flags.setFlag(Flags.ADD_SUB, true);
+
+		flags.setFlag(Flags.X_3, getBit(data, 3));
+		flags.setFlag(Flags.X_5, getBit(data, 5));
+	}
 }

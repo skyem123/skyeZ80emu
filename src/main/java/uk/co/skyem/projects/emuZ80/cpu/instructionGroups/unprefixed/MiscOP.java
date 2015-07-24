@@ -41,6 +41,7 @@ public class MiscOP extends Instruction{
 				break;
 			case 5:
 				// CPL
+				alu.complement(registers.REG_A);
 				break;
 			case 6:
 				// SCF
