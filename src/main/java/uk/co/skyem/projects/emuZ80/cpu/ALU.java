@@ -67,11 +67,11 @@ public class ALU {
 	 *
 	 * @param data The integer to be rotated.
 	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
-	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
+	 * @param dataLength The length of the data. If 0, assumes short length (16 bits).
 	 * @return The rotated byte.
 	 */
 	public static short rotate(short data, int dataLength, int amount) {
-		if (dataLength == 0) dataLength = Byte.SIZE;
+		if (dataLength == 0) dataLength = Short.SIZE;
 		if (amount > 0) {
 			return (short)((data >>> amount) | (data << dataLength - amount));
 		} else if (amount < 0) {
