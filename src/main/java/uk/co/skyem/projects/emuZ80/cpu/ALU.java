@@ -199,7 +199,7 @@ public class ALU {
 	}
 
 	public void decrement16(Register16 register) {
-		register.increment();
+		register.deccrement();
 	}
 
 	private byte incDec8SetFlags(int result) {
