@@ -29,8 +29,10 @@ public abstract class Register<T extends Number> {
 	 */
 	public abstract void setData(Register<?> register);
 
+	/** Add one to the value in the register **/
 	public abstract void increment();
 
+	/** Subtract one from the value in the register **/
 	public abstract void decrement();
 
 	public abstract void increment(T value);
@@ -51,6 +53,9 @@ public abstract class Register<T extends Number> {
 
 	public abstract int getSize();
 
+	/**
+	 * A Register that stores an 8 bit value, a byte.
+	 */
 	public static class Register8 extends Register<Byte> {
 
 		public byte data;
@@ -126,6 +131,9 @@ public abstract class Register<T extends Number> {
 		}
 	}
 
+	/**
+	 * A Register that stores a 16 bit value, two bytes, by storing a reference to two 8 bit (byte) registers.
+	 */
 	public static class Register16 extends Register<Short> {
 
 		public static final int SIZE = Short.SIZE;
@@ -223,6 +231,9 @@ public abstract class Register<T extends Number> {
 		}
 	}
 
+	/**
+	 * An 8 bit Register, that stores it's data in a location in an IByteHandler.
+	 */
 	public static class MemoryRegister8 extends Register8 {
 		private final IByteHandler memory;
 		private final int position;
