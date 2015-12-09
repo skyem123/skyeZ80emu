@@ -12,9 +12,9 @@ public class Core {
 	ALU alu;
 	private boolean halted = true;
 
-	public Core(IBusDevice memory, IBusDevice IO) {
+	public Core(IBusDevice memory, IBusDevice io) {
 		memoryBus = memory;
-		IOBus = IO;
+		IOBus = io;
 		instructionDecoder = new InstructionDecoder(this);
 		alu = new ALU(this);
 		reset();
@@ -34,6 +34,7 @@ public class Core {
 	};
 
 	public void relativeJump(byte displacement) {
+		// TODO: Does this have to cope with relative numbers?
 		registers.programCounter.increment((short) displacement);
 	}
 
