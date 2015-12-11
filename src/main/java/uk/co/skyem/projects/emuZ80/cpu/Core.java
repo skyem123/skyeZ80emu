@@ -34,7 +34,7 @@ public class Core {
 	};
 
 	public void relativeJump(byte displacement) {
-		// TODO: Does this have to cope with relative numbers?
+		// TODO: Fix so that it works with negative numbers!
 		registers.programCounter.increment((short) displacement);
 	}
 
