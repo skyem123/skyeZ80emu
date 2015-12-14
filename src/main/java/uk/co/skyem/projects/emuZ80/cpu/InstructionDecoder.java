@@ -126,11 +126,11 @@ public class InstructionDecoder {
 	};
 
 	// Arithmetic and logic operations
-	private enum AluOP {
+	public enum AluOP {
 		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
 	}
 
-	private static final AluOP[] AluTable = {
+	public static final AluOP[] AluTable = {
 		AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
 	};
 

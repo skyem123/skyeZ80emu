@@ -6,7 +6,7 @@ The emulated Z80 CPU supports these instructions:
 (List may be incorrect, but I really hope not.)
 (List is not finished.)
 
-|Opcode|Memonic   |What it does                                                          |Effect on Flags
+|Opcode|Mnemonic  |What it does                                                          |Effect on Flags
 |------|----------|----------------------------------------------------------------------|---------------------------------------------------------------------------------------
 | 0x00 |nop       |Do Nothing.                                                           |No effect.
 | 0x01 |ld BC,nn  |Put fixed 16 bit value nn into register BC.                           |No effect.
@@ -23,5 +23,6 @@ The emulated Z80 CPU supports these instructions:
 | 0x2F |cpl       |Inverts all the bits in the accumulator.                              |The addition / subtraction flag and the half carry flags are set.
 | 0x37 |scf       |Sets the carry flag.                                                  |Carry flag is set. Addition / subtraction flag is reset. Half-carry flag is reset.
 | 0x3F |ccf       |Inverts the carry flag.                                               |Carry is inverted. Addition / subtraction is reset. Half-carry is old carry.
+| 0x76 |halt      |Halts the CPU until an interrupt or reset                             |No effect.
 
 ##Assembler##

@@ -10,6 +10,6 @@ public class ALURegister extends Instruction {
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
-
+		InstructionDecoder.AluOP op = InstructionDecoder.AluTable[splitInstruction.y];
 	}
 }
