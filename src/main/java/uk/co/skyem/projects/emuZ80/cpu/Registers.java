@@ -18,6 +18,7 @@ public class Registers {
 		return Collections.unmodifiableList(registers);
 	}
 
+	// If you are an Instruction: DO NOT WRITE TO THIS VALUE!
 	public Register16 programCounter = register16();
 	public Register8 interruptVector = register8();
 	public Register8 refreshCounter = register8();
@@ -87,20 +88,6 @@ public class Registers {
 	}
 
 	public short getProgramCounter() {
-		return programCounter.getData();
-	}
-
-	public void setProgramCounter(short index) {
-		programCounter.setData(index);
-	}
-
-	public short incrementProgramCounter() {
-		programCounter.increment();
-		return programCounter.getData();
-	}
-
-	public short incrementProgramCounter(short value) {
-		programCounter.increment(value);
 		return programCounter.getData();
 	}
 

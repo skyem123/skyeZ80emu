@@ -14,7 +14,7 @@ public class IncrementDecrement8LDI extends Instruction {
 	}
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.z) {
 			case 3:
 				// 16 bit INC/DEC
@@ -55,5 +55,6 @@ public class IncrementDecrement8LDI extends Instruction {
 			default:
 				throw new IllegalStateException("We should never be here.");
 		}
+		return splitInstruction.position;
 	}
 }

@@ -17,7 +17,7 @@ public class MiscInstruction extends Instruction {
 	private Core cpuCore = instructionDecoder.cpuCore;
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.y) {
 			case 0:
 				// NOP -- Do nothing.
@@ -29,54 +29,24 @@ public class MiscInstruction extends Instruction {
 			case 2:
 				// DJNZ d -- Decrement B by one, then relative jump if B is not zero.
 				registers.REG_B.decrement();
+				byte relJmp = splitInstruction.getByteInc();
 				if (registers.REG_B.getData() != 0)
-					cpuCore.relativeJump(splitInstruction.getByteInc());
+					return (short)(registers.getProgramCounter() + relJmp);
 				break;
 			case 3:
 				// JR d -- Relative jump.
-				cpuCore.relativeJump(splitInstruction.getByteInc());
-				break;
+				return (short)(registers.getProgramCounter() + splitInstruction.getByteInc());
 			case 4:
 			case 5:
 			case 6:
 			case 7:
 				// JR cc[y-4], d -- Relative jump if condition is met.
 				Condition condition = InstructionDecoder.conditionTable[splitInstruction.y - 4];
-				switch (condition) {
-					case NZ: // Jump if no zero flag
-						if (!registers.flags.getFlag(Flags.ZERO))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case Z: // Jump if zero flag
-						if (registers.flags.getFlag(Flags.ZERO))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case NC: // Jump if no carry flag
-						if (!registers.flags.getFlag(Flags.CARRY))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case C: // Jump if carry flag
-						if (registers.flags.getFlag(Flags.CARRY))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case PO: // Parity odd / Parity flag is false
-						if (!registers.flags.getFlag(Flags.PARITY_OVERFLOW))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case PE:
-						if (registers.flags.getFlag(Flags.PARITY_OVERFLOW))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case P: // Jump if sign positive / sign flag is false
-						if (!registers.flags.getFlag(Flags.SIGN))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-					case M: // Jump if sign positive / sign flag is true
-						if (registers.flags.getFlag(Flags.SIGN))
-							cpuCore.relativeJump(splitInstruction.getByteInc());
-						break;
-				}
+				relJmp = splitInstruction.getByteInc();
+				if (registers.flags.getFlag(condition.flagVal) == condition.expectedResult)
+					return (short)(registers.getProgramCounter() + relJmp);
 				break;
 		}
+		return splitInstruction.position;
 	}
 }

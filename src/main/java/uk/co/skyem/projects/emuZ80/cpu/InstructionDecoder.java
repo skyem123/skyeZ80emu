@@ -1,11 +1,9 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.InstructionGroups;
-import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
 public class InstructionDecoder {
-	private IByteHandler memoryBuffer;
 	public Registers registers;
 	public Core cpuCore;
 	public ALU alu;
@@ -13,11 +11,11 @@ public class InstructionDecoder {
 	private InstructionGroups instructionGroups;
 
 	InstructionDecoder(Core cpu) {
-		memoryBuffer = cpu.memoryBuffer;
 		cpuCore = cpu;
 		registers = cpu.registers;
-		instructionGroups = new InstructionGroups(this);
 		alu = cpu.alu;
+		// instructionGroups needs everything initialized
+		instructionGroups = new InstructionGroups(this);
 	}
 
 	// 8 Bit registers
@@ -31,8 +29,14 @@ public class InstructionDecoder {
 			Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
+	/*
+	 * NOTE: THIS FUNCTION WILL TREAT HL AS INDIRECT
+	 */
 	public uk.co.skyem.projects.emuZ80.cpu.Register.Register8 getRegister(Register register) {
 		switch (register) {
+			case A:
+				// NOTE: If this was supposed to be REG_L, leave a comment
+				return registers.REG_A;
 			case B:
 				return registers.REG_B;
 			case C:
@@ -45,10 +49,8 @@ public class InstructionDecoder {
 				return registers.REG_H;
 			case L:
 				return registers.REG_L;
-			case A:
-				return registers.REG_L;
 			case HL:
-				return new MemoryRegister8(memoryBuffer, registers.REG_HL.getData());
+				return new MemoryRegister8(cpuCore, registers.REG_HL.getData());
 		}
 		throw new RuntimeException("This shouldn't happen / get here.");
 	}
@@ -118,8 +120,20 @@ public class InstructionDecoder {
 		throw new RuntimeException("This shouldn't happen / get here.");
 	}
 
+	// The conditions now contain the situation in which they're supposed to trigger.
+	// This saves copy and pasting a switch
+	// flags.getFlag(c.flagVal) == c.expectedResult
 	public enum Condition {
-		NZ, Z, NC, C, PO, PE, P, M
+		NZ(Flags.ZERO, false), Z(Flags.ZERO, true),
+		NC(Flags.CARRY, false), C(Flags.CARRY, true),
+		PO(Flags.PARITY_OVERFLOW, true), PE(Flags.PARITY_OVERFLOW, false),
+		P(Flags.SIGN, false), M(Flags.SIGN, true);
+		public final int flagVal;
+		public final boolean expectedResult;
+		Condition(int flag, boolean val) {
+			flagVal = flag;
+			expectedResult = val;
+		}
 	}
 
 	public static final Condition[] conditionTable = {
@@ -128,11 +142,11 @@ public class InstructionDecoder {
 
 	// Arithmetic and logic operations
 	public enum AluOP {
-		ADD_A, ACD_A, SUB, SBC_A, AND, XOR, OR, CP
+		ADD_A, ADC_A, SUB, SBC_A, AND, XOR, OR, CP
 	}
 
 	public static final AluOP[] AluTable = {
-			AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
+			AluOP.ADD_A, AluOP.ADC_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.XOR, AluOP.OR, AluOP.CP
 	};
 
 	// Rotation and shift operations
@@ -168,7 +182,7 @@ public class InstructionDecoder {
 	};
 
 	public static class SplitInstruction {
-		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte secondPrefixDisplacement, IByteHandler buffer, int position) {
+		SplitInstruction(byte prefix, byte opcode, boolean secondPrefix, byte secondPrefixDisplacement, Core buffer, short position) {
 			this.prefix = prefix;
 			this.opcode = opcode;
 			this.secondPrefix = secondPrefix;
@@ -184,9 +198,9 @@ public class InstructionDecoder {
 		}
 
 		// Used to get more data, like the immediate value and displacement.
-		public IByteHandler buffer;
+		public Core buffer;
 		// position MUST be the byte after the opcode. also, MUST be incremented if data is fetched so that the CPU doesn't think the displacement byte / immediate data is the next instruction.
-		public int position;
+		public short position;
 
 		// The instruction
 		public byte prefix, opcode, secondPrefixDisplacement;
@@ -198,15 +212,15 @@ public class InstructionDecoder {
 		public boolean q;
 
 		public byte getByteInc() {
-			return buffer.getByte(position++);
+			return buffer.getMemoryByte(position++);
 		}
 
 		public short getShortInc() {
-			return buffer.getWord(position++);
+			return buffer.getMemoryWord(position++);
 		}
 	}
 
-	public SplitInstruction decode(IByteHandler buffer, int position) {
+	public SplitInstruction decode(short position) {
 		byte prefix = 0;
 		byte opcode;
 		boolean secondPrefix = false;
@@ -214,30 +228,30 @@ public class InstructionDecoder {
 
 		// The shortest way I could do this...
 		// Find out the prefix (if there is one)
-		switch ((int) buffer.getByte(position)) {
+		switch ((int) cpuCore.getMemoryByte(position)) {
 			case 0xDD:
 			case 0xFD:
 			case 0xCB:
 			case 0xED:
-				prefix = buffer.getByte(position++);
+				prefix = cpuCore.getMemoryByte(position++);
 		}
 		// Is there a second prefix?
 		if (prefix == 0xFD || prefix == 0xDD)
-			if (buffer.getByte(position) == 0xCB) {
+			if (cpuCore.getMemoryByte(position) == 0xCB) {
 				secondPrefix = true;
 				// Get the displacement byte
-				secondPrefixDisplacement = buffer.getByte(++position);
+				secondPrefixDisplacement = cpuCore.getMemoryByte(++position);
 				++position;
 			}
 		// Get the opcode of the instruction
-		opcode = buffer.getByte(position++);
+		opcode = cpuCore.getMemoryByte(position++);
 
-		return new SplitInstruction(prefix, opcode, secondPrefix, secondPrefixDisplacement, buffer, position);
+		return new SplitInstruction(prefix, opcode, secondPrefix, secondPrefixDisplacement, cpuCore, position);
 	}
 
 	// TODO: What are disassembly tables? Would they do better for this?
-	public void runOpcode(SplitInstruction splitInstruction) {
-		instructionGroups.runOpcode(splitInstruction);
+	public short runOpcode(SplitInstruction splitInstruction) {
+		return instructionGroups.runOpcode(splitInstruction);
 	}
 
 	// TODO: Is there a more appropriate name?
@@ -245,8 +259,7 @@ public class InstructionDecoder {
 		short position = registers.getProgramCounter();
 		// TODO: Short circuit for NOP?
 		// FIXME! Does this actually work?
-		runOpcode(decode(memoryBuffer, position));
-		// TODO: Set the program counter to the final position (set by the instruction?)
-		registers.incrementProgramCounter();
+		short newPosition = runOpcode(decode(position));
+		registers.programCounter.setData(newPosition);
 	}
 }

@@ -9,7 +9,7 @@ public class Load8Halt extends Instruction {
 	}
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		// Exception to this instruction.
 		// Replaces LD(HL),(HL)
 		if (splitInstruction.z == 6 && splitInstruction.y == 6) {
@@ -19,5 +19,6 @@ public class Load8Halt extends Instruction {
 
 		// LD r[y],r[z]
 		instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.y]).setData(instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.z]));
+		return splitInstruction.position;
 	}
 }

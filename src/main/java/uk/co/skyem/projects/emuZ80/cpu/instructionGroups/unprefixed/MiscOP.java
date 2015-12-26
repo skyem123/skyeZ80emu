@@ -16,7 +16,7 @@ public class MiscOP extends Instruction {
 	}
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.y) {
 			// TODO: Implement instructions.
 			case 0:
@@ -53,5 +53,6 @@ public class MiscOP extends Instruction {
 				alu.invertCarry();
 				break;
 		}
+		return splitInstruction.position;
 	}
 }

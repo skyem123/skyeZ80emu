@@ -18,7 +18,7 @@ public class IndirectLoad extends Instruction {
 	}
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		// This is true most of the time.
 		Register register = registers.REG_A;
 		short address;
@@ -55,5 +55,6 @@ public class IndirectLoad extends Instruction {
 				alu.indirectLoad16((Register16) register, address);
 			}
 		}
+		return splitInstruction.position;
 	}
 }

@@ -5,8 +5,11 @@ import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 
 public class Core {
-	IBusDevice memoryBus;
-	IBusDevice IOBus;
+	// These were protected anyway, and they're a sign-extension accident waiting to happen. --gamemanj
+	// Don't touch them, btw
+	private IBusDevice memoryBus;
+	private IBusDevice IOBus;
+	// --
 	Registers registers;
 	InstructionDecoder instructionDecoder;
 	ALU alu;
@@ -15,30 +18,15 @@ public class Core {
 	public Core(IBusDevice memory, IBusDevice io) {
 		memoryBus = memory;
 		IOBus = io;
+		// registers must exist before instructionDecoder and maybe ALU
 		registers = new Registers();
-		instructionDecoder = new InstructionDecoder(this);
+		// ALU must exist before instructionDecoder
 		alu = new ALU(this);
+		instructionDecoder = new InstructionDecoder(this);
 		reset();
 	}
 
-	// The real Z80 CPU reads bytes at a time... so let's do that.
-	IByteHandler memoryBuffer = new AbstractByteBuffer(AbstractByteBuffer.Endian.LITTLE) {
-		@Override
-		public void putByte(int position, byte data) {
-			memoryBus.putByte(position, data);
-		}
-
-		@Override
-		public byte getByte(int position) {
-			return memoryBus.getByte(position);
-		}
-	};
-
-	public void relativeJump(byte displacement) {
-		// TODO: Fix so that it works with negative numbers!
-		registers.programCounter.increment((short) displacement);
-	}
-
+	// Instruction should never call this!!! Use the return value instead!!!
 	public void jump(short address) {
 		registers.programCounter.setData(address);
 	}
@@ -66,5 +54,32 @@ public class Core {
 
 	public boolean halted() {
 		return halted;
+	}
+
+	// NOTE: The following do the required signed/unsigned conversions.
+	// Java will probably sign-extend - that's probably not what you want.
+	private int safeShortToInt(short address) {
+		int i = address;
+		i &= 0xFFFF; // get rid of any sign-extension
+		return i;
+	}
+
+	public void putMemoryByte(short address, Byte data) {
+		memoryBus.putByte(safeShortToInt(address), data);
+	}
+
+	public void putMemoryWord(short address, Short data) {
+		memoryBus.putByte(safeShortToInt(address++), (byte)(data & 0xFF));
+		memoryBus.putByte(safeShortToInt(address), (byte)((data & 0xFF00)>>8));
+	}
+
+	public byte getMemoryByte(short address) {
+		return memoryBus.getByte(safeShortToInt(address));
+	}
+
+	public short getMemoryWord(short address) {
+		byte l = memoryBus.getByte(safeShortToInt(address++));
+		byte h = memoryBus.getByte(safeShortToInt(address));
+		return (short) (l | (h << 8));
 	}
 }

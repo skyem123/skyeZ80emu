@@ -151,24 +151,25 @@ public class ALU {
 		return result > 0xF;
 	}
 
+	// NOTE: These 5 functions are 0-based
+	//       Don't forget that!!!
+
 	private byte getByte(long number, int byteNumber) {
-		return (byte) ((number << (8 * byteNumber)) & 0xFF);
+		return (byte) ((number >> (8 * byteNumber)) & 0xFF);
 	}
 
 	private byte getByte(int number, int byteNumber) {
-		return (byte) ((number << (8 * byteNumber) & 0xFF));
+		return (byte) ((number >> (8 * byteNumber)) & 0xFF);
 	}
 
-	private boolean getBit(long number, int bitNumber) {
-		return ((number << bitNumber) & 0b1) == 1;
-	}
+	private boolean getBit(long number, int bitNumber) { return ((number >> bitNumber) & 0b1) == 1; }
 
 	private boolean getBit(int number, int bitNumber) {
-		return ((number << bitNumber) & 0b1) == 1;
+		return ((number >> bitNumber) & 0b1) == 1;
 	}
 
 	private boolean getBit(byte number, int bitNumber) {
-		return ((number << bitNumber) & 0b1) == 1;
+		return ((number >> bitNumber) & 0b1) == 1;
 	}
 
 	private boolean betweenInclusive(int x, int min, int max) {
@@ -178,27 +179,45 @@ public class ALU {
 	/**
 	 * Adds two registers together.
 	 **/
-	public void add16Register(Register16 a, Register16 b) {
+	public void add16Register(Register16 a, Register16 b, boolean carryIn, int flagControl) {
+		short as = a.getData();
+		short bs = b.getData();
+		// note: add8 passes the carry flag too
+		int lower = add8((byte)(as & 0xFF), (byte)(bs & 0xFF), false, 0);
+		int upper = add8((byte)((as>>8) & 0xFF), (byte)((bs>>8) & 0xFF), getBit(lower, 8), 0);
+		short r = (short)((lower & 0xFF) | ((upper & 0xFF) << 8));
+		a.setData(r);
+	}
+
+	/**
+	 * Adds two bytes together
+	 * @param a Value A
+	 * @param b Value B
+	 * @param carryIn Input carry
+	 * @param flagControl Controls which flags to set
+	 * @return A bitfield. The lower 8 bits are the target value, the next highest bit is carry.
+	 */
+	public int add8(byte a, byte b, boolean carryIn, int flagControl) {
+		// First, convert everything to unsigned
+		int ai = Byte.toUnsignedInt(a);
+		int bi = Byte.toUnsignedInt(b);
+		int r = ai + bi + (carryIn ? 1 : 0);
+		boolean carry = r > 0xFF;
+		r &= 0xFF;
+
+		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F)) > 0x0F;
+
 		Register8 flags = getFlags();
 
-		// get the result
-		int result = a.getData() + b.getData();
-
-		// check and set the carry flag
-		flags.setFlag(Flags.CARRY, checkCarry16(result));
-
-		// set the addition / subtraction flag
-		flags.setFlag(Flags.ADD_SUB, false);
-
-		// set the X_5 and X_3 flags
-		byte upper = getByte(result, 2);
-		flags.setFlag(Flags.X_3, getBit(upper, 3));
-		flags.setFlag(Flags.X_5, getBit(upper, 5));
-		// set the H flag
-		flags.setFlag(Flags.HALF_CARRY, checkCarry4(upper));
-
-		// finally, set the register with the result.
-		a.setData((short) result);
+		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
+		flags.setFlag(Flags.ZERO & flagControl, r == 0);
+		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
+		flags.setFlag(Flags.HALF_CARRY & flagControl, halfCarry);
+		flags.setFlag(Flags.X_3 & flagControl, getBit(r, 3));
+		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != carryIn);
+		flags.setFlag(Flags.ADD_SUB & flagControl, false);
+		flags.setFlag(Flags.CARRY & flagControl, carry);
+		return r | (carry ? (1 << 8) : 0);
 	}
 
 	/**
@@ -220,6 +239,7 @@ public class ALU {
 		Register8 flags = getFlags();
 		// Check to see if there is an overflow
 		// TODO: Is this correct?
+
 		flags.setFlag(Flags.PARITY_OVERFLOW, checkCarry8(result));
 
 		// set the addition / subtraction flag
@@ -265,28 +285,28 @@ public class ALU {
 	 * Loads a register with a value from a memory address
 	 **/
 	public void indirectLoad8(Register8 register, short address) {
-		register.setData(core.memoryBuffer.getByte(address));
+		register.setData(core.getMemoryByte(address));
 	}
 
 	/**
 	 * Load contents of register into memory location
 	 **/
 	public void memoryLoad8(short address, Register8 register) {
-		core.memoryBuffer.putByte(address, register.getData());
+		core.putMemoryByte(address, register.getData());
 	}
 
 	/**
 	 * Loads a register with a value from a memory address
 	 **/
 	public void indirectLoad16(Register16 register, short address) {
-		register.setData(core.memoryBuffer.getWord(address));
+		register.setData(core.getMemoryWord(address));
 	}
 
 	/**
 	 * Load contents of register into memory location
 	 **/
 	public void memoryLoad16(short address, Register16 register) {
-		core.memoryBuffer.putWord(address, register.getData());
+		core.putMemoryWord(address, register.getData());
 	}
 
 	/**
@@ -474,5 +494,40 @@ public class ALU {
 		byte regA = registers.REG_A.getData();
 		flags.setFlag(Flags.X_3, getBit(regA, 3));
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
+	}
+
+	/**
+	 * Push a byte onto the stack
+	 **/
+	public void pushByte(byte b) {
+		registers.stackPointer.decrement();
+		core.putMemoryByte(registers.stackPointer.getData(), b);
+	}
+
+	/**
+	 * Push a word onto the stack
+	 * h is stored first, then l, so when read it's little-endian
+	 **/
+	public void pushWord(short v) {
+		pushByte((byte)((v & 0xFF00) >> 8));
+		pushByte((byte)(v & 0xFF));
+	}
+
+	/**
+	 * Pop a word from the stack
+	 **/
+	public short popWord() {
+		short value = core.getMemoryWord(registers.stackPointer.getData());
+		registers.stackPointer.increment((short) 2);
+		return value;
+	}
+
+	/**
+	 * Pop a byte from the stack
+	 **/
+	public byte popByte() {
+		byte v = core.getMemoryByte(registers.stackPointer.getData());
+		registers.stackPointer.increment();
+		return v;
 	}
 }
