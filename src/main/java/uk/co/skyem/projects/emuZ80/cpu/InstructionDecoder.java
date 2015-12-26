@@ -126,7 +126,7 @@ public class InstructionDecoder {
 	public enum Condition {
 		NZ(Flags.ZERO, false), Z(Flags.ZERO, true),
 		NC(Flags.CARRY, false), C(Flags.CARRY, true),
-		PO(Flags.PARITY_OVERFLOW, true), PE(Flags.PARITY_OVERFLOW, false),
+		PO(Flags.PARITY_OVERFLOW, false), PE(Flags.PARITY_OVERFLOW, true),
 		P(Flags.SIGN, false), M(Flags.SIGN, true);
 		public final int flagVal;
 		public final boolean expectedResult;

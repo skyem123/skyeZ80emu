@@ -37,7 +37,7 @@ public class SingleInstructionTest {
 	public void testNop() {
 		short[] positions = new short[65536];
 		for (int i = 0; i < 65536; i++)
-			positions[i] = (short)(i + 1);
+			positions[i] = (short)((i + 1) & 0xFFFF);
 		Core c = executeTest(new byte[65536], positions);
 		// do a minor check just in case
 		assertFlags(c.registers.flags, (byte) 0);
