@@ -53,10 +53,10 @@ public class Main {
 		System.out.println(Arrays.toString(assembler.preparse()));*/
 
 		Assembler assembler = new Assembler("NOP\nNOP\nNOP\nLD\nLD\nNOP\nLD\nLD\nLD\nLD\n"
-			+ "Nothing:\n"
-			+ "nop\n"
-			//+ "LD A, B\n"
-			+ "Load: LD");
+				+ "Nothing:\n"
+				+ "nop\n"
+				//+ "LD A, B\n"
+				+ "Load: LD");
 		assembler.assemble();
 		//System.out.println(Arrays.toString(assembler.preparse()));
 

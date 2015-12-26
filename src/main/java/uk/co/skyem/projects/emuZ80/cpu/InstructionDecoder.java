@@ -28,7 +28,7 @@ public class InstructionDecoder {
 	}
 
 	public static final Register[] registerTable = {
-		Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
+			Register.B, Register.C, Register.D, Register.E, Register.H, Register.L, Register.HL, Register.A
 	};
 
 	public uk.co.skyem.projects.emuZ80.cpu.Register.Register8 getRegister(Register register) {
@@ -59,11 +59,11 @@ public class InstructionDecoder {
 	}
 
 	public static final RegisterPair[] registerPairTable1 = {
-		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
+			RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.SP
 	};
 
 	public static final RegisterPair[] registerPairTable2 = {
-		RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
+			RegisterPair.BC, RegisterPair.DE, RegisterPair.HL, RegisterPair.AF
 	};
 
 	public void setRegisterPairData(RegisterPair registerPair, short data) {
@@ -85,6 +85,7 @@ public class InstructionDecoder {
 				break;
 		}
 	}
+
 	public short getRegisterPairData(RegisterPair registerPair) {
 		switch (registerPair) {
 			case BC:
@@ -122,7 +123,7 @@ public class InstructionDecoder {
 	}
 
 	public static final Condition[] conditionTable = {
-		Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
+			Condition.NZ, Condition.Z, Condition.NC, Condition.C, Condition.PO, Condition.PE, Condition.P, Condition.M
 	};
 
 	// Arithmetic and logic operations
@@ -131,7 +132,7 @@ public class InstructionDecoder {
 	}
 
 	public static final AluOP[] AluTable = {
-		AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
+			AluOP.ADD_A, AluOP.ACD_A, AluOP.SUB, AluOP.SBC_A, AluOP.AND, AluOP.OR, AluOP.OR, AluOP.CP
 	};
 
 	// Rotation and shift operations
@@ -140,7 +141,7 @@ public class InstructionDecoder {
 	}
 
 	private static final RotationOP[] rotationTable = {
-		RotationOP.RLC, RotationOP.RRC, RotationOP.RL, RotationOP.RR, RotationOP.SLA, RotationOP.SRA, RotationOP.SLL, RotationOP.SRL
+			RotationOP.RLC, RotationOP.RRC, RotationOP.RL, RotationOP.RR, RotationOP.SLA, RotationOP.SRA, RotationOP.SLL, RotationOP.SRL
 	};
 
 	private enum InterruptMode {
@@ -148,7 +149,7 @@ public class InstructionDecoder {
 	}
 
 	private static final InterruptMode[] interruptModeTable = {
-		InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO, InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO
+			InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO, InterruptMode.ZERO, InterruptMode.ZERO_ONE, InterruptMode.ONE, InterruptMode.TWO
 	};
 
 	private enum BlockInstruction {
@@ -159,11 +160,11 @@ public class InstructionDecoder {
 	}
 
 	private static final BlockInstruction[][] BlockInstructionTable = {
-		{},{},{},{},
-		{ BlockInstruction.LDI, BlockInstruction.CPI, BlockInstruction.INI, BlockInstruction.OUTI},
-		{ BlockInstruction.LDD, BlockInstruction.CPD, BlockInstruction.IND, BlockInstruction.OUTD},
-		{ BlockInstruction.LDIR, BlockInstruction.CPIR, BlockInstruction.INIR, BlockInstruction.OTIR},
-		{ BlockInstruction.LDDR, BlockInstruction.CPDR, BlockInstruction.INDR, BlockInstruction.OTDR},
+			{}, {}, {}, {},
+			{BlockInstruction.LDI, BlockInstruction.CPI, BlockInstruction.INI, BlockInstruction.OUTI},
+			{BlockInstruction.LDD, BlockInstruction.CPD, BlockInstruction.IND, BlockInstruction.OUTD},
+			{BlockInstruction.LDIR, BlockInstruction.CPIR, BlockInstruction.INIR, BlockInstruction.OTIR},
+			{BlockInstruction.LDDR, BlockInstruction.CPDR, BlockInstruction.INDR, BlockInstruction.OTDR},
 	};
 
 	public static class SplitInstruction {
@@ -177,10 +178,11 @@ public class InstructionDecoder {
 			// split up the opcode for further processing
 			this.x = (byte) ((0b11000000 & this.opcode) >>> 6);
 			this.y = (byte) ((0b00111000 & this.opcode) >>> 3);
-			this.z = (byte)  (0b00000111 & this.opcode);
-			this.p = (byte)  (0b110 & y);
+			this.z = (byte) (0b00000111 & this.opcode);
+			this.p = (byte) (0b110 & y);
 			this.q = (0b001 & y) == 0b1;
 		}
+
 		// Used to get more data, like the immediate value and displacement.
 		public IByteHandler buffer;
 		// position MUST be the byte after the opcode. also, MUST be incremented if data is fetched so that the CPU doesn't think the displacement byte / immediate data is the next instruction.
@@ -198,6 +200,7 @@ public class InstructionDecoder {
 		public byte getByteInc() {
 			return buffer.getByte(position++);
 		}
+
 		public short getShortInc() {
 			return buffer.getWord(position++);
 		}
@@ -212,7 +215,10 @@ public class InstructionDecoder {
 		// The shortest way I could do this...
 		// Find out the prefix (if there is one)
 		switch ((int) buffer.getByte(position)) {
-			case 0xDD:case 0xFD:case 0xCB:case 0xED:
+			case 0xDD:
+			case 0xFD:
+			case 0xCB:
+			case 0xED:
 				prefix = buffer.getByte(position++);
 		}
 		// Is there a second prefix?

@@ -22,6 +22,7 @@ public abstract class AbstractByteBuffer implements IByteHandler {
 
 	/**
 	 * Gets the endian of this buffer
+	 *
 	 * @return the endian that this buffer is set to
 	 */
 	public Endian getEndian() {
@@ -32,6 +33,7 @@ public abstract class AbstractByteBuffer implements IByteHandler {
 
 	/**
 	 * Sets the endian of this buffer
+	 *
 	 * @param endian the endian to set the buffer to
 	 */
 	public void setEndian(Endian endian) {

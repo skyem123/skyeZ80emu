@@ -7,7 +7,7 @@ import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 public class Core {
 	IBusDevice memoryBus;
 	IBusDevice IOBus;
-	Registers registers = new Registers();
+	Registers registers;
 	InstructionDecoder instructionDecoder;
 	ALU alu;
 	private boolean halted = true;
@@ -15,6 +15,7 @@ public class Core {
 	public Core(IBusDevice memory, IBusDevice io) {
 		memoryBus = memory;
 		IOBus = io;
+		registers = new Registers();
 		instructionDecoder = new InstructionDecoder(this);
 		alu = new ALU(this);
 		reset();

@@ -5,9 +5,10 @@ import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
 import uk.co.skyem.projects.emuZ80.cpu.Registers;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 
-public class MiscOP extends Instruction{
+public class MiscOP extends Instruction {
 	private ALU alu;
 	private Registers registers;
+
 	public MiscOP(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		this.alu = instructionDecoder.alu;
@@ -16,7 +17,7 @@ public class MiscOP extends Instruction{
 
 	@Override
 	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
-		switch(splitInstruction.y) {
+		switch (splitInstruction.y) {
 			// TODO: Implement instructions.
 			case 0:
 				// RLCA

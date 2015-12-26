@@ -1,5 +1,5 @@
 package uk.co.skyem.projects.emuZ80.cpu;
-import javafx.scene.transform.Rotate;
+
 import uk.co.skyem.projects.emuZ80.cpu.Register.Register16;
 import uk.co.skyem.projects.emuZ80.cpu.Register.Register8;
 
@@ -8,8 +8,8 @@ public class ALU {
 	/**
 	 * Rotates a long.
 	 *
-	 * @param data The long to be rotated.
-	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
+	 * @param data       The long to be rotated.
+	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes long length (65 bits).
 	 * @return The rotated byte.
 	 */
@@ -44,8 +44,8 @@ public class ALU {
 	/**
 	 * Rotates an integer.
 	 *
-	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
+	 * @param data       The integer to be rotated.
+	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes integer length (32 bits).
 	 * @return The rotated byte.
 	 */
@@ -65,18 +65,18 @@ public class ALU {
 	/**
 	 * Rotates a short.
 	 *
-	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
+	 * @param data       The integer to be rotated.
+	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes short length (16 bits).
 	 * @return The rotated byte.
 	 */
 	public static short rotate(short data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Short.SIZE;
 		if (amount > 0) {
-			return (short)((data >>> amount) | (data << dataLength - amount));
+			return (short) ((data >>> amount) | (data << dataLength - amount));
 		} else if (amount < 0) {
 			amount = Math.abs(amount);
-			return (short)((data << amount) | (data >>> dataLength - amount));
+			return (short) ((data << amount) | (data >>> dataLength - amount));
 		} else {
 			// No Rotation
 			return data;
@@ -86,18 +86,18 @@ public class ALU {
 	/**
 	 * Rotates a byte.
 	 *
-	 * @param data The integer to be rotated.
-	 * @param amount The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
+	 * @param data       The integer to be rotated.
+	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
 	 * @param dataLength The length of the data. If 0, assumes byte length (8 bits).
 	 * @return The rotated byte.
 	 */
 	public static byte rotate(byte data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Byte.SIZE;
 		if (amount > 0) {
-			return (byte)((data >>> amount) | (data << dataLength - amount));
+			return (byte) ((data >>> amount) | (data << dataLength - amount));
 		} else if (amount < 0) {
 			amount = Math.abs(amount);
-			return (byte)((data << amount) | (data >>> dataLength - amount));
+			return (byte) ((data << amount) | (data >>> dataLength - amount));
 		} else {
 			// No Rotation
 			return data;
@@ -107,7 +107,7 @@ public class ALU {
 	Registers registers;
 	Core core;
 
-	public ALU(Core core){
+	public ALU(Core core) {
 		this.core = core;
 		this.registers = core.registers;
 	}
@@ -116,37 +116,47 @@ public class ALU {
 		return registers.flags;
 	}
 
-	/** Check if number is bigger than 16 bits. **/
+	/**
+	 * Check if number is bigger than 16 bits.
+	 **/
 	private boolean checkCarry16(int result) {
 		return result > 0xFFFF;
 	}
 
-	/** Check if number is bigger than 8 bits. **/
+	/**
+	 * Check if number is bigger than 8 bits.
+	 **/
 	private boolean checkCarry8(short result) {
 		return result > 0xFF;
 	}
 
-	/** Check if number is bigger than 8 bits. **/
+	/**
+	 * Check if number is bigger than 8 bits.
+	 **/
 	private boolean checkCarry8(int result) {
 		return result > 0xFF;
 	}
 
-	/** Check if a number is bigger than 4 bits. **/
+	/**
+	 * Check if a number is bigger than 4 bits.
+	 **/
 	private boolean checkCarry4(int result) {
 		return result > 0xF;
 	}
 
-	/** Check if a number is bigger than 4 bits. **/
+	/**
+	 * Check if a number is bigger than 4 bits.
+	 **/
 	private boolean checkCarry4(byte result) {
 		return result > 0xF;
 	}
 
 	private byte getByte(long number, int byteNumber) {
-		return (byte)((number << (8 * byteNumber)) & 0xFF);
+		return (byte) ((number << (8 * byteNumber)) & 0xFF);
 	}
 
 	private byte getByte(int number, int byteNumber) {
-		return (byte)((number << (8 * byteNumber) & 0xFF));
+		return (byte) ((number << (8 * byteNumber) & 0xFF));
 	}
 
 	private boolean getBit(long number, int bitNumber) {
@@ -162,11 +172,13 @@ public class ALU {
 	}
 
 	private boolean betweenInclusive(int x, int min, int max) {
-		return x>=min && x<=max;
+		return x >= min && x <= max;
 	}
 
-	/** Adds two registers together. **/
-	public void add16Register (Register16 a, Register16 b) {
+	/**
+	 * Adds two registers together.
+	 **/
+	public void add16Register(Register16 a, Register16 b) {
 		Register8 flags = getFlags();
 
 		// get the result
@@ -189,7 +201,9 @@ public class ALU {
 		a.setData((short) result);
 	}
 
-	/** Sets a register to a 16 bit immediate value **/
+	/**
+	 * Sets a register to a 16 bit immediate value
+	 **/
 	public void load16(Register16 register, short data) {
 		register.setData(data);
 	}
@@ -221,7 +235,7 @@ public class ALU {
 		// set the Z flag
 		flags.setFlag(Flags.ZERO, result == 0);
 
-		byte resultByte = (byte)result;
+		byte resultByte = (byte) result;
 
 		// set the S flag
 		flags.setFlag(Flags.SIGN, resultByte < 0);
@@ -247,27 +261,37 @@ public class ALU {
 		register.setData(data);
 	}
 
-	/** Loads a register with a value from a memory address **/
+	/**
+	 * Loads a register with a value from a memory address
+	 **/
 	public void indirectLoad8(Register8 register, short address) {
 		register.setData(core.memoryBuffer.getByte(address));
 	}
 
-	/** Load contents of register into memory location **/
+	/**
+	 * Load contents of register into memory location
+	 **/
 	public void memoryLoad8(short address, Register8 register) {
 		core.memoryBuffer.putByte(address, register.getData());
 	}
 
-	/** Loads a register with a value from a memory address **/
+	/**
+	 * Loads a register with a value from a memory address
+	 **/
 	public void indirectLoad16(Register16 register, short address) {
 		register.setData(core.memoryBuffer.getWord(address));
 	}
 
-	/** Load contents of register into memory location **/
+	/**
+	 * Load contents of register into memory location
+	 **/
 	public void memoryLoad16(short address, Register16 register) {
 		core.memoryBuffer.putWord(address, register.getData());
 	}
 
-	/** Rotate register one bit to the left **/
+	/**
+	 * Rotate register one bit to the left
+	 **/
 	public void rotateRegisterLeft(Register register) {
 		// These flags are reset.
 		getFlags().setFlag(Flags.HALF_CARRY, false);
@@ -275,7 +299,9 @@ public class ALU {
 		register.rotateLeft(1);
 	}
 
-	/** Rotate register one bit to the right **/
+	/**
+	 * Rotate register one bit to the right
+	 **/
 	public void rotateRegisterRight(Register register) {
 		// These flags are reset.
 		getFlags().setFlag(Flags.HALF_CARRY, false);
@@ -283,7 +309,9 @@ public class ALU {
 		register.rotateRight(1);
 	}
 
-	/** Set the carry flag to the LSB and rotate the register one bit to the right. **/
+	/**
+	 * Set the carry flag to the LSB and rotate the register one bit to the right.
+	 **/
 	public void rotateRegisterRightCarry(Register register) {
 		// Get the LSB and put it into the carry flag.
 		getFlags().setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
@@ -291,7 +319,9 @@ public class ALU {
 		rotateRegisterRight(register);
 	}
 
-	/** Set the carry flag to the LSB and rotate the register one bit to the right. **/
+	/**
+	 * Set the carry flag to the LSB and rotate the register one bit to the right.
+	 **/
 	public void rotateRegisterLeftCarry(Register register) {
 		// Get the MSB and put it into the carry flag.
 		// TODO: Does this work?
@@ -300,7 +330,9 @@ public class ALU {
 		rotateRegisterLeft(register);
 	}
 
-	/** Rotate a register right though carry. The carry flag is used as an extra bit. **/
+	/**
+	 * Rotate a register right though carry. The carry flag is used as an extra bit.
+	 **/
 	public void rotateRegisterRightThroughCarry(Register register) {
 		// Get the previous contents of the carry flag
 		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
@@ -313,7 +345,9 @@ public class ALU {
 		register.setFlag(0b1 << (register.getSize() - 1), oldCarry);
 	}
 
-	/** Rotate a register left though carry. The carry flag is used as an extra bit. **/
+	/**
+	 * Rotate a register left though carry. The carry flag is used as an extra bit.
+	 **/
 	public void rotateRegisterLeftThroughCarry(Register register) {
 		// Get the previous contents of the carry flag
 		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
@@ -326,7 +360,9 @@ public class ALU {
 		register.setFlag(0b1, oldCarry);
 	}
 
-	/** Edits the accumulator after an operation with BCD input (ADD / SUB, etc...), to make the result BCD. **/
+	/**
+	 * Edits the accumulator after an operation with BCD input (ADD / SUB, etc...), to make the result BCD.
+	 **/
 	public void bcdAdjust(Register8 toAdjust) {
 		// Get the flags register
 		Register8 flags = getFlags();
@@ -375,8 +411,8 @@ public class ALU {
 		// If the lower nibble is greater than 9 or there is a half carry, add 0x06 to the register
 		if (lower > 0x09 && flagH)
 			data += 0x06;
-		// If the upper nibble is greater than 9 or there is a carry, add 0x60 to the register
-		else if(upper > 0x09 && flagC)
+			// If the upper nibble is greater than 9 or there is a carry, add 0x60 to the register
+		else if (upper > 0x09 && flagC)
 			data += 0x60;
 
 		// Set the S flag if the MSB is true
@@ -395,7 +431,9 @@ public class ALU {
 		toAdjust.setData((byte) data);
 	}
 
-	/** Invert register **/
+	/**
+	 * Invert register
+	 **/
 	public void complement(Register8 register) {
 		int data = ~register.getData() & 0xFF;
 		register.setData((byte) data);
@@ -408,7 +446,9 @@ public class ALU {
 		flags.setFlag(Flags.X_5, getBit(data, 5));
 	}
 
-	/** Sets the carry flag and some other flags **/
+	/**
+	 * Sets the carry flag and some other flags
+	 **/
 	public void setCarry() {
 		Register8 flags = getFlags();
 
@@ -421,7 +461,9 @@ public class ALU {
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
 
-	/** Invert the carry flag **/
+	/**
+	 * Invert the carry flag
+	 **/
 	public void invertCarry() {
 		Register8 flags = getFlags();
 

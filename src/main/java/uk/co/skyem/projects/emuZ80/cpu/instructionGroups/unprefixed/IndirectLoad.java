@@ -7,9 +7,10 @@ import uk.co.skyem.projects.emuZ80.cpu.Registers;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
-public class IndirectLoad extends Instruction{
+public class IndirectLoad extends Instruction {
 	Registers registers;
 	ALU alu;
+
 	public IndirectLoad(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		this.registers = instructionDecoder.registers;
@@ -42,7 +43,7 @@ public class IndirectLoad extends Instruction{
 		if (splitInstruction.q) {
 			// Load contents of register into memory location
 			if (register instanceof Register8) {
-				alu.memoryLoad8(address, (Register8)register);
+				alu.memoryLoad8(address, (Register8) register);
 			} else if (register instanceof Register16) {
 				alu.memoryLoad16(address, (Register16) register);
 			}

@@ -16,7 +16,7 @@ public class Arguments {
 
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public <T> T get(int index, ArgumentType<T> type) {
 		return (T) arguments.get(index).getValue();
 	}

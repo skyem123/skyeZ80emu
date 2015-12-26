@@ -5,8 +5,9 @@ import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
 import uk.co.skyem.projects.emuZ80.cpu.Register;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 
-public class IncrementDecrement8LDI extends Instruction{
+public class IncrementDecrement8LDI extends Instruction {
 	ALU alu;
+
 	public IncrementDecrement8LDI(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		this.alu = instructionDecoder.alu;
@@ -27,7 +28,9 @@ public class IncrementDecrement8LDI extends Instruction{
 					alu.decrement16(registerPair);
 				}
 				break;
-			case 4:case 5:case 6:
+			case 4:
+			case 5:
+			case 6:
 				// r[y]
 				Register.Register8 register = instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.y]);
 				switch (splitInstruction.z) {

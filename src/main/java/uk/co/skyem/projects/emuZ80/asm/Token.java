@@ -29,7 +29,8 @@ abstract class Token {
 
 		public int position;
 
-		public void insertLabel(Assembler assembler, Label label) {}
+		public void insertLabel(Assembler assembler, Label label) {
+		}
 	}
 
 	public static class LD extends CPUInstruction {

@@ -29,10 +29,14 @@ public abstract class Register<T extends Number> {
 	 */
 	public abstract void setData(Register<?> register);
 
-	/** Add one to the value in the register **/
+	/**
+	 * Add one to the value in the register
+	 **/
 	public abstract void increment();
 
-	/** Subtract one from the value in the register **/
+	/**
+	 * Subtract one from the value in the register
+	 **/
 	public abstract void decrement();
 
 	public abstract void increment(T value);
@@ -92,7 +96,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((Byte)register.getData());
+			setData((Byte) register.getData());
 		}
 
 		@Override
@@ -107,12 +111,12 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void increment(Byte value) {
-			setData((byte)(getData() + value));
+			setData((byte) (getData() + value));
 		}
 
 		@Override
 		public void decrement(Byte value) {
-			setData((byte)(getData() - value));
+			setData((byte) (getData() - value));
 		}
 
 		@Override
@@ -192,7 +196,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((Short)register.getData());
+			setData((Short) register.getData());
 		}
 
 		@Override

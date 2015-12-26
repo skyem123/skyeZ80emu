@@ -34,7 +34,10 @@ public class UnprefixedInstruction extends Instruction {
 					case 2:
 						indirectLoad.runOpcode(splitInstruction);
 						break;
-					case 3:case 4:case 5:case 6:
+					case 3:
+					case 4:
+					case 5:
+					case 6:
 						incrementDecrement.runOpcode(splitInstruction);
 						break;
 					case 7:

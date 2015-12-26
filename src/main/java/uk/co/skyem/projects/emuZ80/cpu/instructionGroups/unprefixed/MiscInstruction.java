@@ -12,6 +12,7 @@ public class MiscInstruction extends Instruction {
 	public MiscInstruction(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 	}
+
 	private Registers registers = instructionDecoder.registers;
 	private Core cpuCore = instructionDecoder.cpuCore;
 
@@ -35,7 +36,10 @@ public class MiscInstruction extends Instruction {
 				// JR d -- Relative jump.
 				cpuCore.relativeJump(splitInstruction.getByteInc());
 				break;
-			case 4:case 5:case 6:case 7:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
 				// JR cc[y-4], d -- Relative jump if condition is met.
 				Condition condition = InstructionDecoder.conditionTable[splitInstruction.y - 4];
 				switch (condition) {

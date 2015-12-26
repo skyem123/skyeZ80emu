@@ -5,7 +5,8 @@ import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 public abstract class SimpleBusDevice extends AbstractByteBuffer implements IBusDevice {
 	int offset = 0;
 
-	public SimpleBusDevice() { }
+	public SimpleBusDevice() {
+	}
 
 	public SimpleBusDevice(int offset) {
 		this.offset = offset;

@@ -4,8 +4,9 @@ import uk.co.skyem.projects.emuZ80.cpu.ALU;
 import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 
-public class LoadAdd16 extends Instruction{
+public class LoadAdd16 extends Instruction {
 	ALU alu;
+
 	public LoadAdd16(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		alu = instructionDecoder.alu;
