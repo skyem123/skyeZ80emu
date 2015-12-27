@@ -210,14 +210,18 @@ public class ALU {
 		boolean carry = r > 0xFF;
 		r &= 0xFF;
 
-		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F)) > 0x0F;
+		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F) + (carryIn ? 1 : 0)) > 0x0F;
+		// a random PDF file says that carry *into the sign bit* and *out of the sign bit*
+		// determines overflow.
+		// We already know carry out, but carry in?
+		boolean signCarry = ((ai & 0x7F) + (bi & 0x7F) + (carryIn ? 1 : 0)) > 0x7F;
 
 		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
 		flags.setFlag(Flags.ZERO & flagControl, r == 0);
 		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
 		flags.setFlag(Flags.HALF_CARRY & flagControl, halfCarry);
 		flags.setFlag(Flags.X_3 & flagControl, getBit(r, 3));
-		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != carryIn);
+		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != signCarry);
 		flags.setFlag(Flags.ADD_SUB & flagControl, false);
 		flags.setFlag(Flags.CARRY & flagControl, carry);
 		return r | (carry ? (1 << 8) : 0);

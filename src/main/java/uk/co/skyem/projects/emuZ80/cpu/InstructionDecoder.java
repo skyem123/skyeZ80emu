@@ -296,7 +296,7 @@ public class InstructionDecoder {
 			this.x = (byte) ((0b11000000 & this.opcode) >>> 6);
 			this.y = (byte) ((0b00111000 & this.opcode) >>> 3);
 			this.z = (byte) (0b00000111 & this.opcode);
-			this.p = (byte) (0b110 & y);
+			this.p = (byte) ((0b110 & y) >> 1);
 			this.q = (0b001 & y) == 0b1;
 		}
 
@@ -343,7 +343,7 @@ public class InstructionDecoder {
 		// this has to cover a *lot* of cases
 		boolean readingPrefix = true;
 		while (readingPrefix) {
-			switch ((int) buffer.getByte(position)) {
+			switch (Byte.toUnsignedInt(buffer.getByte(position))) {
 				// magical index prefixes
 				case 0xDD:
 					index = IndexPrefix.IX;

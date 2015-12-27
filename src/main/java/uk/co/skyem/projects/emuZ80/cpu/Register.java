@@ -201,22 +201,22 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void increment() {
-			setData((short) (getData() + 1));
+			increment((short)1);
 		}
 
 		@Override
 		public void decrement() {
-			setData((short) (getData() - 1));
+			decrement((short)1);
 		}
 
 		@Override
 		public void increment(Short value) {
-			setData((short) (getData() + value));
+			setData((short) ((getData() + value) & 0xFFFF));
 		}
 
 		@Override
 		public void decrement(Short value) {
-			setData((short) (getData() - value));
+			setData((short) ((getData() - value) & 0xFFFF));
 		}
 
 		@Override

@@ -22,10 +22,10 @@ public class IncrementDecrement8LDI extends Instruction {
 				Register.Register16 registerPair = instructionDecoder.getRegisterPair(InstructionDecoder.registerPairTable1[splitInstruction.p], splitInstruction);
 				if (splitInstruction.q) {
 					// DEC rp[p]
-					alu.increment16(registerPair);
+					alu.decrement16(registerPair);
 				} else {
 					// INC rp[p]
-					alu.decrement16(registerPair);
+					alu.increment16(registerPair);
 				}
 				break;
 			case 4:
