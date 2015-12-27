@@ -449,4 +449,25 @@ public class ALU {
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
 
+	public byte and8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a & b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	public byte xor8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a ^ b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	public byte or8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a | b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	private void bitOpFlags(int flagControl, byte r) {
+		throw new UnsupportedOperationException("TODO");
+	}
 }

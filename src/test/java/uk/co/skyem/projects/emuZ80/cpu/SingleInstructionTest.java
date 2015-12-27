@@ -360,6 +360,33 @@ public class SingleInstructionTest {
 		}
 	}
 
+	@Test
+	public void testUcRelJump() {
+		executeTest(new byte[]{
+				(byte) 0x18,
+				(byte) 0xF0,
+		}, new short[]{
+				(short) 0xFFF0
+		}, (byte) 0x00);
+		executeTest(new byte[]{
+				(byte) 0x18,
+				(byte) 0x10,
+		}, new short[]{
+				(short) 0x10
+		}, (byte) 0x00);
+	}
+
+	@Test
+	public void testUcAbJump() {
+		executeTest(new byte[]{
+				(byte) 0xC3,
+				0x00,
+				(byte) 0x80,
+		}, new short[]{
+				(short) 0x8000
+		}, (byte) 0x00);
+	}
+
 	// jumps are easier to test than anything else, really
 	@Test
 	public void testCoAbJumpsTrue() {
@@ -387,6 +414,38 @@ public class SingleInstructionTest {
 			// expectedResult says if the flag should be true
 			Core c = executeTest(memory, new short[]{
 					(short) (shouldPass ? 0x8000 : 0x03)
+			}, (byte) (flagState ? flag : ~flag));
+			// executeTest did the required checks on PC
+		}
+	}
+
+	@Test
+	public void testCoRelJumpsTrue() {
+		testCoRelJumpsRun(true, false);
+		testCoRelJumpsRun(true, true);
+	}
+
+	@Test
+	public void testCoRelJumpsFalse() {
+		testCoRelJumpsRun(false, false);
+		testCoRelJumpsRun(false, true);
+	}
+
+	public void testCoRelJumpsRun(boolean shouldPass, boolean reverse) {
+		byte[] memory = new byte[0x3];
+		short target = (short) (reverse ? 0xFFF0 : 0x10);
+		// 001CC000
+		//0x20 | (condition)
+		for (int condition = 0; condition < 4; condition++) {
+			int flag = InstructionDecoder.conditionTable[condition].flagVal;
+			boolean flagState = InstructionDecoder.conditionTable[condition].expectedResult;
+			if (!shouldPass)
+				flagState = !flagState;
+			memory[0] = (byte) (0x20 | (condition << 3));
+			memory[1] = (byte) (reverse ? 0xF0 : 0x10);
+			// expectedResult says if the flag should be true
+			Core c = executeTest(memory, new short[]{
+					(shouldPass ? target : 0x02)
 			}, (byte) (flagState ? flag : ~flag));
 			// executeTest did the required checks on PC
 		}

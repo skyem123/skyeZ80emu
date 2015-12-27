@@ -60,6 +60,14 @@ public class UnprefixedInstruction extends Instruction {
 						if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
 							return target;
 						break;
+					case 3:
+						switch (splitInstruction.y) {
+							case 0:
+								// JP nn
+								return splitInstruction.getShortInc();
+							default:
+								throw new UnsupportedOperationException("Unprefixed / x=3, z=3, y=" + splitInstruction.y + " NYI");
+						}
 					default:
 						throw new UnsupportedOperationException("Unprefixed / x=3, z=" + splitInstruction.z + " NYI");
 				}
