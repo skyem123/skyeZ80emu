@@ -42,12 +42,12 @@ public class Assembler {
 		this.source = source;
 	}
 
-	private static void registerASMDirective(String name,  Supplier<ASMDirective> supplier) {
+	private static void registerASMDirective(String name, Supplier<ASMDirective> supplier) {
 		asmDirectives.put(name, supplier);
 		registerInstruction(name, supplier::get);
 	}
 
-	private static void registerInstruction(String name,  Supplier<Instruction> supplier) {
+	private static void registerInstruction(String name, Supplier<Instruction> supplier) {
 		instructions.put(name, supplier);
 	}
 
@@ -184,10 +184,10 @@ public class Assembler {
 
 	public void write() {
 		program = new Program(origin);
-		for(instructionPosition = 0; instructionPosition < instructionList.size(); instructionPosition++) {
+		for (instructionPosition = 0; instructionPosition < instructionList.size(); instructionPosition++) {
 			Label label = labelMap.get(instructionPosition);
 
-			if(label != null) {
+			if (label != null) {
 				label.position = program.getSize();
 			}
 

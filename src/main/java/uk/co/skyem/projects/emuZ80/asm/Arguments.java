@@ -16,7 +16,7 @@ public class Arguments {
 
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({"unchecked"})
 	public <T> T get(int index, ArgumentType<T> type) {
 		return (T) arguments.get(index).getValue();
 	}
@@ -58,7 +58,12 @@ public class Arguments {
 	}
 
 	public static enum Reg {
-		PC, I, R, IX, IY, SP, F, A, B, C, D, E, H, L, AF, BC, DE;
+		// NOTE: KEEP IN SYNC WITH REGISTERS
+		PC, I, R, SP, F,
+		A, B, C, D, E, H, L,
+		IXH, IXL, IYH, IYL,
+		AF, BC, DE, HL,
+		IX, IY;
 
 		public Register get(Registers registers) {
 			return registers.getRegister(ordinal());

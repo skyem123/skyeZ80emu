@@ -53,10 +53,10 @@ public class Main {
 		System.out.println(Arrays.toString(assembler.preparse()));*/
 
 		Assembler assembler = new Assembler("NOP\nNOP\nNOP\nLD\nLD\nNOP\nLD\nLD\nLD\nLD\n"
-			+ "Nothing:\n"
-			+ "nop\n"
-			//+ "LD A, B\n"
-			+ "Load: LD");
+				+ "Nothing:\n"
+				+ "nop\n"
+				//+ "LD A, B\n"
+				+ "Load: LD");
 		assembler.assemble();
 		//System.out.println(Arrays.toString(assembler.preparse()));
 
@@ -146,7 +146,7 @@ public class Main {
 		// TODO: Run the thing.
 		while (System.in.read() != "s".getBytes()[0]) {
 			System.out.println(toHexString(cpu.registers.getProgramCounter()));
-			cpu.cycle();
+			cpu.step();
 		}
 		System.out.println("\nDone!");
 		*/

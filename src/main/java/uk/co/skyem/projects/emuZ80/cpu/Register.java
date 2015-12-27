@@ -29,10 +29,14 @@ public abstract class Register<T extends Number> {
 	 */
 	public abstract void setData(Register<?> register);
 
-	/** Add one to the value in the register **/
+	/**
+	 * Add one to the value in the register
+	 **/
 	public abstract void increment();
 
-	/** Subtract one from the value in the register **/
+	/**
+	 * Subtract one from the value in the register
+	 **/
 	public abstract void decrement();
 
 	public abstract void increment(T value);
@@ -92,7 +96,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((Byte)register.getData());
+			setData((Byte) register.getData());
 		}
 
 		@Override
@@ -107,12 +111,12 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void increment(Byte value) {
-			setData((byte)(getData() + value));
+			setData((byte) (getData() + value));
 		}
 
 		@Override
 		public void decrement(Byte value) {
-			setData((byte)(getData() - value));
+			setData((byte) (getData() - value));
 		}
 
 		@Override
@@ -192,7 +196,7 @@ public abstract class Register<T extends Number> {
 
 		@Override
 		public void setData(Register<?> register) {
-			setData((Short)register.getData());
+			setData((Short) register.getData());
 		}
 
 		@Override
@@ -232,23 +236,24 @@ public abstract class Register<T extends Number> {
 	}
 
 	/**
-	 * An 8 bit Register, that stores it's data in a location in an IByteHandler.
+	 * An 8 bit Register, that stores it's data in a location in memory,
+	 * which itself is in a MemoryRouter.
 	 */
 	public static class MemoryRegister8 extends Register8 {
-		private final IByteHandler memory;
-		private final int position;
+		private final MemoryRouter memoryHolder;
+		private final short position;
 
-		public MemoryRegister8(IByteHandler memory, int position) {
-			this.memory = memory;
+		public MemoryRegister8(MemoryRouter memory, short position) {
+			this.memoryHolder = memory;
 			this.position = position;
 		}
 
 		private byte data() {
-			return memory.getByte(position);
+			return memoryHolder.getByte(position);
 		}
 
 		private void data(byte data) {
-			memory.putByte(position, data);
+			memoryHolder.putByte(position, data);
 		}
 
 		@Override

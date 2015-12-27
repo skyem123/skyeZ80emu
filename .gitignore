@@ -11,12 +11,27 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+### Eclipse ###
+
+.classpath
+.project
+
+### IDEA ###
+
 .idea/
 out/
 
 skyeZ80emu.iml
 Z80emu.iml
 emuZ80.iml
+
+skyeZ80emu.ipr
+Z80emu.ipr
+emuZ80.ipr
+
+skyeZ80emu.iws
+Z80emu.iws
+emuZ80.iws
 
 JavaDoc/*
 

@@ -16,7 +16,7 @@ public class Program extends ByteBuffer {
 	}
 
 	public static Program combine(Program... programs) {
-		if(programs.length < 1) throw new IllegalArgumentException("Can't combine an empty array of programs!");
+		if (programs.length < 1) throw new IllegalArgumentException("Can't combine an empty array of programs!");
 		Program firstProgram;
 		Stream<Program> sortedPrograms = Arrays.stream(programs).sorted((program1, program2) -> Integer.compare(program1.origin, program2.origin));
 		firstProgram = sortedPrograms.findFirst().get();

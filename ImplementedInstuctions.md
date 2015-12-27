@@ -24,5 +24,7 @@ The emulated Z80 CPU supports these instructions:
 | 0x37 |scf       |Sets the carry flag.                                                  |Carry flag is set. Addition / subtraction flag is reset. Half-carry flag is reset.
 | 0x3F |ccf       |Inverts the carry flag.                                               |Carry is inverted. Addition / subtraction is reset. Half-carry is old carry.
 | 0x76 |halt      |Halts the CPU until an interrupt or reset                             |No effect.
+(NOTE: It seems that "ld A, n" currently works, along with add A,(HL), and *maybe* other variants of these.
+       adc *might* work, it's basically add but with the carry flag, and that should be working. Not completely tested though.)
 
 ##Assembler##

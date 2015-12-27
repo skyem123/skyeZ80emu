@@ -7,32 +7,35 @@ import uk.co.skyem.projects.emuZ80.cpu.Registers;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 import uk.co.skyem.projects.emuZ80.cpu.Register.*;
 
-public class IndirectLoad extends Instruction{
-	Registers registers;
+public class IndirectLoad extends Instruction {
 	ALU alu;
+
 	public IndirectLoad(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
-		this.registers = instructionDecoder.registers;
 		this.alu = instructionDecoder.alu;
 	}
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
-		// This is true most of the time.
-		Register register = registers.REG_A;
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+		Register register;
 		short address;
 
 		switch (splitInstruction.p) {
+			// the logic makes a lot more sense when you add register to each case
 			case 0:
-				address = registers.REG_BC.getData();
+				register = instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction);
+				address = instructionDecoder.getRegisterPair(InstructionDecoder.RegisterPair.BC, splitInstruction).getData();
 				break;
 			case 1:
-				address = registers.REG_DE.getData();
+				register = instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction);
+				address = instructionDecoder.getRegisterPair(InstructionDecoder.RegisterPair.DE, splitInstruction).getData();
 				break;
 			case 2:
-				register = registers.REG_HL;
-				// No, I don't need a break, I also need to run the next case as well.
+				register = instructionDecoder.getRegister(InstructionDecoder.Register.HL, splitInstruction);
+				address = splitInstruction.getShortInc();
+				break;
 			case 3:
+				register = instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction);
 				address = splitInstruction.getShortInc();
 				break;
 			default:
@@ -42,7 +45,7 @@ public class IndirectLoad extends Instruction{
 		if (splitInstruction.q) {
 			// Load contents of register into memory location
 			if (register instanceof Register8) {
-				alu.memoryLoad8(address, (Register8)register);
+				alu.memoryLoad8(address, (Register8) register);
 			} else if (register instanceof Register16) {
 				alu.memoryLoad16(address, (Register16) register);
 			}
@@ -54,5 +57,6 @@ public class IndirectLoad extends Instruction{
 				alu.indirectLoad16((Register16) register, address);
 			}
 		}
+		return splitInstruction.position;
 	}
 }

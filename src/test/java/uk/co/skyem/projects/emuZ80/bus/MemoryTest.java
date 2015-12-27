@@ -49,14 +49,14 @@ public class MemoryTest {
 		assertThat(memory1.getByte(9)).isEqualTo(testByte);
 
 		System.out.println("Making sure that memory1 doesn't crash for an address that isn't in it.");
-		memory1.putByte(100, (byte)0x44);
+		memory1.putByte(100, (byte) 0x44);
 	}
 
 	@Test
 	public void testGetByte() throws Exception {
 		System.out.println("Making sure that memory1 returns nothing for an empty byte.");
 		assertThat(memory1.getByte(0)).isEqualTo((byte) 0);
-		
+
 		System.out.println("Making sure that memory1 can set and retrieve a bytes one by one.");
 		byte[] result;
 		IntStream.range(0, testBytes1.length)
@@ -96,7 +96,7 @@ public class MemoryTest {
 		byte[] result;
 		byte[] result1;
 		byte[] result2;
-		int split = new Random().nextInt( testBytes2.length);
+		int split = new Random().nextInt(testBytes2.length);
 
 		memory1.putBytes(0, testBytes2);
 
@@ -136,10 +136,10 @@ public class MemoryTest {
 	public void testChangeOffset() throws Exception {
 		System.out.println("Making sure that memory2 can set the offset and set and retrieve data");
 		assertThat(memory2.getOffset()).isEqualTo(5);
-		memory2.putByte(5, (byte)0x33);
-		assertThat(memory2.getByte(5)).isEqualTo((byte)0x33);
+		memory2.putByte(5, (byte) 0x33);
+		assertThat(memory2.getByte(5)).isEqualTo((byte) 0x33);
 		memory2.changeOffset(10);
-		assertThat(memory2.getByte(10)).isEqualTo((byte)0x33);
+		assertThat(memory2.getByte(10)).isEqualTo((byte) 0x33);
 	}
 
 	@Test

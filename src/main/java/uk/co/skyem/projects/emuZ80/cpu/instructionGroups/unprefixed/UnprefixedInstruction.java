@@ -21,37 +21,45 @@ public class UnprefixedInstruction extends Instruction {
 	ALURegister aluRegister = new ALURegister(instructionDecoder);
 
 	@Override
-	public void runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
+	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.x) {
 			case 0:
 				switch (splitInstruction.z) {
 					case 0:
-						miscInstruction.runOpcode(splitInstruction);
-						break;
+						return miscInstruction.runOpcode(splitInstruction);
 					case 1:
-						loadAdd16.runOpcode(splitInstruction);
-						break;
+						return loadAdd16.runOpcode(splitInstruction);
 					case 2:
-						indirectLoad.runOpcode(splitInstruction);
-						break;
-					case 3:case 4:case 5:case 6:
-						incrementDecrement.runOpcode(splitInstruction);
-						break;
+						return indirectLoad.runOpcode(splitInstruction);
+					case 3:
+					case 4:
+					case 5:
+					case 6:
+						return incrementDecrement.runOpcode(splitInstruction);
 					case 7:
-						miscOP.runOpcode(splitInstruction);
-						break;
+						return miscOP.runOpcode(splitInstruction);
 					default:
 						throw new IllegalStateException("We should never be here.");
 				}
-				break;
 			case 1:
-				load8Halt.runOpcode(splitInstruction);
-				break;
+				return load8Halt.runOpcode(splitInstruction);
 			case 2:
-				aluRegister.runOpcode(splitInstruction);
+				return aluRegister.runOpcode(splitInstruction);
+			case 3:
+				switch (splitInstruction.z) {
+					case 0:
+						// RET (condition).
+						InstructionDecoder.Condition condition = instructionDecoder.conditionTable[splitInstruction.y];
+						if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
+							return instructionDecoder.popWord();
+						break;
+					default:
+						throw new IllegalStateException("Unprefixed / x=3, z=" + splitInstruction.z + " NYI");
+				}
 				break;
 			default:
 				throw new IllegalStateException("We should never be here.");
 		}
+		return splitInstruction.position;
 	}
 }
