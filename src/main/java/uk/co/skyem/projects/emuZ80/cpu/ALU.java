@@ -5,6 +5,23 @@ import uk.co.skyem.projects.emuZ80.cpu.Register.Register8;
 
 public class ALU {
 
+	/*
+	 * The ALU is where I'm putting a few things instructionGroups are allowed access to.
+	 * Memory and IO routers are put here so that Core's references aren't exposed.
+	 * Why? Because of IX/IY. If someone punches a hole directly and starts using registers,
+	 * and they then start using H/L, they'll break things badly.
+	 */
+
+	public MemoryRouter memRouter;
+	public MemoryRouter ioRouter;
+	public Register8 flags;
+
+	public ALU(MemoryRouter core, MemoryRouter io, Register8 flag) {
+		memRouter = core;
+		ioRouter = io;
+		flags = flag;
+	}
+
 	/**
 	 * Rotates a long.
 	 *
@@ -104,18 +121,6 @@ public class ALU {
 		}
 	}
 
-	Registers registers;
-	Core core;
-
-	public ALU(Core core) {
-		this.core = core;
-		this.registers = core.registers;
-	}
-
-	private Register8 getFlags() {
-		return registers.flags;
-	}
-
 	/**
 	 * Check if number is bigger than 16 bits.
 	 **/
@@ -207,8 +212,6 @@ public class ALU {
 
 		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F)) > 0x0F;
 
-		Register8 flags = getFlags();
-
 		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
 		flags.setFlag(Flags.ZERO & flagControl, r == 0);
 		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
@@ -236,7 +239,6 @@ public class ALU {
 	}
 
 	private byte incDec8SetFlags(int result) {
-		Register8 flags = getFlags();
 		// Check to see if there is an overflow
 		// TODO: Is this correct?
 
@@ -285,28 +287,28 @@ public class ALU {
 	 * Loads a register with a value from a memory address
 	 **/
 	public void indirectLoad8(Register8 register, short address) {
-		register.setData(core.getMemoryByte(address));
+		register.setData(memRouter.getByte(address));
 	}
 
 	/**
 	 * Load contents of register into memory location
 	 **/
 	public void memoryLoad8(short address, Register8 register) {
-		core.putMemoryByte(address, register.getData());
+		memRouter.putByte(address, register.getData());
 	}
 
 	/**
 	 * Loads a register with a value from a memory address
 	 **/
 	public void indirectLoad16(Register16 register, short address) {
-		register.setData(core.getMemoryWord(address));
+		register.setData(memRouter.getWord(address));
 	}
 
 	/**
 	 * Load contents of register into memory location
 	 **/
 	public void memoryLoad16(short address, Register16 register) {
-		core.putMemoryWord(address, register.getData());
+		memRouter.putWord(address, register.getData());
 	}
 
 	/**
@@ -314,8 +316,8 @@ public class ALU {
 	 **/
 	public void rotateRegisterLeft(Register register) {
 		// These flags are reset.
-		getFlags().setFlag(Flags.HALF_CARRY, false);
-		getFlags().setFlag(Flags.ADD_SUB, false);
+		flags.setFlag(Flags.HALF_CARRY, false);
+		flags.setFlag(Flags.ADD_SUB, false);
 		register.rotateLeft(1);
 	}
 
@@ -324,8 +326,8 @@ public class ALU {
 	 **/
 	public void rotateRegisterRight(Register register) {
 		// These flags are reset.
-		getFlags().setFlag(Flags.HALF_CARRY, false);
-		getFlags().setFlag(Flags.ADD_SUB, false);
+		flags.setFlag(Flags.HALF_CARRY, false);
+		flags.setFlag(Flags.ADD_SUB, false);
 		register.rotateRight(1);
 	}
 
@@ -334,18 +336,18 @@ public class ALU {
 	 **/
 	public void rotateRegisterRightCarry(Register register) {
 		// Get the LSB and put it into the carry flag.
-		getFlags().setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
+		flags.setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
 		// Rotate the register
 		rotateRegisterRight(register);
 	}
 
 	/**
-	 * Set the carry flag to the LSB and rotate the register one bit to the right.
+	 * Set the carry flag to the MSB and rotate the register one bit to the left.
 	 **/
 	public void rotateRegisterLeftCarry(Register register) {
 		// Get the MSB and put it into the carry flag.
 		// TODO: Does this work?
-		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
+		flags.setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
 		// Rotate the register
 		rotateRegisterLeft(register);
 	}
@@ -355,9 +357,9 @@ public class ALU {
 	 **/
 	public void rotateRegisterRightThroughCarry(Register register) {
 		// Get the previous contents of the carry flag
-		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
+		boolean oldCarry = flags.getFlag(Flags.CARRY);
 		// Get the LSB and put it into the carry flag.
-		getFlags().setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
+		flags.setFlag(Flags.CARRY, (register.getData().byteValue() & 0b1) == 0b1);
 		// Rotate the register
 		rotateRegisterRight(register);
 		// Copy the flag into the register.
@@ -370,10 +372,10 @@ public class ALU {
 	 **/
 	public void rotateRegisterLeftThroughCarry(Register register) {
 		// Get the previous contents of the carry flag
-		boolean oldCarry = getFlags().getFlag(Flags.CARRY);
+		boolean oldCarry = flags.getFlag(Flags.CARRY);
 		// Get the MSB and put it into the carry flag.
 		// TODO: Does this work?
-		getFlags().setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
+		flags.setFlag(Flags.CARRY, (register.getData().longValue() & (0b1L << (register.getSize() - 1))) == 0b1);
 		// Rotate the register
 		rotateRegisterLeft(register);
 		// Copy the flag into the register.
@@ -385,7 +387,6 @@ public class ALU {
 	 **/
 	public void bcdAdjust(Register8 toAdjust) {
 		// Get the flags register
-		Register8 flags = getFlags();
 
 		// Get the data in the register
 		int data = toAdjust.getData();
@@ -458,7 +459,6 @@ public class ALU {
 		int data = ~register.getData() & 0xFF;
 		register.setData((byte) data);
 
-		Register8 flags = getFlags();
 		flags.setFlag(Flags.HALF_CARRY, true);
 		flags.setFlag(Flags.ADD_SUB, true);
 
@@ -469,14 +469,12 @@ public class ALU {
 	/**
 	 * Sets the carry flag and some other flags
 	 **/
-	public void setCarry() {
-		Register8 flags = getFlags();
+	public void setCarry(byte regA) {
 
 		flags.setFlag(Flags.CARRY, true);
 		flags.setFlag(Flags.HALF_CARRY, false);
 		flags.setFlag(Flags.ADD_SUB, false);
 
-		byte regA = registers.REG_A.getData();
 		flags.setFlag(Flags.X_3, getBit(regA, 3));
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
@@ -484,50 +482,14 @@ public class ALU {
 	/**
 	 * Invert the carry flag
 	 **/
-	public void invertCarry() {
-		Register8 flags = getFlags();
+	public void invertCarry(byte regA) {
 
 		flags.setFlag(Flags.HALF_CARRY, flags.getFlag(Flags.CARRY));
 		flags.toggleFlag(Flags.CARRY);
 		flags.setFlag(Flags.ADD_SUB, false);
 
-		byte regA = registers.REG_A.getData();
 		flags.setFlag(Flags.X_3, getBit(regA, 3));
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
 
-	/**
-	 * Push a byte onto the stack
-	 **/
-	public void pushByte(byte b) {
-		registers.stackPointer.decrement();
-		core.putMemoryByte(registers.stackPointer.getData(), b);
-	}
-
-	/**
-	 * Push a word onto the stack
-	 * h is stored first, then l, so when read it's little-endian
-	 **/
-	public void pushWord(short v) {
-		pushByte((byte)((v & 0xFF00) >> 8));
-		pushByte((byte)(v & 0xFF));
-	}
-
-	/**
-	 * Pop a word from the stack
-	 **/
-	public short popWord() {
-		short value = core.getMemoryWord(registers.stackPointer.getData());
-		registers.stackPointer.increment((short) 2);
-		return value;
-	}
-
-	/**
-	 * Pop a byte from the stack
-	 **/
-	public byte popByte() {
-		byte v = core.getMemoryByte(registers.stackPointer.getData());
-		registers.stackPointer.increment();
-		return v;
-	}
 }

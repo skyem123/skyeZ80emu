@@ -236,24 +236,24 @@ public abstract class Register<T extends Number> {
 	}
 
 	/**
-	 * An 8 bit Register, that stores it's data in a location in memory
+	 * An 8 bit Register, that stores it's data in a location in memory,
+	 * which itself is in a MemoryRouter.
 	 */
 	public static class MemoryRegister8 extends Register8 {
-		// NOTE: I've routed everything through Core for lack of a saner option
-		private final Core memoryHolder;
+		private final MemoryRouter memoryHolder;
 		private final short position;
 
-		public MemoryRegister8(Core memory, short position) {
+		public MemoryRegister8(MemoryRouter memory, short position) {
 			this.memoryHolder = memory;
 			this.position = position;
 		}
 
 		private byte data() {
-			return memoryHolder.getMemoryByte(position);
+			return memoryHolder.getByte(position);
 		}
 
 		private void data(byte data) {
-			memoryHolder.putMemoryByte(position, data);
+			memoryHolder.putByte(position, data);
 		}
 
 		@Override

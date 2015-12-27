@@ -19,7 +19,7 @@ public class IncrementDecrement8LDI extends Instruction {
 			case 3:
 				// 16 bit INC/DEC
 				// rp[p]
-				Register.Register16 registerPair = instructionDecoder.getRegisterPair(InstructionDecoder.registerPairTable1[splitInstruction.p]);
+				Register.Register16 registerPair = instructionDecoder.getRegisterPair(InstructionDecoder.registerPairTable1[splitInstruction.p], splitInstruction);
 				if (splitInstruction.q) {
 					// DEC rp[p]
 					alu.increment16(registerPair);
@@ -32,7 +32,7 @@ public class IncrementDecrement8LDI extends Instruction {
 			case 5:
 			case 6:
 				// r[y]
-				Register.Register8 register = instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.y]);
+				Register.Register8 register = instructionDecoder.getRegister(InstructionDecoder.registerTable[splitInstruction.y], splitInstruction);
 				switch (splitInstruction.z) {
 					case 4:
 						// 8 bit INC

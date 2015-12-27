@@ -1,9 +1,6 @@
 package uk.co.skyem.projects.emuZ80.cpu.instructionGroups.unprefixed;
 
-import uk.co.skyem.projects.emuZ80.cpu.Core;
-import uk.co.skyem.projects.emuZ80.cpu.Flags;
-import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder;
-import uk.co.skyem.projects.emuZ80.cpu.Registers;
+import uk.co.skyem.projects.emuZ80.cpu.*;
 import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 import uk.co.skyem.projects.emuZ80.cpu.InstructionDecoder.Condition;
 
@@ -13,9 +10,6 @@ public class MiscInstruction extends Instruction {
 		super(instructionDecoder);
 	}
 
-	private Registers registers = instructionDecoder.registers;
-	private Core cpuCore = instructionDecoder.cpuCore;
-
 	@Override
 	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.y) {
@@ -24,18 +18,20 @@ public class MiscInstruction extends Instruction {
 				break;
 			case 1:
 				// EX AF,AF' -- Swap AF with its shadow register.
-				registers.swapRegisters(registers.REG_AF, registers.REG_AFS);
+				instructionDecoder.specialExceptionEXAF();
 				break;
 			case 2:
 				// DJNZ d -- Decrement B by one, then relative jump if B is not zero.
-				registers.REG_B.decrement();
+				Register.Register8 b = instructionDecoder.getRegister(InstructionDecoder.Register.B, splitInstruction);
+				b.decrement();
 				byte relJmp = splitInstruction.getByteInc();
-				if (registers.REG_B.getData() != 0)
-					return (short)(registers.getProgramCounter() + relJmp);
+				if (b.getData() != 0)
+					return (short)((instructionDecoder.getProgramCounter() + relJmp) & 0xFFFF);
 				break;
 			case 3:
 				// JR d -- Relative jump.
-				return (short)(registers.getProgramCounter() + splitInstruction.getByteInc());
+				// As byte is signed, there are no problems here.
+				return (short)((instructionDecoder.getProgramCounter() + splitInstruction.getByteInc()) & 0xFFFF);
 			case 4:
 			case 5:
 			case 6:
@@ -43,8 +39,8 @@ public class MiscInstruction extends Instruction {
 				// JR cc[y-4], d -- Relative jump if condition is met.
 				Condition condition = InstructionDecoder.conditionTable[splitInstruction.y - 4];
 				relJmp = splitInstruction.getByteInc();
-				if (registers.flags.getFlag(condition.flagVal) == condition.expectedResult)
-					return (short)(registers.getProgramCounter() + relJmp);
+				if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
+					return (short)((instructionDecoder.getProgramCounter() + relJmp) & 0xFFFF);
 				break;
 		}
 		return splitInstruction.position;

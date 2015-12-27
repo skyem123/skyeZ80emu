@@ -21,7 +21,7 @@ public class DoesJavaSignExtendTest {
 	@Test
 	public void testDoesCoreFixThis() {
 		short i = 0;
-		Core core = new Core(new SimpleBusDevice() {
+		MemoryRouter core = new MemoryRouter(new SimpleBusDevice() {
 			@Override
 			public void putByte(int position, byte data) {
 				assertThat(position).isBetween(0, 65535);
@@ -32,12 +32,12 @@ public class DoesJavaSignExtendTest {
 				assertThat(position).isBetween(0, 65535);
 				return 0;
 			}
-		}, new Memory(65536, 0));
+		});
 		while (true) {
-			core.putMemoryByte(i, (byte)0);
-			core.putMemoryWord(i, (short)0);
-			core.getMemoryByte(i);
-			core.getMemoryWord(i);
+			core.putByte(i, (byte)0);
+			core.putWord(i, (short)0);
+			core.getByte(i);
+			core.getWord(i);
 			i++;
 			if (i == 0)
 				break;

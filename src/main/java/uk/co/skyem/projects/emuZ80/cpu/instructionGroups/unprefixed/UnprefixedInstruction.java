@@ -50,8 +50,8 @@ public class UnprefixedInstruction extends Instruction {
 					case 0:
 						// RET (condition).
 						InstructionDecoder.Condition condition = instructionDecoder.conditionTable[splitInstruction.y];
-						if (instructionDecoder.registers.flags.getFlag(condition.flagVal) == condition.expectedResult)
-							return instructionDecoder.alu.popWord();
+						if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
+							return instructionDecoder.popWord();
 						break;
 					default:
 						throw new IllegalStateException("Unprefixed / x=3, z=" + splitInstruction.z + " NYI");

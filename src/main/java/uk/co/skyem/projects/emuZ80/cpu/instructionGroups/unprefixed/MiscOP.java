@@ -7,50 +7,48 @@ import uk.co.skyem.projects.emuZ80.cpu.instructionGroups.Instruction;
 
 public class MiscOP extends Instruction {
 	private ALU alu;
-	private Registers registers;
 
 	public MiscOP(InstructionDecoder instructionDecoder) {
 		super(instructionDecoder);
 		this.alu = instructionDecoder.alu;
-		this.registers = instructionDecoder.registers;
 	}
 
 	@Override
 	public short runOpcode(InstructionDecoder.SplitInstruction splitInstruction) {
 		switch (splitInstruction.y) {
-			// TODO: Implement instructions.
+			// TODO: Apparently these aren't implemented? According to the last TODOer.
 			case 0:
 				// RLCA
-				alu.rotateRegisterLeftCarry(registers.REG_A);
+				alu.rotateRegisterLeftCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 1:
 				// RRCA
-				alu.rotateRegisterRightCarry(registers.REG_A);
+				alu.rotateRegisterRightCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 2:
 				// RLA
-				alu.rotateRegisterLeftThroughCarry(registers.REG_A);
+				alu.rotateRegisterLeftThroughCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 3:
 				// RRA
-				alu.rotateRegisterRightThroughCarry(registers.REG_A);
+				alu.rotateRegisterRightThroughCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 4:
 				// DAA
 				// Edits the accumulator after an operation with BCD input (ADD / SUB, etc...), to make the result BCD.
-				alu.bcdAdjust(registers.REG_A);
+				alu.bcdAdjust(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 5:
 				// CPL
-				alu.complement(registers.REG_A);
+				alu.complement(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction));
 				break;
 			case 6:
 				// SCF
-				alu.setCarry();
+				alu.setCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction).getData());
 				break;
 			case 7:
 				// CCF
-				alu.invertCarry();
+				alu.invertCarry(instructionDecoder.getRegister(InstructionDecoder.Register.A, splitInstruction).getData());
 				break;
 		}
 		return splitInstruction.position;

@@ -26,7 +26,7 @@ public class SingleInstructionTest {
 			}
 		}, new Memory(65536, 0)); // using IO as memory, any better ideas?
 		for (int i = 0; i < positions.length; i++) {
-			c.cycle(); // NOTE: If cycle is ever fixed to work in T-States, then run this 4 times.
+			c.step(); // NOTE: If step is ever fixed to work in T-States, then run this 4 times.
 			System.out.println("Cycle complete, PC=" + c.registers.getProgramCounter());
 			assertThat(c.registers.getProgramCounter()).isEqualTo(positions[i]);
 		}
