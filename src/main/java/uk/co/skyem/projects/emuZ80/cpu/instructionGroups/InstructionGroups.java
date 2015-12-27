@@ -23,7 +23,7 @@ public class InstructionGroups extends Instruction {
 				return unprefixedInstruction.runOpcode(splitInstruction);
 			// NOTE BEFORE YOU ADD BIT PREFIX!!!! SEE ABOVE
 			default:
-				throw new IllegalStateException("Someone forgot a prefix or we shouldn't be here");
+				throw new UnsupportedOperationException("Someone forgot a prefix or we shouldn't be here");
 		}
 	}
 }

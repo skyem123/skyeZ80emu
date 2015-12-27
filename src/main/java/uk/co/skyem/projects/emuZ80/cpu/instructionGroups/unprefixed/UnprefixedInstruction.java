@@ -39,7 +39,7 @@ public class UnprefixedInstruction extends Instruction {
 					case 7:
 						return miscOP.runOpcode(splitInstruction);
 					default:
-						throw new IllegalStateException("We should never be here.");
+						throw new UnsupportedOperationException("We should never be here.");
 				}
 			case 1:
 				return load8Halt.runOpcode(splitInstruction);
@@ -53,12 +53,19 @@ public class UnprefixedInstruction extends Instruction {
 						if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
 							return instructionDecoder.popWord();
 						break;
+					case 2:
+						// JP (condition),nn
+						condition = instructionDecoder.conditionTable[splitInstruction.y];
+						short target = splitInstruction.getShortInc();
+						if (instructionDecoder.alu.flags.getFlag(condition.flagVal) == condition.expectedResult)
+							return target;
+						break;
 					default:
-						throw new IllegalStateException("Unprefixed / x=3, z=" + splitInstruction.z + " NYI");
+						throw new UnsupportedOperationException("Unprefixed / x=3, z=" + splitInstruction.z + " NYI");
 				}
 				break;
 			default:
-				throw new IllegalStateException("We should never be here.");
+				throw new UnsupportedOperationException("We should never be here.");
 		}
 		return splitInstruction.position;
 	}

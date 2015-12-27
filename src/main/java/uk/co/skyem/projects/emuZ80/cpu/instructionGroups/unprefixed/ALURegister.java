@@ -24,7 +24,7 @@ public class ALURegister extends Instruction {
 				r = instructionDecoder.alu.add8(a.getData(), b.getData(), instructionDecoder.alu.flags.getFlag(Flags.CARRY), 0xFF) & 0xFF;
 				break;
 			default:
-				throw new IllegalStateException("TODO: Implement");
+				throw new UnsupportedOperationException("TODO: Implement");
 		}
 		a.setData((byte) r);
 

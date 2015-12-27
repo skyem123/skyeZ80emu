@@ -39,7 +39,7 @@ public class IndirectLoad extends Instruction {
 				address = splitInstruction.getShortInc();
 				break;
 			default:
-				throw new IllegalStateException("We should never be here.");
+				throw new UnsupportedOperationException("We should never be here.");
 		}
 
 		if (splitInstruction.q) {
