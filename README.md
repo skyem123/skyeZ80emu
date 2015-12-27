@@ -1,4 +1,4 @@
-# skyeZ80emu [![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Skye/skyeZ80emu.svg)](http://ci.rx14.co.uk/job/Skye/job/skyeZ80emu/) [![Jenkins tests](https://img.shields.io/jenkins/t/http/jenkins.rx14.co.uk/job/Skye/skyeZ80emu.svg)](http://ci.rx14.co.uk/job/Skye/job/skyeZ80emu/lastCompletedBuild/testReport/) [![codecov.io](https://img.shields.io/codecov/c/github/skyem123/skyeZ80emu.svg)](http://codecov.io/github/skyem123/skyeZ80emu?branch=master) ##
+# skyeZ80emu [![Jenkins Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Skye/skyeZ80emu.svg)](http://ci.rx14.co.uk/job/Skye/job/skyeZ80emu/) [![Jenkins tests](https://img.shields.io/jenkins/t/http/jenkins.rx14.co.uk/job/Skye/skyeZ80emu.svg)](http://ci.rx14.co.uk/job/Skye/job/skyeZ80emu/lastCompletedBuild/testReport/) [![codecov.io](https://img.shields.io/codecov/c/github/skyem123/skyeZ80emu.svg)](http://codecov.io/github/skyem123/skyeZ80emu?branch=master) [![Travis build staus](https://img.shields.io/travis/skyem123/skyeZ80emu.svg)](https://travis-ci.org/skyem123/skyeZ80emu)
 This is a very stupid project idea made by someone who thinks they're idiotic, and focuses so much on this thought it's a little ridiculous.
 It might not be completed.
 
@@ -8,7 +8,7 @@ Fun fact, [@Victorious3](https://github.com/Victorious3) and [@RX14](https://git
 
 Thanks to [@RX14](https://github.com/RX14) for the Jenkins build server!
 
-*Whatever you do, if you are writing an Instruction sub-class, do not set the program counter. Please, use the return value.*
+Also, thank you [@gamemanj](https://github.com/gamemanj) for writing a lot of code to help me, and generally being more intelligent than me!
 
 ### Code Coverage ###
 ![codecov.io](http://codecov.io/github/skyem123/skyeZ80emu/branch.svg?branch=master)
