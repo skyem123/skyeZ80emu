@@ -121,41 +121,6 @@ public class ALU {
 		}
 	}
 
-	/**
-	 * Check if number is bigger than 16 bits.
-	 **/
-	private boolean checkCarry16(int result) {
-		return result > 0xFFFF;
-	}
-
-	/**
-	 * Check if number is bigger than 8 bits.
-	 **/
-	private boolean checkCarry8(short result) {
-		return result > 0xFF;
-	}
-
-	/**
-	 * Check if number is bigger than 8 bits.
-	 **/
-	private boolean checkCarry8(int result) {
-		return result > 0xFF;
-	}
-
-	/**
-	 * Check if a number is bigger than 4 bits.
-	 **/
-	private boolean checkCarry4(int result) {
-		return result > 0xF;
-	}
-
-	/**
-	 * Check if a number is bigger than 4 bits.
-	 **/
-	private boolean checkCarry4(byte result) {
-		return result > 0xF;
-	}
-
 	// NOTE: These 5 functions are 0-based
 	//       Don't forget that!!!
 
@@ -210,24 +175,48 @@ public class ALU {
 		boolean carry = r > 0xFF;
 		r &= 0xFF;
 
-		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F)) > 0x0F;
+		boolean halfCarry = ((ai & 0x0F) + (bi & 0x0F) + (carryIn ? 1 : 0)) > 0x0F;
+		// a random PDF file says that carry *into the sign bit* and *out of the sign bit*
+		// determines overflow.
+		// We already know carry out, but carry in?
+		boolean signCarry = ((ai & 0x7F) + (bi & 0x7F) + (carryIn ? 1 : 0)) > 0x7F;
 
 		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
 		flags.setFlag(Flags.ZERO & flagControl, r == 0);
 		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
 		flags.setFlag(Flags.HALF_CARRY & flagControl, halfCarry);
 		flags.setFlag(Flags.X_3 & flagControl, getBit(r, 3));
-		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != carryIn);
+		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != signCarry);
 		flags.setFlag(Flags.ADD_SUB & flagControl, false);
 		flags.setFlag(Flags.CARRY & flagControl, carry);
 		return r | (carry ? (1 << 8) : 0);
 	}
 
-	/**
-	 * Sets a register to a 16 bit immediate value
-	 **/
-	public void load16(Register16 register, short data) {
-		register.setData(data);
+	public int sub8(byte a, byte b, boolean borrowIn, int flagControl) {
+		// First, convert everything to unsigned.
+		// For any subtraction that doesn't borrow, all 3 values will be between 0 and 0xFF.
+		// If the subtraction does borrow, the result will be under 0.
+		int ai = Byte.toUnsignedInt(a);
+		int bi = Byte.toUnsignedInt(b);
+		int r = (ai - bi) - (borrowIn ? 1 : 0);
+		boolean carry = r < 0;
+		r &= 0xFF;
+
+		boolean halfCarry = (((ai & 0x0F) - (bi & 0x0F)) - (borrowIn ? 1 : 0)) < 0;
+		// a random PDF file says that carry *into the sign bit* and *out of the sign bit*
+		// determines overflow.
+		// We already know carry out, but carry in?
+		boolean signCarry = (((ai & 0x7F) - (bi & 0x7F)) - (borrowIn ? 1 : 0)) < 0;
+
+		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
+		flags.setFlag(Flags.ZERO & flagControl, r == 0);
+		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
+		flags.setFlag(Flags.HALF_CARRY & flagControl, halfCarry);
+		flags.setFlag(Flags.X_3 & flagControl, getBit(r, 3));
+		flags.setFlag(Flags.PARITY_OVERFLOW & flagControl, carry != signCarry);
+		flags.setFlag(Flags.ADD_SUB & flagControl, true);
+		flags.setFlag(Flags.CARRY & flagControl, carry);
+		return r | (carry ? (1 << 8) : 0);
 	}
 
 	public void increment16(Register16 register) {
@@ -238,49 +227,17 @@ public class ALU {
 		register.decrement();
 	}
 
-	private byte incDec8SetFlags(int result) {
-		// Check to see if there is an overflow
-		// TODO: Is this correct?
-
-		flags.setFlag(Flags.PARITY_OVERFLOW, checkCarry8(result));
-
-		// set the addition / subtraction flag
-		flags.setFlag(Flags.ADD_SUB, false);
-
-		// set the X_5 and X_3 flags
-		flags.setFlag(Flags.X_3, getBit(result, 3));
-		flags.setFlag(Flags.X_5, getBit(result, 5));
-
-		// set the H flag
-		flags.setFlag(Flags.HALF_CARRY, checkCarry4(result));
-
-		// set the Z flag
-		flags.setFlag(Flags.ZERO, result == 0);
-
-		byte resultByte = (byte) result;
-
-		// set the S flag
-		flags.setFlag(Flags.SIGN, resultByte < 0);
-
-		return resultByte;
-	}
-
 	public void increment8(Register8 register) {
-		int result = register.getData() + 1;
+		int result = add8(register.getData(), (byte) 1, false, Flags.ADD_SUB | Flags.PARITY_OVERFLOW | Flags.HALF_CARRY | Flags.ZERO | Flags.SIGN | Flags.X_3 | Flags.X_5);
 
-		// set the register with the result after setting flags
-		register.setData(incDec8SetFlags(result));
+		register.setData((byte) (result & 0xFF));
 	}
 
 	public void decrement8(Register8 register) {
-		int result = register.getData() - 1;
+		int result = sub8(register.getData(), (byte) 1, false, Flags.ADD_SUB | Flags.PARITY_OVERFLOW | Flags.HALF_CARRY | Flags.ZERO | Flags.SIGN | Flags.X_3 | Flags.X_5);
 
 		// set the register with the result after setting flags
-		register.setData(incDec8SetFlags(result));
-	}
-
-	public void load8(Register8 register, byte data) {
-		register.setData(data);
+		register.setData((byte) (result & 0xFF));
 	}
 
 	/**
@@ -492,4 +449,25 @@ public class ALU {
 		flags.setFlag(Flags.X_5, getBit(regA, 5));
 	}
 
+	public byte and8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a & b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	public byte xor8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a ^ b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	public byte or8(byte a, byte b, int flagControl) {
+		byte r = (byte) (a | b);
+		bitOpFlags(flagControl, r);
+		return r;
+	}
+
+	private void bitOpFlags(int flagControl, byte r) {
+		throw new UnsupportedOperationException("TODO");
+	}
 }

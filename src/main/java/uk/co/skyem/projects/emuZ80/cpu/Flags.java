@@ -1,6 +1,6 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
-public class Flags {
+public abstract class Flags {
 
 	public static final int CARRY = 1 << 0;
 	public static final int ADD_SUB = 1 << 1;
@@ -12,7 +12,4 @@ public class Flags {
 	public static final int X_5 = 1 << 5;
 	public static final int ZERO = 1 << 6;
 	public static final int SIGN = 1 << 7;
-
-	private Flags() {
-	}
 }

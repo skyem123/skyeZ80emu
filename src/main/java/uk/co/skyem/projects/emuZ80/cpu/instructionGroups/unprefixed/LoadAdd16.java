@@ -24,7 +24,7 @@ public class LoadAdd16 extends Instruction {
 			alu.add16Register(hl, instructionDecoder.getRegisterPair(registerPair, splitInstruction), false, Flags.X_3 | Flags.X_5 | Flags.HALF_CARRY | Flags.ADD_SUB | Flags.CARRY);
 		} else {
 			// LD rp[p],nn
-			alu.load16(instructionDecoder.getRegisterPair(registerPair, splitInstruction), splitInstruction.getShortInc());
+			instructionDecoder.getRegisterPair(registerPair, splitInstruction).setData(splitInstruction.getShortInc());
 		}
 		return splitInstruction.position;
 	}

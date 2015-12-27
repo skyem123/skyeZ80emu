@@ -23,8 +23,29 @@ public class ALURegister extends Instruction {
 			case ADC_A:
 				r = instructionDecoder.alu.add8(a.getData(), b.getData(), instructionDecoder.alu.flags.getFlag(Flags.CARRY), 0xFF) & 0xFF;
 				break;
+			case SUB:
+				r = instructionDecoder.alu.sub8(a.getData(), b.getData(), false, 0xFF) & 0xFF;
+				break;
+			case SBC_A:
+				r = instructionDecoder.alu.sub8(a.getData(), b.getData(), instructionDecoder.alu.flags.getFlag(Flags.CARRY), 0xFF) & 0xFF;
+				break;
+			case CP:
+				instructionDecoder.alu.sub8(a.getData(), b.getData(), false, 0xFF);
+				instructionDecoder.alu.flags.setFlag(Flags.X_3, (b.getData() & 0x08) == 0x08);
+				instructionDecoder.alu.flags.setFlag(Flags.X_5, (b.getData() & 0x20) == 0x20);
+				// don't actually set A
+				return splitInstruction.position;
+			case AND:
+				r = instructionDecoder.alu.and8(a.getData(), b.getData(), 0xFF);
+				break;
+			case OR:
+				r = instructionDecoder.alu.or8(a.getData(), b.getData(), 0xFF);
+				break;
+			case XOR:
+				r = instructionDecoder.alu.xor8(a.getData(), b.getData(), 0xFF);
+				break;
 			default:
-				throw new IllegalStateException("TODO: Implement");
+				throw new UnsupportedOperationException("TODO: Implement");
 		}
 		a.setData((byte) r);
 

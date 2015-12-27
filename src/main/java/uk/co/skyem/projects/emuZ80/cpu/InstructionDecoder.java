@@ -81,7 +81,7 @@ public class InstructionDecoder {
 					case None:
 						return rawRegisters.REG_H;
 					default:
-						throw new IllegalStateException("Shouldn't go here - unknown IndexPrefix");
+						throw new UnsupportedOperationException("Shouldn't go here - unknown IndexPrefix");
 				}
 			case L:
 				ins.screwupDetectFlag = true;
@@ -91,13 +91,13 @@ public class InstructionDecoder {
 					case IY:
 						return rawRegisters.REG_IYL;
 					case None:
-						return rawRegisters.REG_H;
+						return rawRegisters.REG_L;
 					default:
-						throw new IllegalStateException("Shouldn't go here - unknown IndexPrefix");
+						throw new UnsupportedOperationException("Shouldn't go here - unknown IndexPrefix");
 				}
 			case HL:
 				if (ins.screwupDetectFlag)
-					throw new IllegalStateException("Someone forgot this: Read from HL-Indirect before any other HL-based register. This is for IX/IY compatibility's sake.");
+					throw new UnsupportedOperationException("Someone forgot this: Read from HL-Indirect before any other HL-based register. This is for IX/IY compatibility's sake.");
 				ins.screwupDetectFlag = true;
 				Register16 reg = rawRegisters.REG_HL;
 				byte ofs = 0;
@@ -113,8 +113,9 @@ public class InstructionDecoder {
 					case None:
 						break;
 					default:
-						throw new IllegalStateException("Shouldn't go here - unknown IndexPrefix");
+						throw new UnsupportedOperationException("Shouldn't go here - unknown IndexPrefix");
 				}
+				ins.index = IndexPrefix.None; // future accesses in the same instruction are not affected.
 				// why & 0xFFFF? Oracle JVMs don't like casting to short, THAT'S WHY
 				return new MemoryRegister8(alu.memRouter, (short)((reg.getData() + Byte.toUnsignedInt(ofs)) & 0xFFFF));
 		}
@@ -136,7 +137,7 @@ public class InstructionDecoder {
 					case None:
 						return rawRegisters.REG_HL;
 					default:
-						throw new IllegalStateException("Shouldn't go here - unknown IndexPrefix");
+						throw new UnsupportedOperationException("Shouldn't go here - unknown IndexPrefix");
 				}
 			case SP:
 				return rawRegisters.stackPointer;
@@ -186,7 +187,7 @@ public class InstructionDecoder {
 	}
 
 	public void halt() {
-		rawRegisters.halted = false;
+		rawRegisters.halted = true;
 	}
 
 	/*
@@ -296,7 +297,7 @@ public class InstructionDecoder {
 			this.x = (byte) ((0b11000000 & this.opcode) >>> 6);
 			this.y = (byte) ((0b00111000 & this.opcode) >>> 3);
 			this.z = (byte) (0b00000111 & this.opcode);
-			this.p = (byte) (0b110 & y);
+			this.p = (byte) ((0b110 & y) >> 1);
 			this.q = (0b001 & y) == 0b1;
 		}
 
@@ -329,7 +330,9 @@ public class InstructionDecoder {
 
 		public short getShortInc() {
 			screwupDetectFlag = true;
-			return buffer.getWord(position++);
+			short w = buffer.getWord(position);
+			position += 2;
+			return w;
 		}
 	}
 
@@ -337,13 +340,12 @@ public class InstructionDecoder {
 		IndexPrefix index = IndexPrefix.None;
 		byte prefix = 0; // can be CB or ED
 		byte opcode;
-		boolean secondPrefix = false;
-		byte secondPrefixDisplacement = 0;
 
 		// this has to cover a *lot* of cases
 		boolean readingPrefix = true;
 		while (readingPrefix) {
-			switch ((int) buffer.getByte(position)) {
+			byte potentialPrefix = buffer.getByte(position);
+			switch (Byte.toUnsignedInt(potentialPrefix)) {
 				// magical index prefixes
 				case 0xDD:
 					index = IndexPrefix.IX;
@@ -358,13 +360,14 @@ public class InstructionDecoder {
 					// ED is a prefix, so it disables other prefixes - like the Index prefix
 					// The quote below should explain why there can only be 1 prefix:
 					index = IndexPrefix.None; // "If the next byte is a DD, ED or FD prefix, the current DD prefix is ignored..."
-					prefix = buffer.getByte(position++);
+					prefix = potentialPrefix;
+					position++;
 					readingPrefix = false;
 					break;
 				// 0xDB is NOT A PREFIX!!!
 				// It's an opcode - that's why the displacement byte goes first after it.
 				default:
-					// no prefix, break
+					// no prefix, break without advancing position
 					readingPrefix = false;
 					break;
 			}

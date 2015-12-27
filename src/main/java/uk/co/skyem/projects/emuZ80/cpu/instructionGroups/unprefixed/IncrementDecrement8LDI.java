@@ -22,10 +22,10 @@ public class IncrementDecrement8LDI extends Instruction {
 				Register.Register16 registerPair = instructionDecoder.getRegisterPair(InstructionDecoder.registerPairTable1[splitInstruction.p], splitInstruction);
 				if (splitInstruction.q) {
 					// DEC rp[p]
-					alu.increment16(registerPair);
+					alu.decrement16(registerPair);
 				} else {
 					// INC rp[p]
-					alu.decrement16(registerPair);
+					alu.increment16(registerPair);
 				}
 				break;
 			case 4:
@@ -46,14 +46,14 @@ public class IncrementDecrement8LDI extends Instruction {
 						break;
 					case 6:
 						// 8 bit immediate load
-						alu.load8(register, splitInstruction.getByteInc());
+						register.setData(splitInstruction.getByteInc());
 						break;
 					default:
-						throw new IllegalStateException("We should never be here.");
+						throw new UnsupportedOperationException("We should never be here.");
 				}
 				break;
 			default:
-				throw new IllegalStateException("We should never be here.");
+				throw new UnsupportedOperationException("We should never be here.");
 		}
 		return splitInstruction.position;
 	}
