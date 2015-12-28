@@ -85,7 +85,7 @@ public class Main {
 		System.out.println("Implemented EXTops: " + runningExtOpcodes + ". IX and IY prefixes have already been implemented, and BIT counts as an instruction");
 
 		// The assembler doesn't work, so for now...
-		FileInputStream fis = new FileInputStream("a.bin");
+		FileInputStream fis = new FileInputStream("calculator.bin");
 		Memory memory = new Memory(65536, 0);
 		int len = fis.available();
 		for (int i = 0; i < len; i++)
