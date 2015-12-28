@@ -451,23 +451,43 @@ public class ALU {
 
 	public byte and8(byte a, byte b, int flagControl) {
 		byte r = (byte) (a & b);
-		bitOpFlags(flagControl, r);
+		bitOpFlags(flagControl, r, true);
 		return r;
 	}
 
 	public byte xor8(byte a, byte b, int flagControl) {
 		byte r = (byte) (a ^ b);
-		bitOpFlags(flagControl, r);
+		bitOpFlags(flagControl, r, false);
 		return r;
 	}
 
 	public byte or8(byte a, byte b, int flagControl) {
 		byte r = (byte) (a | b);
-		bitOpFlags(flagControl, r);
+		bitOpFlags(flagControl, r, false);
 		return r;
 	}
 
-	private void bitOpFlags(int flagControl, byte r) {
-		throw new UnsupportedOperationException("TODO");
+	private void bitOpFlags(int flagControl, byte r, boolean isAnd) {
+//		AND r                 SZ513P00
+
+//		OR/XOR r              SZ503P00
+		flags.setFlag(Flags.SIGN & flagControl, getBit(r, 7));
+		flags.setFlag(Flags.ZERO & flagControl, r == 0);
+		flags.setFlag(Flags.X_5 & flagControl, getBit(r, 5));
+		flags.setFlag(Flags.HALF_CARRY & flagControl, isAnd);
+		flags.setFlag(Flags.X_3 & flagControl, getBit(r, 3));
+		boolean parity = getParity(r);
+		flags.setFlag(Flags.PARITY_OVERFLOW, parity);
+		flags.setFlag(Flags.ADD_SUB & flagControl, false);
+		flags.setFlag(Flags.CARRY & flagControl, false);
+	}
+
+	private boolean getParity(byte r) {
+		boolean bc = true;
+		for (int i = 0; i < 8; i++)
+			if (getBit(r, i))
+				bc = !bc;
+		// first true bit makes it false, second makes it even... parity == even
+		return bc;
 	}
 }

@@ -36,6 +36,13 @@ public class InstructionDecoder {
 		rawRegisters.swapRegisters(new Register16(upper, lower), getRegisterPair(RegisterPair.HL, idx));
 	}
 
+	public void specialExceptionEXX() {
+		// NOTE: EXX is unaffected by IX/IY, unlike EXPtrSPHL
+		rawRegisters.swapRegisters(rawRegisters.REG_BC, rawRegisters.REG_BCS);
+		rawRegisters.swapRegisters(rawRegisters.REG_DE, rawRegisters.REG_DES);
+		rawRegisters.swapRegisters(rawRegisters.REG_HL, rawRegisters.REG_HLS);
+	}
+
 	/*
 	 * NOTE: This function is the main gateway for 8-bit
 	 * register access. This *CAN* have side-effects under the following 3 conditions:
@@ -188,6 +195,21 @@ public class InstructionDecoder {
 
 	public void halt() {
 		rawRegisters.halted = true;
+	}
+
+	// Get the full IO address for everything in the 0xED block.
+	// The reason it's like this is more complex than that really,
+	// but this only happens in (and happens in all) Extended Prefix IO opcodes.
+	// Note that this; http://www.z80.info/zip/z80-documented.pdf
+	// says: The INI/INIR/IND/INDR instructions use BC after decrementing B, and the
+	//       OUTI/OTIR/OUTD/OTDR instructions before.
+	public short getIOAddress_EXT(boolean ini_ind) {
+		return (short) ((rawRegisters.REG_BC.getData() - (ini_ind ? 0x10 : 0)) & 0xFFFF);
+	}
+
+	// Get the full IO address for in A, (*) and out A, (*)
+	public short getIOAddress_A(byte immediate) {
+		return (short) (((rawRegisters.REG_A.getData() << 8) & 0xFF00) | (immediate & 0xFF));
 	}
 
 	/*

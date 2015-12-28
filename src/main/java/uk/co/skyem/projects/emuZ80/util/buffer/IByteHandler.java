@@ -1,5 +1,10 @@
 package uk.co.skyem.projects.emuZ80.util.buffer;
 
+/**
+ * NOTE: -1 sized IByteHandlers are now being used in place of the old Bus system.
+ * Why? Because microcomputer buses are terrible, arbitrary things.
+ * They don't follow any idea of "buses".
+ */
 public interface IByteHandler {
 	/**
 	 * Gets the size of this buffer

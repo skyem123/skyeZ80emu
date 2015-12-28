@@ -1,6 +1,10 @@
 package uk.co.skyem.projects.emuZ80.bus;
 
-public class Memory extends SimpleBusDevice {
+import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
+
+public class Memory extends AbstractByteBuffer implements IByteHandler {
+	private int offset;
 	private byte[] storage;
 
 	public Memory(int size) {
@@ -9,7 +13,8 @@ public class Memory extends SimpleBusDevice {
 	}
 
 	public Memory(int size, int offset) {
-		super(offset);
+		super();
+		this.offset = offset;
 		this.storage = new byte[size];
 	}
 

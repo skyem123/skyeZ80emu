@@ -2,7 +2,7 @@ package uk.co.skyem.projects.emuZ80.cpu;
 
 import org.junit.Test;
 import uk.co.skyem.projects.emuZ80.bus.Memory;
-import uk.co.skyem.projects.emuZ80.bus.SimpleBusDevice;
+import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SingleInstructionTest {
 
 	public static Core executeTest(byte[] data, short[] positions, byte initialFlags) {
-		Core c = new Core(new SimpleBusDevice() {
+		Core c = new Core(new AbstractByteBuffer() {
 			@Override
 			public void putByte(int position, byte bdata) {
 				assertThat(position).isBetween(0, data.length - 1);
@@ -366,13 +366,13 @@ public class SingleInstructionTest {
 				(byte) 0x18,
 				(byte) 0xF0,
 		}, new short[]{
-				(short) 0xFFF0
+				(short) 0xFFF2
 		}, (byte) 0x00);
 		executeTest(new byte[]{
 				(byte) 0x18,
 				(byte) 0x10,
 		}, new short[]{
-				(short) 0x10
+				(short) 0x12
 		}, (byte) 0x00);
 	}
 
@@ -433,7 +433,7 @@ public class SingleInstructionTest {
 
 	public void testCoRelJumpsRun(boolean shouldPass, boolean reverse) {
 		byte[] memory = new byte[0x3];
-		short target = (short) (reverse ? 0xFFF0 : 0x10);
+		short target = (short) (reverse ? 0xFFF2 : 0x12);
 		// 001CC000
 		//0x20 | (condition)
 		for (int condition = 0; condition < 4; condition++) {

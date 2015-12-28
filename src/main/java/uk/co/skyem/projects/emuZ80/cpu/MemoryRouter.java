@@ -1,6 +1,6 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
-import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
 
 /**
  * As part of Project: "Let's try and keep anything that shouldn't be touching Core or Registers from
@@ -16,9 +16,9 @@ import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
  */
 public class MemoryRouter {
 
-	private IBusDevice memoryBus;
+	private IByteHandler memoryBus;
 
-	public MemoryRouter(IBusDevice targetBus) {
+	public MemoryRouter(IByteHandler targetBus) {
 		memoryBus = targetBus;
 	}
 
@@ -44,8 +44,10 @@ public class MemoryRouter {
 	}
 
 	public short getWord(short address) {
-		byte l = memoryBus.getByte(safeShortToInt(address++));
+		byte l = memoryBus.getByte(safeShortToInt(address));
+		address++;
 		byte h = memoryBus.getByte(safeShortToInt(address));
-		return (short) (l | (h << 8));
+		int lh = ((h << 8) & 0xFF00) | (l & 0xFF);
+		return (short) (lh);
 	}
 }
