@@ -126,23 +126,6 @@ public class MemoryTest {
 	}
 
 	@Test
-	public void testGetOffset() throws Exception {
-		System.out.println("Making sure that the memories can remember their offsets");
-		assertThat(memory1.getOffset()).isEqualTo(0);
-		assertThat(memory2.getOffset()).isEqualTo(5);
-	}
-
-	@Test
-	public void testChangeOffset() throws Exception {
-		System.out.println("Making sure that memory2 can set the offset and set and retrieve data");
-		assertThat(memory2.getOffset()).isEqualTo(5);
-		memory2.putByte(5, (byte) 0x33);
-		assertThat(memory2.getByte(5)).isEqualTo((byte) 0x33);
-		memory2.changeOffset(10);
-		assertThat(memory2.getByte(10)).isEqualTo((byte) 0x33);
-	}
-
-	@Test
 	public void testGetEndian() throws Exception {
 		System.out.println("Making sure that memory1 can set endian and retrieve the correct value");
 

@@ -1,0 +1,162 @@
+; RPN Z80 Calculator
+; Designed for Skye Electronics computers
+; example syntax: 5 5 +
+; remember: M and P are sign conditions, PE and PO are the parity conditions
+readToken:
+in A, (0x00)
+readTokenIn:
+call classWhitespace
+jr z, readToken
+cp '0'
+jp m, notNumeric
+cp ':'
+jp p, notNumeric
+ld B, A
+ld A, 0
+; at this point, B is ASCII new digit.
+; A is the current value * 10.
+addNum:
+add B
+sub 0x30
+push af
+in A, (0x00)
+call classWhitespace
+jr z, numericEnd
+cp '0'
+jp m, numericEnd
+cp ':'
+jp p, numericEnd
+; ok, so it's a digit
+ld B, A
+pop af
+; B: new digit (ASCII)
+; A: old digit (0-9)
+; * 2, then add with that * 4
+rlca
+ld C, A
+rlca
+rlca
+; A is now A's original value * 8, add with C to get * 10
+add C
+; B: new digit (ASCII)
+; A: current value (*10'd ready for the next one)
+; this is exactly addNum's signature, so back up we go
+jr addNum
+numericEnd:
+; Number is now on stack, A currently contains the offending char
+jp readTokenIn
+notNumeric:
+cp '+'
+jr nz, notPlus
+
+; + routine
+call checkStack
+pop af
+ld B, A
+call checkStack
+pop af
+add B
+push AF
+jp tokenOk
+
+notPlus:
+cp '='
+jr nz, notEq
+
+; = routine
+call checkStack
+pop af
+call dispNum
+jp tokenOk
+
+notEq:
+cp 'H'
+jr nz, notHalt
+halt
+notHalt:
+; unknown token
+ld A, '!'
+out (0x00), A
+jr endResponse
+tokenOk:
+ld A, 'K'
+out (0x00), A
+endResponse:
+ld A, 10
+out (0x00), A
+jp readToken
+
+; A must be a char
+; result: Zero flag if whitespace
+classWhitespace:
+cp ' '
+ret z
+cp 10
+ret z
+cp 13
+ret
+
+; -- ROUTINES --
+
+; destroys: A, H, L
+; it checks if the lower byte of SP == FE (where an almost-empty stack would be at)
+; if the stack is basically empty apart from the call, it restarts the calculator
+checkStack:
+ld hl, 0
+add hl, sp
+
+ld a, 0xFE
+cp l
+jr nz, checkStackFine
+
+; stack seems to be empty, check in case it just got > 256 bytes
+inc a
+cp h
+jr nz, checkStackFine
+
+pop hl
+ld a, 'S'
+out (0x00), a
+jr endResponse
+
+checkStackFine:
+ret
+
+; Divides by 10, and modulos by 10
+; inputs: A
+; outputs: A(mod) B(div)
+; destroys: F
+divMod10:
+ld b, 0
+divMod10Loop:
+sub 10
+jp c, divMod10Correct ; borrow (Note: used to check for Negative, but that's signed)
+                      ; - we're under, need to correct
+inc b
+ret z ;l == 0 - we just inc'd B, we can return now
+jr divMod10Loop
+divMod10Correct:
+add 10 ; There, fixed
+ret
+
+; Displays a number
+; recursive to handle the reversing
+; inputs: A
+; destroys: A, F, B, C
+dispNum:
+call divMod10
+add 0x30
+ld c, a
+ld a, b
+; at this point: A: Div, B: useless, C: ASCII value
+cp 0
+; div == 0 means no need to write more digits beforehand
+jr z, dispNumMain
+push bc
+call dispNum
+pop bc
+dispNumMain:
+; finally output
+ld a, c
+out (0x00), a
+ret

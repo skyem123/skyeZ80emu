@@ -2,7 +2,7 @@ package uk.co.skyem.projects.emuZ80.cpu;
 
 import org.junit.Test;
 import uk.co.skyem.projects.emuZ80.bus.Memory;
-import uk.co.skyem.projects.emuZ80.bus.SimpleBusDevice;
+import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SingleInstructionTest {
 
 	public static Core executeTest(byte[] data, short[] positions, byte initialFlags) {
-		Core c = new Core(new SimpleBusDevice() {
+		Core c = new Core(new AbstractByteBuffer() {
 			@Override
 			public void putByte(int position, byte bdata) {
 				assertThat(position).isBetween(0, data.length - 1);

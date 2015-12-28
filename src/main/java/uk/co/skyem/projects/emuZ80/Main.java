@@ -1,8 +1,16 @@
 package uk.co.skyem.projects.emuZ80;
 
 import uk.co.skyem.projects.emuZ80.asm.Assembler;
+import uk.co.skyem.projects.emuZ80.bus.Memory;
+import uk.co.skyem.projects.emuZ80.bus.SimpleIO;
+import uk.co.skyem.projects.emuZ80.cpu.Core;
+import uk.co.skyem.projects.emuZ80.cpu.Flags;
+import uk.co.skyem.projects.emuZ80.cpu.MemoryRouter;
 import uk.co.skyem.projects.emuZ80.util.Console;
 
+import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,118 +46,88 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		Logger logger = Logger.getGlobal();
-		Console.init("skyeZ80emu");
-		logger.log(Level.INFO, "test2!");
-		logger.log(Level.INFO, "test3!");
+		// cool, but loading fonts takes time
+		//Console.init("skyeZ80emu");
 
-
-		/*String text = "" +
-				"				DI                    ; Disable interrupt\n\n\n" +
-				"				LD     SP,RAMTOP      ; Set stack pointer to top off ram\n" +
-				"      			IM     1              ; Set interrupt mode 1\n" +
-				"            	JP     $100           ; jump to Start of program\n" +
-				"            	.blah     \"I am a string   \\\\\\\"he   llo!\\\"    with spaces\"";
-		Assembler assembler = new Assembler(text);
-		System.out.println(Arrays.toString(assembler.preparse()));*/
-
-		Assembler assembler = new Assembler("NOP\nNOP\nNOP\nLD\nLD\nNOP\nLD\nLD\nLD\nLD\n"
-				+ "Nothing:\n"
-				+ "nop\n"
-				//+ "LD A, B\n"
-				+ "Load: LD");
-		assembler.assemble();
-		//System.out.println(Arrays.toString(assembler.preparse()));
-
-
-		/*Scanner input = new Scanner(System.in);
-		while(true) {
-			System.out.println(Arrays.toString(assembler.preparse()));
-		}*/
-		/*
-		Bus bus = new Bus();
-		Memory memory = new Memory(1024);
-		bus.addConnection(memory);
-		System.out.println(toHexString(bus.getByte(0)));
-		byte[] datas = new byte[4];
-		datas[0] = (byte) 0xAA;
-		datas[1] = (byte) 0xEE;
-		datas[3] = (byte) 0xCC;
-		bus.putBytes(0, datas);
-		bus.putQWord(4, 0xDEADL);
-		for (byte data : bus.getBytes(0, 16)) {
-			System.out.print(toHexString(data) + ' ');
+		int runningOpcodes = 0;
+		System.out.println("Exception-throwing ops are:");
+		for (int op = 0; op < 0x100; op++) {
+			Memory memory = new Memory(1, 0);
+			Core cpuCore = new Core(memory, new Memory(1, 0));
+			memory.putByte(0, (byte) op);
+			try {
+				cpuCore.step();
+				runningOpcodes++;
+			} catch (Exception e) {
+				// opcode is not running
+				System.out.print(toHexString(op) + " ");
+			}
 		}
+		int runningExtOpcodes = 0;
 		System.out.println();
-		System.out.println(toHexString(bus.getWord(2)));
-		System.out.println(toHexString(bus.getWord(0)));
-		System.out.println(toHexString(bus.getDWord(0)));
-		System.out.println(toHexString(bus.getQWord(4)));
-		bus.addConnection(new SimpleIO(1025));
-		bus.putByte(1025, (byte) 65);
-		bus.putByte(1025, (byte) 65);
-		bus.putByte(1025, bus.getByte(1025));
-		bus.putByte(1025, bus.getByte(1025));
-		System.out.println("\nOkay, now lets start the virtual Z80...\n" +
-			"First, we need ROM...");
-		// Load the ROM from a file
-		Memory cpuROM = new Memory(32768, 0);
-		byte[] ROMdata = new byte[4];
-		ROMdata[0] = (byte) 0x01; // LD BC
-		ROMdata[1] = (byte) 0x42; //      ,$42
-		ROMdata[2] = (byte) 0xFE; //          FE
-		cpuROM.putBytes(0, ROMdata);
-		System.out.println("Next, we need RAM...");
-		Memory cpuMemory = new Memory(32768, 32768);
-		System.out.println("Don't forget IO!");
-		SimpleIO cpuIO = new SimpleIO(0);
-		System.out.println("Now for the buses!");
-		Bus cpuMemBus = new Bus();
-		Bus cpuIOBus = new Bus();
-		System.out.println("Now connect things to those buses!");
-		cpuIOBus.addConnection(cpuIO);
-		cpuMemBus.addConnection(cpuMemory);
-		cpuMemBus.addConnection(cpuROM);
-		System.out.println("Okay, so now get the cpu and give it the buses...");
-		Core cpu = new Core(cpuMemBus, cpuIOBus);
-
-		// Load code to 1000h
-		// bus.putBytes(0x1000, assembledCode)
-		*/
-		/*
-		Thread processor1 = new Thread(() -> {
+		System.out.println("Exception-throwing EXTops are:");
+		for (int op = 0; op < 0x100; op++) {
+			Memory memory = new Memory(2, 0);
+			Core cpuCore = new Core(memory, new Memory(1, 0));
+			memory.putByte(0, (byte) 0xED);
+			memory.putByte(1, (byte) op);
 			try {
-				while (true) {
-					// You can do that here
-					bus.putQWord(0, 0xAAAAAAAAAAAAAAAAL);
-					System.out.println(toHexString(bus.getQWord(0)));
-					Thread.sleep(100);
-				}
+				cpuCore.step();
+				runningExtOpcodes++;
 			} catch (Exception e) {
-
+				// opcode is not running
+				System.out.print("ED." + toHexString(op) + " ");
 			}
-		});
-		Thread processor2 = new Thread(() -> {
-			try {
-				while (true) {
-					bus.putQWord(0, 0xFFFFFFFFFFFFFFFFL);
-					System.out.println(toHexString(bus.getQWord(0)));
-					// This one is slower
-					Thread.sleep(300);
-				}
-			} catch (Exception e) {
-
-			}
-		});
-		processor1.start();
-		processor2.start();*/
-		/*
-		// TODO: Run the thing.
-		while (System.in.read() != "s".getBytes()[0]) {
-			System.out.println(toHexString(cpu.registers.getProgramCounter()));
-			cpu.step();
 		}
-		System.out.println("\nDone!");
-		*/
+
+		System.out.println();
+		System.out.println("Self-test complete, " + runningOpcodes + " of 256 opcodes that do not throw exceptions. (Including unimplemented prefixes) Please run tests for further detail.");
+		System.out.println("Implemented EXTops: " + runningExtOpcodes + ". IX and IY prefixes have already been implemented, and BIT counts as an instruction");
+
+		// The assembler doesn't work, so for now...
+		FileInputStream fis = new FileInputStream("a.bin");
+		Memory memory = new Memory(65536, 0);
+		int len = fis.available();
+		for (int i = 0; i < len; i++)
+			memory.putByte(i, (byte) fis.read());
+		fis.close();
+		Core cpuCore = new Core(memory, new SimpleIO(0));
+		while (true) {
+			try {
+				//System.out.println("Step @ x" + toHexString(cpuCore.registers.programCounter.getData()) + " : A = " + cpuCore.registers.REG_A.getData() + " : SP = " + cpuCore.registers.stackPointer.getData());
+				cpuCore.step();
+			} catch (Exception e) {
+				System.err.println("Step @ x" + toHexString(cpuCore.registers.programCounter.getData()) + " : A = " + cpuCore.registers.REG_A.getData() + " : SP = " + cpuCore.registers.stackPointer.getData());
+				throw e;
+			}
+			if (cpuCore.halted()) {
+				System.out.println("HALT @ x" + (cpuCore.registers.programCounter.getData() - 1) + " : A = " + cpuCore.registers.REG_A.getData());
+				System.out.println("SP = " + cpuCore.registers.stackPointer.getData());
+				MemoryRouter memRouter = new MemoryRouter(memory);
+				System.out.println("(SP) = " + memRouter.getWord(cpuCore.registers.stackPointer.getData()));
+				System.out.println("(SP)L = " + memRouter.getByte(cpuCore.registers.stackPointer.getData()));
+				System.out.println("(SP)H = " + memRouter.getByte((short) (cpuCore.registers.stackPointer.getData() + 1)));
+				listFlag(Flags.ADD_SUB, "ADD/SUB", cpuCore.registers.flags.getData());
+				listFlag(Flags.CARRY, "CARRY", cpuCore.registers.flags.getData());
+				listFlag(Flags.HALF_CARRY, "HALF_CARRY", cpuCore.registers.flags.getData());
+				listFlag(Flags.PARITY_OVERFLOW, "PARITY_OVERFLOW", cpuCore.registers.flags.getData());
+				listFlag(Flags.SIGN, "SIGN", cpuCore.registers.flags.getData());
+				listFlag(Flags.X_3, "X_3", cpuCore.registers.flags.getData());
+				listFlag(Flags.X_5, "X_5", cpuCore.registers.flags.getData());
+				listFlag(Flags.ZERO, "ZERO", cpuCore.registers.flags.getData());
+				System.in.read();
+				cpuCore.unhalt();
+			}
+		}
+	}
+
+	private static void listFlag(int flags, String name, byte data) {
+		if ((data & flags) == flags) {
+			name += " +";
+		} else {
+			name += " -";
+		}
+		System.out.println(name);
 	}
 
 }

@@ -1,7 +1,5 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
-import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
-
 /*         _/Calls to execute Z80 instructions1<-+     +---3>this way: data comes from here>+
  * +------/-----+    calls for services          |     |    +-----------------+             |
  * |Instruction*|2-> and gets mem/io   ----------+-----+-2> |ALU :mem,flags,io| <---------+ |
@@ -36,22 +34,24 @@ import uk.co.skyem.projects.emuZ80.bus.IBusDevice;
  * Hope that explained it somewhat for you.
  */
 
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
+
 public class Core {
 
 	// These were protected anyway, and they're a sign-extension accident waiting to happen. --gamemanj
 	// Don't touch them, btw
-	private IBusDevice memoryBus;
-	private IBusDevice IOBus;
+	private IByteHandler memoryBus;
+	private IByteHandler IOBus;
 	// --
 	// INSTRUCTIONS ARE NOT SUPPOSED TO ACCESS THIS!!!
 	// Let InstructionDecoder do it - it handles IX/IY.
-	Registers registers;
+	public Registers registers;
 	InstructionDecoder instructionDecoder;
 	ALU alu;
 	// Safe to touch.
 	MemoryRouter memRouter, ioRouter;
 
-	public Core(IBusDevice memory, IBusDevice io) {
+	public Core(IByteHandler memory, IByteHandler io) {
 		memoryBus = memory;
 		IOBus = io;
 

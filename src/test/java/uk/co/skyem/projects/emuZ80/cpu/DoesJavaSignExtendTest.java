@@ -1,8 +1,7 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
 import org.junit.Test;
-import uk.co.skyem.projects.emuZ80.bus.Memory;
-import uk.co.skyem.projects.emuZ80.bus.SimpleBusDevice;
+import uk.co.skyem.projects.emuZ80.util.buffer.AbstractByteBuffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +20,7 @@ public class DoesJavaSignExtendTest {
 	@Test
 	public void testDoesCoreFixThis() {
 		short i = 0;
-		MemoryRouter core = new MemoryRouter(new SimpleBusDevice() {
+		MemoryRouter core = new MemoryRouter(new AbstractByteBuffer() {
 			@Override
 			public void putByte(int position, byte data) {
 				assertThat(position).isBetween(0, 65535);

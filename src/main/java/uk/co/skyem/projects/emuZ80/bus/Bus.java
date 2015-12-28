@@ -1,12 +1,14 @@
 package uk.co.skyem.projects.emuZ80.bus;
 
+import uk.co.skyem.projects.emuZ80.util.buffer.IByteHandler;
+
 import java.util.ArrayList;
 
-public class Bus implements IBusDevice {
-	private ArrayList<IBusDevice> connections = new ArrayList<>();
+public class Bus implements IByteHandler {
+	private ArrayList<IByteHandler> connections = new ArrayList<>();
 
 	public void putByte(int position, byte data) {
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			connection.putByte(position, data);
 		}
 	}
@@ -14,7 +16,7 @@ public class Bus implements IBusDevice {
 	@Override
 	public byte getByte(int position) {
 		byte result = 0x00;
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			result = (byte) (result | connection.getByte(position));
 		}
 		return result;
@@ -23,7 +25,7 @@ public class Bus implements IBusDevice {
 	@Override
 	public byte[] getBytes(int position, int amount) {
 		byte[] result = new byte[amount];
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			byte[] bytes = connection.getBytes(position, amount);
 			for (int i = 0; i < bytes.length; i++) {
 				result[i] = (byte) (result[i] | bytes[i]);
@@ -34,7 +36,7 @@ public class Bus implements IBusDevice {
 
 	@Override
 	public void putBytes(int position, byte[] data) {
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			connection.putBytes(position, data);
 		}
 	}
@@ -42,7 +44,7 @@ public class Bus implements IBusDevice {
 	@Override
 	public short getWord(int position) {
 		short result = 0x00;
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			result = (short) (result | connection.getWord(position));
 		}
 		return result;
@@ -51,7 +53,7 @@ public class Bus implements IBusDevice {
 	@Override
 	public int getDWord(int position) {
 		int result = 0x00;
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			result = (result | connection.getDWord(position));
 		}
 		return result;
@@ -60,7 +62,7 @@ public class Bus implements IBusDevice {
 	@Override
 	public long getQWord(int position) {
 		long result = 0x00;
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			result = (result | connection.getQWord(position));
 		}
 		return result;
@@ -68,40 +70,30 @@ public class Bus implements IBusDevice {
 
 	@Override
 	public void putWord(int position, short data) {
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			connection.putWord(position, data);
 		}
 	}
 
 	@Override
 	public void putDWord(int position, int data) {
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			connection.putDWord(position, data);
 		}
 	}
 
 	@Override
 	public void putQWord(int position, long data) {
-		for (IBusDevice connection : connections) {
+		for (IByteHandler connection : connections) {
 			connection.putQWord(position, data);
 		}
 	}
 
-	public void addConnection(IBusDevice connection) {
+	public void addConnection(IByteHandler connection) {
 		connections.add(connection);
 	}
 
-	public void removeConnection(IBusDevice connection) {
+	public void removeConnection(IByteHandler connection) {
 		connections.remove(connection);
-	}
-
-	@Override
-	public int getOffset() {
-		return 0;
-	}
-
-	@Override
-	public void changeOffset(int offset) {
-
 	}
 }
