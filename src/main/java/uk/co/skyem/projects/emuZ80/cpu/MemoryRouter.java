@@ -23,7 +23,7 @@ public class MemoryRouter {
 	}
 
 	public void putByte(short address, Byte data) {
-		memoryBus.putByte(safeShortToInt(address), data);
+		memoryBus.putByte(Short.toUnsignedInt(address), data);
 	}
 
 	public void putWord(short address, Short data) {
