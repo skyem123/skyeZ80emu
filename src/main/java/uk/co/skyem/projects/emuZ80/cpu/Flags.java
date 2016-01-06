@@ -1,7 +1,8 @@
 package uk.co.skyem.projects.emuZ80.cpu;
 
-public abstract class Flags {
-
+public final class Flags {
+	private Flags() {}
+	
 	public static final int CARRY = 1 << 0;
 	public static final int ADD_SUB = 1 << 1;
 	public static final int PARITY_OVERFLOW = 1 << 2;
