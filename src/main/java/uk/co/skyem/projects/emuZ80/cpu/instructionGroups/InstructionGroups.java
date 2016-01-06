@@ -9,7 +9,6 @@ public class InstructionGroups extends Instruction {
 		super(instructionDecoder);
 	}
 
-	// NOTE: This *must* be below the constructor, since the instructions rely on the decoder...
 	Instruction unprefixedInstruction = new UnprefixedInstruction(instructionDecoder);
 
 	@Override
