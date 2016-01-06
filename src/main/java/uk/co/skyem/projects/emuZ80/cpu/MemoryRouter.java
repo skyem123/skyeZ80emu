@@ -22,31 +22,22 @@ public class MemoryRouter {
 		memoryBus = targetBus;
 	}
 
-	// NOTE: The following do the required signed/unsigned conversions.
-	// Java will probably sign-extend - that's probably not what you want.
-	// TODO: Use Java 8 stuff!
-	private int safeShortToInt(short address) {
-		int i = address;
-		i &= 0xFFFF; // get rid of any sign-extension
-		return i;
-	}
-
 	public void putByte(short address, Byte data) {
 		memoryBus.putByte(safeShortToInt(address), data);
 	}
 
 	public void putWord(short address, Short data) {
-		memoryBus.putByte(safeShortToInt(address), (byte)(data & 0xFF));
-		memoryBus.putByte(safeShortToInt(++address), (byte)((data & 0xFF00)>>8));
+		memoryBus.putByte(Short.toUnsignedInt(address), (byte)(data & 0x00FF));
+		memoryBus.putByte(Short.toUnsignedInt(++address), (byte)((data & 0xFF00)>>8));
 	}
 
 	public byte getByte(short address) {
-		return memoryBus.getByte(safeShortToInt(address));
+		return memoryBus.getByte(Short.toUnsignedInt(address));
 	}
 
 	public short getWord(short address) {
-		byte l = memoryBus.getByte(safeShortToInt(address));
-		byte h = memoryBus.getByte(safeShortToInt(++address));
+		byte l = memoryBus.getByte(Short.toUnsignedInt(address));
+		byte h = memoryBus.getByte(Short.toUnsignedInt(++address));
 		int lh = ((h << 8) & 0xFF00) | (l & 0xFF);
 		return (short) (lh);
 	}
