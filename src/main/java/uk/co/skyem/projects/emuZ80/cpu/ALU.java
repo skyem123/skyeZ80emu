@@ -58,7 +58,7 @@ public class ALU {
 	public static short rotate(short data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Short.SIZE;
 		if (amount != 0) return (short)rotate(Short.toUnsignedInt(data), dataLength, amount);
-		else return amount;
+		else return data;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class ALU {
 	public static byte rotate(byte data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Byte.SIZE;
 		if (amount != 0) return (byte)rotate(Byte.toUnsignedInt(data), dataLength, amount);
-		else return amount;
+		else return data;
 	}
 
 	// NOTE: These 5 functions are 0-based
