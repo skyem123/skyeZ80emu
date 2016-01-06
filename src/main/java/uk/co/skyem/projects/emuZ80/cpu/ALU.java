@@ -25,7 +25,28 @@ public class ALU {
 	/*
 	 * Note: a commented rotate function is at https://gist.github.com/skyem123/a6f912af97f25ea8d7e2
 	 */
-
+	
+	/**
+	 * Rotates an integer.
+	 *
+	 * @param data       The integer to be rotated.
+	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
+	 * @param dataLength The length of the data. If 0, assumes integer length (32 bits).
+	 * @return The rotated byte.
+	 */
+	public static int rotate(int data, int dataLength, int amount) {
+		if (dataLength == 0) dataLength = Integer.SIZE;
+		if (amount > 0) {
+			return (data >>> amount) | (data << dataLength - amount);
+		} else if (amount < 0) {
+			amount = Math.abs(amount);
+			return (data << amount) | (data >>> dataLength - amount);
+		} else {
+			// No Rotation
+			return data;
+		}
+	}
+	
 	/**
 	 * Rotates a short.
 	 *
@@ -36,15 +57,8 @@ public class ALU {
 	 */
 	public static short rotate(short data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Short.SIZE;
-		if (amount > 0) {
-			return (short) ((data >>> amount) | (data << dataLength - amount));
-		} else if (amount < 0) {
-			amount = Math.abs(amount);
-			return (short) ((data << amount) | (data >>> dataLength - amount));
-		} else {
-			// No Rotation
-			return data;
-		}
+		if (amount != 0) return (short)rotate(Short.toUnsignedInt(data), dataLength, amount)
+		else return amount
 	}
 
 	/**
@@ -57,15 +71,8 @@ public class ALU {
 	 */
 	public static byte rotate(byte data, int dataLength, int amount) {
 		if (dataLength == 0) dataLength = Byte.SIZE;
-		if (amount > 0) {
-			return (byte) ((data >>> amount) | (data << dataLength - amount));
-		} else if (amount < 0) {
-			amount = Math.abs(amount);
-			return (byte) ((data << amount) | (data >>> dataLength - amount));
-		} else {
-			// No Rotation
-			return data;
-		}
+		if (amount != 0) return (byte)rotate(Byte.toUnsignedInt(data), dataLength, amount)
+		else return amount
 	}
 
 	// NOTE: These 5 functions are 0-based
