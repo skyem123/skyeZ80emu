@@ -22,62 +22,9 @@ public class ALU {
 		flags = flag;
 	}
 
-	/**
-	 * Rotates a long.
-	 *
-	 * @param data       The long to be rotated.
-	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
-	 * @param dataLength The length of the data. If 0, assumes long length (65 bits).
-	 * @return The rotated byte.
+	/*
+	 * Note: a commented rotate function is at https://gist.github.com/skyem123/a6f912af97f25ea8d7e2
 	 */
-	// TODO: optimise?
-	public static long rotate(long data, int dataLength, int amount) {
-		if (dataLength == 0) dataLength = Long.SIZE;
-		if (amount > 0) {
-			// Rotate Right
-			// Shift the whole thing right.
-			long rotated = data >>> amount;
-			// Get the chopped off bits and move them.
-			long removed = data << dataLength - amount;
-			// stick the chopped off bits back on.
-			rotated = rotated | removed;
-			return rotated;
-		} else if (amount < 0) {
-			amount = Math.abs(amount);
-			// Rotate Left
-			// Shift the whole thing left.
-			long rotated = data << amount;
-			// Get the chopped off bits and move them.
-			long removed = data >>> dataLength - amount;
-			// stick the chopped off bits back on.
-			rotated = rotated | removed;
-			return rotated;
-		} else {
-			// No Rotation
-			return data;
-		}
-	}
-
-	/**
-	 * Rotates an integer.
-	 *
-	 * @param data       The integer to be rotated.
-	 * @param amount     The amount to rotate the byte by, if greater than 0, rotate right, if less than 0, rotate left.
-	 * @param dataLength The length of the data. If 0, assumes integer length (32 bits).
-	 * @return The rotated byte.
-	 */
-	public static int rotate(int data, int dataLength, int amount) {
-		if (dataLength == 0) dataLength = Integer.SIZE;
-		if (amount > 0) {
-			return (data >>> amount) | (data << dataLength - amount);
-		} else if (amount < 0) {
-			amount = Math.abs(amount);
-			return (data << amount) | (data >>> dataLength - amount);
-		} else {
-			// No Rotation
-			return data;
-		}
-	}
 
 	/**
 	 * Rotates a short.
