@@ -11,6 +11,3 @@ Fun fact, [@Victorious3](https://github.com/Victorious3) and [@RX14](https://git
 Thanks to [@RX14](https://github.com/RX14) for the Jenkins build server!
 
 Also, thank you [@gamemanj](https://github.com/gamemanj) for writing a lot of code to help me.
-
-### Code Coverage ###
-![codecov.io](http://codecov.io/github/skyem123/skyeZ80emu/branch.svg?branch=master)
