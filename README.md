@@ -1,6 +1,6 @@
 # skyeZ80emu [![Travis build staus](https://img.shields.io/travis/skyem123/skyeZ80emu.svg)](https://travis-ci.org/skyem123/skyeZ80emu)
 
-**ABANDONED FOR NOW*** I don't have the time to work on this anymore, and I don't really enjoy picking apart the sparse documentation, so I'm leaving this here, but I don't expect to work on it any time soon.
+**ABANDONED FOR NOW** I don't have the time to work on this anymore, and I don't really enjoy picking apart the sparse documentation, so I'm leaving this here, but I don't expect to work on it any time soon.
 
 While this project might not be completed, the good news is that it has got to the point where it "sort of" works, and is Turing complete enough to run a RPN calculator.
 
